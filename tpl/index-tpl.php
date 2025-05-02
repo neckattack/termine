@@ -70,8 +70,10 @@ $gText  = $client["greeting_text"];
 				    <div class="col-md-12">
 				    <?php
 				    	if (!empty($client["image"])) { ?>
-				    		<img  src="/get_group_logo.php?id=<?=$client['id']?>&type=client" alt="Logo for <?php echo $title; ?>"  style="margin: 9px;margin-right: 25px; float: left;width: auto;height: 130px;"/>
-				    <?php } ?>
+						<img src="/get_group_logo.php?id=<?=$client['id']?>&type=client"
+     alt="Logo for <?php echo $title; ?>"
+     style="margin: 9px 0 9px 25px; float: right; width: auto; height: 130px; border: 2px solid #ccc; padding: 5px; background: #fff;"/>				    
+									<?php } ?>
 				        <h1 class="mb-1"><?php echo $title; ?></h1>
 				        <h3 class="mb-5"><span style="white-space:pre-line;"><em><?php echo $gText; ?></em></span></h3>
 				    </div>
