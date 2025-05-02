@@ -1,0 +1,22 @@
+# Rewrite root to /web
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/[0-9]+\..+\.cpaneldcv$
+RewriteCond %{REQUEST_URI} !^/[A-F0-9]{32}\.txt(?:\ Comodo\ DCV)?$
+RewriteRule ^(.*)$ web/$1 [NC,L]
+
+# Deactivate the Session ID transmission
+# php_flag session.use_trans_sid off
+# php_flag session.use_only_cookies on
+
+# Error Reporting
+# php_flag display_errors on
+# php_value error_reporting -1
+
+# Suhoshin Encryption (may cause problems)
+# php_flag suhosin.cookie.encrypt off
+# php_flag suhosin.session.encrypt off
+
+# Disable register_globals
+# Why is this enabled by default?
+# php_flag register_globals off

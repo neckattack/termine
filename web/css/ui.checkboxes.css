@@ -1,0 +1,68 @@
+/* 
+ * The state classes are a little bit complex, because of the doubble class bug in IE6
+ * The state class looks like this:
+ * 
+ * .ui-radio-state[-checked][-disabled][-hover] or .ui-checkbox-state[-checked][-disabled][-hover]
+ * 
+ * Examples:
+ * 
+ * .ui-radio-state-checked (simply checked) 
+ * .ui-radio-state-checked-hover (checked and hovered/focused)
+ * .ui-radio-state-hover (unchecked and hovered/focused)
+ * 
+ * If you don´t have to deal with the doubble class bug of IE6 you can also use the simple ui-checked, ui-disabled, ui-hover state-classnames
+ * and the ui-radio/ui-checkbox role-classnames.
+ * 
+ */
+
+
+label.ui-checkbox,
+label.ui-radio {
+	padding: 2px 0 2px 20px;
+	background: url(../img/icon_checkboxes.png) right -40px no-repeat;
+}
+label.ui-checkbox-state-hover,
+label.ui-radio-state-hover {
+	background-position: right -114px;
+}
+			
+label.ui-checkbox-state-checked {
+	background-position: right -1px;
+}
+
+label.ui-checkbox-state-checked-hover {
+	background-position: right -75px;
+}
+
+label.ui-radio-state-checked {
+	background-position: right -161px;
+}
+label.ui-radio-state-checked-hover {
+	background-position: right -200px;
+}
+
+.button-style label {
+	display: inline-block;
+	margin: 3px 0;
+	border: 1px solid #999;
+	padding: 4px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	background: #434f56;
+	cursor: pointer;
+}
+
+.button-style label.ui-radio-hover,
+.button-style label.ui-checkbox-hover {
+	border-color: #e6ab5d;
+}
+.button-style label.ui-radio-checked,
+.button-style label.ui-checkbox-checked {
+	background: #5db0e6;
+}
+
+.ui-helper-hidden-accessible {
+	position: absolute;
+	left: -999em;
+}		

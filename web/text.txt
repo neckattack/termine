@@ -1,0 +1,82 @@
+Array
+(
+    [mc_gross] => 0.10
+    [protection_eligibility] => Eligible
+    [address_status] => confirmed
+    [payer_id] => RGXFWHJDUND94
+    [address_street] => Zaporizka 9a
+    [payment_date] => 14:43:05 Mar 26, 2018 PDT
+    [payment_status] => Completed
+    [charset] => windows-1252
+    [address_zip] => 69095
+    [first_name] => Nikita
+    [mc_fee] => 0.10
+    [address_country_code] => UA
+    [address_name] => Nikita Titov
+    [notify_version] => 3.9
+    [custom] => 26159
+    [payer_status] => unverified
+    [business] => chris@neckattack.net
+    [address_country] => Ukraine
+    [address_city] => Zaporizhia
+    [quantity] => 1
+    [verify_sign] => ASQtLetib.e0K9765E3BEEHDRnytAObx9OEdi99ZXUhCtyKh-VcP6v3k
+    [payer_email] => nikitaua1993@gmail.com
+    [txn_id] => 4FR09290TM4244845
+    [payment_type] => instant
+    [last_name] => Titov
+    [address_state] => Zaporizhia
+    [receiver_email] => lizenzen@neckattack.net
+    [payment_fee] => 
+    [receiver_id] => X5CBU6FK6LWUN
+    [txn_type] => web_accept
+    [item_name] => nikitos,rock1313@ukr.net
+    [mc_currency] => EUR
+    [item_number] => GIUK7
+    [residence_country] => UA
+    [transaction_subject] => 
+    [payment_gross] => 
+    [ipn_track_id] => ed40649415889
+)
+
+Array
+(
+    [mc_gross] => 0.20
+    [protection_eligibility] => Eligible
+    [address_status] => confirmed
+    [payer_id] => RGXFWHJDUND94
+    [address_street] => Zaporizka 9a
+    [payment_date] => 14:45:23 Mar 26, 2018 PDT
+    [payment_status] => Completed
+    [charset] => windows-1252
+    [address_zip] => 69095
+    [first_name] => Nikita
+    [mc_fee] => 0.20
+    [address_country_code] => UA
+    [address_name] => Nikita Titov
+    [notify_version] => 3.9
+    [custom] => 26159,26160
+    [payer_status] => unverified
+    [business] => chris@neckattack.net
+    [address_country] => Ukraine
+    [address_city] => Zaporizhia
+    [quantity] => 1
+    [verify_sign] => AEUOx5JFv4Qsy7g6XAnQ-X6T8aL1AgcMU4EqS9rCNBx7jhosjTljyUxL
+    [payer_email] => nikitaua1993@gmail.com
+    [txn_id] => 18973283B9802180L
+    [payment_type] => instant
+    [last_name] => Titov
+    [address_state] => Zaporizhia
+    [receiver_email] => lizenzen@neckattack.net
+    [payment_fee] => 
+    [receiver_id] => X5CBU6FK6LWUN
+    [txn_type] => web_accept
+    [item_name] => NIKITA_TEST_PAY_PAL_REAL,rock1313@ukr.net
+    [mc_currency] => EUR
+    [item_number] => GIUK7
+    [residence_country] => UA
+    [transaction_subject] => 
+    [payment_gross] => 
+    [ipn_track_id] => 1291a587a05eb
+)
+

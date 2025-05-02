@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WorkingProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Track xsi:type="VideoTrackProject">
+    <FilePath>D:\Zona Downloads\Vikings.(S02).NewStudio\Vikings.s02e03.WEBDLRip.NewStudio.TV.avi</FilePath>
+    <Title>Vikings.s02e03.WEBDLRip.NewStudio.TV</Title>
+    <AudioCollection />
+    <AudioCollectionIndex>0</AudioCollectionIndex>
+    <SubtitleCollection />
+    <SubtitleIndex>-1</SubtitleIndex>
+    <SubtitlesFontFamily>Tahoma</SubtitlesFontFamily>
+    <SubtitlesFontSize>20</SubtitlesFontSize>
+    <EditRotate>0</EditRotate>
+    <DeleteInterval />
+    <IsTrackEdited>false</IsTrackEdited>
+    <IsFrameCropped>false</IsFrameCropped>
+    <IsFrameCroppedManually>false</IsFrameCroppedManually>
+  </Track>
+  <Track xsi:type="VideoTrackProject">
+    <FilePath>D:\Zona Downloads\Vikings.(S02).NewStudio\Vikings.s02e01.WEBDLRip.NewStudio.TV.avi</FilePath>
+    <Title>Vikings.s02e01.WEBDLRip.NewStudio.TV</Title>
+    <AudioCollection />
+    <AudioCollectionIndex>0</AudioCollectionIndex>
+    <SubtitleCollection />
+    <SubtitleIndex>-1</SubtitleIndex>
+    <SubtitlesFontFamily>Tahoma</SubtitlesFontFamily>
+    <SubtitlesFontSize>20</SubtitlesFontSize>
+    <EditRotate>0</EditRotate>
+    <DeleteInterval />
+    <IsTrackEdited>false</IsTrackEdited>
+    <IsFrameCropped>false</IsFrameCropped>
+    <IsFrameCroppedManually>false</IsFrameCroppedManually>
+  </Track>
+  <Track xsi:type="VideoTrackProject">
+    <FilePath>D:\Zona Downloads\Vikings.(S02).NewStudio\Vikings.s02e02.WEBDLRip.NewStudio.TV.avi</FilePath>
+    <Title>Vikings.s02e02.WEBDLRip.NewStudio.TV</Title>
+    <AudioCollection />
+    <AudioCollectionIndex>0</AudioCollectionIndex>
+    <SubtitleCollection />
+    <SubtitleIndex>-1</SubtitleIndex>
+    <SubtitlesFontFamily>Tahoma</SubtitlesFontFamily>
+    <SubtitlesFontSize>20</SubtitlesFontSize>
+    <EditRotate>0</EditRotate>
+    <DeleteInterval />
+    <IsTrackEdited>false</IsTrackEdited>
+    <IsFrameCropped>false</IsFrameCropped>
+    <IsFrameCroppedManually>false</IsFrameCroppedManually>
+  </Track>
+  <Track xsi:type="VideoTrackProject">
+    <FilePath>D:\Zona Downloads\Vikings.(S02).NewStudio-1\Vikings.s02e04.WEBDLRip.NewStudio.TV.avi</FilePath>
+    <Title>Vikings.s02e04.WEBDLRip.NewStudio.TV</Title>
+    <AudioCollection />
+    <AudioCollectionIndex>0</AudioCollectionIndex>
+    <SubtitleCollection />
+    <SubtitleIndex>-1</SubtitleIndex>
+    <SubtitlesFontFamily>Tahoma</SubtitlesFontFamily>
+    <SubtitlesFontSize>20</SubtitlesFontSize>
+    <EditRotate>0</EditRotate>
+    <DeleteInterval />
+    <IsTrackEdited>false</IsTrackEdited>
+    <IsFrameCropped>false</IsFrameCropped>
+    <IsFrameCroppedManually>false</IsFrameCroppedManually>
+  </Track>
+  <Options>
+    <URLOptions HideAdultVideo="false" HideAdultThumbs="false" />
+    <AcsellerationOptions AvtoAcceleration="true" CudaAcceleration="false" DXVAAcceleration="false" />
+    <ProxyOptions UseProxy="false" HTTPProxy="127.0.0.1" Port="80" AuthorizationRequired="false" Login="" Password="" />
+    <Languages>ru-RU</Languages>
+    <Join>false</Join>
+  </Options>
+  <LastConvertGroupName>MP4</LastConvertGroupName>
+  <PresetIndex>0</PresetIndex>
+  <ConvertFolder>D:\</ConvertFolder>
+  <DVDMenuTemplateIndex>0</DVDMenuTemplateIndex>
+  <BDMenuIndex>0</BDMenuIndex>
+</WorkingProject>

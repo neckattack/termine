@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Redirect to https 
+RewriteCond %{HTTP_HOST} ^termine\.neckattack\.net [NC]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+
+# We don't need file extensions for the welcome page
+RewriteRule ^welcome$ welcome.php
+
+# Rewrite to index.php?h=XXX
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !(\/admin\/) [NC]
+RewriteRule ^(.*)$ index.php?h=$1&%{QUERY_STRING} [NC,L]
+#RewriteRule ^(.*)$ deploy.php [NC,L]

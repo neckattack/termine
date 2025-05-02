@@ -1,0 +1,18 @@
+#RewriteEngine On
+
+# We don't need file extensions for the welcome page
+#RewriteRule ^welcome$ welcome.php
+
+# Rewrite to index.php?h=XXX
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_URI} !(\/admin\/) [NC]
+#RewriteRule ^(.*)$ index.php?h=$1&%{QUERY_STRING} [NC,L]
+
+
+# Working
+RewriteEngine On
+RewriteBase /
+#RewriteCond %{REQUEST_URI} !^/working/.*$
+RewriteCond %{REQUEST_URI} !(\/working\/) [NC]
+RewriteRule ^(.*)$ /working/ [R=307,L] 

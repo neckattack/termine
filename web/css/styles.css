@@ -1,0 +1,1251 @@
+html {
+	font-size: 62.5%;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #FAFAFA;
+	font-family: 'Helvetica Neue', Helvetica, sans-serif;
+	font-size: 16px;
+	font-size: 1.6rem;
+}
+
+h1, h2, h3, h4, h5 {
+	font-family: ff-dax-web-pro, 'Helvetica Neue', Helvetica, sans-serif;
+}
+.fLeft {
+	float: left;
+}
+.fRight {
+	float: right;
+}
+.fClear {
+	clear: left:
+}
+.rClear {
+	clear: right;
+}
+.bClear {
+	clear: both;
+}
+.center {
+	margin: auto;
+}
+.tCenter {
+	text-align: center;
+}
+.hide {
+	display: none;
+}
+
+h3 {
+	margin: 0 0 10px 0;
+	padding: 0;
+	font-size: 16px;
+	font-size: 1.6rem;
+}
+
+a {
+	color: #000;
+	padding: 2px 4px;
+}
+a:hover,
+a:active {
+	background-color: #888;
+}
+
+
+/**
+ * Tooltips
+ */
+a.tooltip {
+	display: inline-block;	/* Fixes missing border in IE7 */
+	padding: 0;
+	text-decoration: none;
+	border-bottom: 1px dotted #888;
+}
+a.tooltip:focus,
+a.tooltip:hover,
+a.tooltip:active {
+	background-color: transparent;
+}
+
+div.tooltip {
+	display: inline-block;
+	position: absolute;
+	background-color: #FFFFCA;
+	border: 1px solid #888;
+	font-family: monospace;
+	font-size: 13px;
+	font-size: 1.3rem;
+
+	-webkit-border-radius: 10px;
+	   -moz-border-radius: 10px;
+	    -ms-border-radius: 10px;
+	     -o-border-radius: 10px;
+	        border-radius: 10px;
+}
+div.tooltip h3 {
+	font-size: 14px;
+	font-size: 1.4rem;
+	background-color: #FFFF80;
+	padding: 4px 8px;
+	border-bottom: 1px solid #888;;
+
+	-webkit-border-top-left-radius: 11px;
+	   -moz-border-top-left-radius: 11px;
+	    -ms-border-top-left-radius: 11px;
+	     -o-border-top-left-radius: 11px;
+	        border-top-left-radius: 11px;
+
+	-webkit-border-top-right-radius: 11px;
+	   -moz-border-top-right-radius: 11px;
+	    -ms-border-top-right-radius: 11px;
+	     -o-border-top-right-radius: 11px;
+	        border-top-right-radius: 11px;
+}
+div.tooltip dl {
+	margin: 8px 8px;
+}
+div.tooltip dt {
+	margin-top: 1em;
+	font-weight: bold;
+}
+div.tooltip dd {
+	margin: 0;
+	padding: 0;
+}
+
+
+/**
+ * Zebra Rows
+ */
+.row {
+	clear: both;
+	overflow: hidden;
+	padding: 4px 4px;
+}
+.row input,
+.row select,
+.row textarea {
+	margin-bottom: 0;
+}
+.zebra-rows div.row:nth-child(even) {
+
+}
+
+.zebra-rows div.row:nth-child(odd) {
+	background-color: #FEFDD6;
+}
+
+
+/**
+ * Multiselects
+ */
+.is-multiselect {
+	font size: 13px;
+	font-size: 1.3rem;
+}
+
+button.is-multiselect {
+	        border-radius: 0;
+	   -moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-color: #999;
+	color: black;
+	font-weight: normal;	
+}
+
+div.is-multiselect {
+	        border-radius: 0;
+	   -moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-color: #999;
+	background-color: #FFF;
+	background-image: none;
+}
+
+div.is-multiselect label.ui-state-hover {
+	        border-radius: 0;
+	   -moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	font-weight: normal;
+	/*color: #C69E00;
+	border-color: #C69E00;*/
+}
+
+div.is-multiselect .ui-multiselect-header {
+	        border-radius: 0;
+	   -moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+div.is-multiselect a:hover,
+div.is-multiselect a:active {
+	background-color: transparent;
+}
+
+
+/**
+ * Success, Error and other messages
+ */
+
+/**
+ * Error message for form validation
+ */
+#errorMsg {
+	display: none;
+	width: 400px;
+	margin: 30px auto 0 auto;
+	padding: 10px 10px;
+	text-align: center;
+	font-weight: bold;
+	clear: both;
+	border: 2px solid #800000;
+	background-color: #FF0000;
+
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	    -ms-border-radius: 5px;
+	     -o-border-radius: 5px;
+	        border-radius: 5px;
+
+	-webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	   -moz-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	    -ms-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	     -o-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FF4040), color-stop(100%, #DF0000));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#FF4040), to(#DF0000));
+	background-image: -webkit-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:    -moz-linear-gradient(to bottom, #FF4040, #DF0000);
+	background-image:     -ms-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:      -o-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:         linear-gradient(to bottom, #FF4040, #DF0000);
+}
+
+#errorMsg ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+
+#success,
+#successImage,
+#toolate,
+#error,
+.error,
+#deleted {
+	display: none;
+	margin: 0 auto 30px auto;
+	width: 400px;
+	padding: 10px 10px;
+	border: 2px solid black;
+	clear: both;
+	text-align: center;
+	padding: 5px 10px;
+	font-weight: bold;
+
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	    -ms-border-radius: 5px;
+	     -o-border-radius: 5px;
+	        border-radius: 5px;
+
+
+	-webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	   -moz-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	    -ms-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	     -o-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+	        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#success,
+#successImage {
+	border: 2px solid #004000;
+	background-color: #80FF80;
+	color: #004000;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #80FF80), color-stop(100%, #00BB00));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#80FF80), to(#00BB00));
+	background-image: -webkit-linear-gradient(top,       #80FF80, #00BB00);
+	background-image:    -moz-linear-gradient(to bottom, #80FF80, #00BB00);
+	background-image:     -ms-linear-gradient(top,       #80FF80, #00BB00);
+	background-image:      -o-linear-gradient(top,       #80FF80, #00BB00);
+	background-image:         linear-gradient(to bottom, #80FF80, #00BB00);
+}
+#toolate {
+	border: 2px solid #800000;
+	background-color: #FF0000;
+	color: #500000;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FF4040), color-stop(100%, #DF0000));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#FF4040), to(#DF0000));
+	background-image: -webkit-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:    -moz-linear-gradient(to bottom, #FF4040, #DF0000);
+	background-image:     -ms-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:      -o-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:         linear-gradient(to bottom, #FF4040, #DF0000);
+}
+.error,
+#error {
+	border: 2px solid #800000;
+	background-color: #FF0000;
+	color: #500000;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FF4040), color-stop(100%, #DF0000));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#FF4040), to(#DF0000));
+	background-image: -webkit-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:    -moz-linear-gradient(to bottom, #FF4040, #DF0000);
+	background-image:     -ms-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:      -o-linear-gradient(top,       #FF4040, #DF0000);
+	background-image:         linear-gradient(to bottom, #FF4040, #DF0000);
+}
+#deleted {
+	border: 2px solid #000;
+	background-color: #FFFF80;
+	color: #000;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFFF80), color-stop(100%, #E8E800));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#FFFF80), to(#E8E800));
+	background-image: -webkit-linear-gradient(top,       #FFFF80, #E8E800);
+	background-image:    -moz-linear-gradient(to bottom, #FFFF80, #E8E800);
+	background-image:     -ms-linear-gradient(top,       #FFFF80, #E8E800);
+	background-image:      -o-linear-gradient(top,       #FFFF80, #E8E800);
+	background-image:         linear-gradient(to bottom, #FFFF80, #E8E800);
+}
+
+
+/* The .has-js class is being applied if JavaScript is activated */
+#errorMsg.has-js,
+#error.has-js,
+#success.has-js,
+#successImage.has-js,
+#toolate.has-js,
+#deleted.has-js,
+.has-js {
+	position: fixed;
+	top: 8em;
+	left: 50%;
+	margin-left: -210px;
+	z-index: 10000;
+}
+
+
+/**
+ * The page container
+ */
+.page {
+	/* width: 960px; */
+	width: 1060px;
+	margin: 20px auto;
+	border: 1px solid #888;
+	overflow: hidden;
+	background-color: white;
+	position: relative;
+}
+
+
+/**
+ * General styles for header, footer and container
+ */
+#header,
+#content,
+#footer {
+	margin: 10px 10px;
+	background-color: white;
+	overflow: hidden;
+}
+
+
+/**
+ * The Header 
+ */
+#header {
+	margin: 0;
+}
+
+/* The logo */
+#header .logo {
+	display: block;
+	float: left;
+	border: 0;
+	margin: 0;
+	padding: 20px 20px 20px 20px;
+}
+#header .logo img {
+	border: none;
+	display: block;
+}
+#header .logo:hover,
+#header .logo:active {
+	background-color: transparent;
+}
+
+/* The branding (additional logo/image) */
+#header .branding {
+	display: block;
+	float: right;
+	clear: right;
+	max-height: 100px;
+	max-width: 500px;
+	margin: 20px 20px 20px 20px;
+}
+
+/* The heading text */
+#header .greetingText {
+	position: relative;
+	clear: both;
+	padding: 25px 0 10px 10px;
+	background-color: #FECC00;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFEEAA), color-stop(100%, #FECC00));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#FFEEAA), to(#FECC00));
+	background-image: -webkit-linear-gradient(top,       #FFEEAA, #FECC00);
+	background-image:    -moz-linear-gradient(to bottom, #FFEEAA, #FECC00);
+	background-image:     -ms-linear-gradient(top,       #FFEEAA, #FECC00);
+	background-image:      -o-linear-gradient(top,       #FFEEAA, #FECC00);
+	background-image:         linear-gradient(to bottom, #FFEEAA, #FECC00);
+}
+
+#header .greetingText h1,
+#header .greetingText p {
+	margin: 0;
+}
+#header .greetingText h1 {
+	font-size: 26px;
+	font-size: 2.6rem;
+}
+#header .greetingText p {
+	font-size: 16px;
+	font-size: 1.6rem;
+}
+
+#header .logout {
+	position: absolute;
+	top: 0;
+	right: 0;
+	overflow: hidden;
+	text-align: right;
+	padding: 5px 5px 0 0;
+}
+#header .logout a {
+	color: #FFF;
+	font-size: 13px;
+	font-size: 1.3rem;
+	display: inline-block;
+	padding: 2px 5px;
+	background-color: #666;
+	border: 3px solid #FFF;
+	line-height: 25px;
+
+	text-decoration: none;
+	font-weight: bold;
+}
+#header .logout a:hover,
+#header .logout a:active {
+	background-color: #888;
+}
+
+
+/**
+ * The Footer
+ */
+#footer {
+	font-size: 11px;
+	font-size: 1.1rem;
+	padding: 10px;
+	color:#555;
+}
+
+#footer p {
+	margin: 0;
+}
+
+
+/**
+ * The Content
+ */
+#content {
+	padding: 10px;
+	min-height: 250px;
+	position: relative;
+}
+
+/**
+ * The content menu
+ */
+#content .menu {
+	list-style: none;
+	margin: 0 0 25px 0;
+	padding: 0;
+	overflow: hidden;
+	clear: both;
+	border-bottom: 1px solid #888;
+}
+#content .menu li {
+	float: left;
+	margin-right: 10px;
+}
+#content .menu li a {
+	display: block;
+	padding: 2px 4px;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+
+
+/**
+ * Welcome Page
+ */
+#enterCode div {
+	text-align: center;
+	margin: 50px auto;
+	overflow: hidden;
+	clear: both;
+	width: 500px;
+}
+
+#enterCode input {
+	font-size: 40px;
+	font-size: 4.0rem;
+	display :block;
+}
+#enterCode input[type='submit'] {
+	margin-top: 8px;
+}
+#enterCode input#code {
+	color: #888;
+	width: 225px;
+	margin-right: 15px;
+	padding: 0 5px;
+}
+
+#enterCode input#code.active {
+	font-style: normal;
+	color: #000;
+}
+
+#enterCode input#code,
+#enterCode input#submit {
+	vertical-align: top;
+	height: 50px;
+}
+#enterCode input#submit {
+	width: 100px;
+	height: 53px;
+}
+
+/* IE hack */
+*+html #enterCode input#code {
+	height: 46px;
+	padding: 4px 5px 0 5px;
+}
+
+#enterCode .debug {
+	margin: 50px;
+	color: #888;
+	text-align: left;
+	clear: right;
+}
+
+
+
+/**
+ * User Index (client register)
+ */
+#register {
+	min-height: 450px;
+	overflow: hidden;
+}
+
+#register > div {
+	overflow: hidden;
+}
+
+#register .fLeft,
+#register .fRight {
+	overflow: hidden;
+}
+
+#register .dates {
+	width: 190px;
+	margin-right: 30px;
+}
+
+#register .times {
+	width: 375px;
+}
+
+#register .dates label {
+	cursor: pointer;
+	display: inline-block;
+	line-height: 20px;
+	padding: 2px;
+	margin: 0;
+
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	    -ms-border-radius: 3px;
+	     -o-border-radius: 3px;
+	        border-radius: 3px;
+}
+
+#register .dates label input {
+	vertical-align: bottom;
+	margin-bottom: 3px;
+}
+#register .dates label span {
+	padding: 0 6px 0 0;
+}
+
+#register .dates label.checked {
+	background-color: #FECC00;
+}
+
+#register #name,
+#register #email {
+	float: right;
+	clear: both;
+	width: 10em;
+	height: 1.2em;
+	font-size: 26px;
+	font-size: 2.6rem;
+	margin-bottom: 10px;
+	color: #888;
+	border: 1px solid #888;
+	background-color: #FBFBFB;
+}
+
+#register #name.active,
+#register #email.active {
+	font-style: normal;
+	color: #000;
+	border-color: #000;
+	background-color: #FFF;
+}
+
+#register #submit {
+	font-size: 21px;
+	font-size: 2.1rem;
+	float: right;
+}
+
+#register .registerMe {
+	width: 300px;
+	margin-bottom: 50px; /* Leave space for the message boxes */
+}
+
+
+/**
+ * The day and time values
+ */
+#content label {
+	display: block;
+	margin: 0 0 5px 0;
+}
+#content label span {
+	margin-left: 5px;
+}
+
+/* Disabled time label */
+#content label.disabled {
+	color: #AAA;
+}
+
+
+/* Set the label to .toolate when a reservation has already been made */
+#content label.toolate span {
+	color: #500000;
+	background-color: #FF0000;
+}
+
+/* Set the label to .success if a reservation has succeeded */
+#content label.success span {
+	color: #004000;
+	background-color: #80FF80;
+	font-weight: bold;
+}
+
+
+
+
+
+/**
+ * ADMIN 
+ */
+
+/* General List */
+.general-list {
+	clear: both;
+}
+
+/* The name */
+.general-list li > span {
+	display: inline-block;
+	min-width: 650px;
+}
+
+/* The entry name points to change entry */
+.general-list li > span strong a {
+	text-decoration: none;
+}
+.general-list li > span strong a:focus,
+.general-list li > span strong a:hover,
+.general-list li > span strong a:active {
+	background-color: #FFEEAA;
+}
+
+/* Delete/Disable link */
+a.delete {
+	color: #FF0000;
+}
+a.delete:focus,
+a.delete:hover,
+a.delete:active {
+	background-color: #FF0000;
+	color: #000;
+}
+
+/* Enable link */
+a.enable {
+	color: #008000;
+}
+a.enable:focus,
+a.enable:hover,
+a.enable:active {
+	background-color: #008000;
+	color: #FFF;
+}
+
+/* Edit link */
+a.change {
+	color: #0080FF;
+}
+a.change:focus,
+a.change:hover,
+a.change:active {
+	background-color: #0080FF;
+	color: #FFF;
+}
+
+/* Export link */
+a.orange,
+a.export {
+	color: #ECBB05;
+}
+a.orange:focus,
+a.orange:hover,
+a.orange:active,
+a.export:focus,
+a.export:hover,
+a.export:active {
+	background-color: #ECBB05;
+	color: #000;
+}
+
+a.orange,
+a.export,
+a.delete,
+a.enable,
+a.change {
+	font-size: 13px;
+	font-size: 1.3rem;
+	padding: 2px 5px;
+
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	    -ms-border-radius: 3px;
+	     -o-border-radius: 3px;
+	        border-radius: 3px;
+}
+
+a.orange:focus,
+a.orange:hover,
+a.orange:active,
+a.export:focus,
+a.export:hover,
+a.export:active,
+a.delete:focus,
+a.delete:hover,
+a.delete:active,
+a.enable:focus,
+a.enable:hover,
+a.enable:active,
+a.change:focus,
+a.change:hover,
+a.change:active {
+	text-decoration: none;
+	outline: none;
+}
+
+/* Add/Edit Form */
+.edit label,
+.edit input,
+.edit textarea,
+.edit select,
+.edit .dates,
+.edit .members,
+.edit .memberships {
+	float: left;
+	margin: 0;
+}
+
+.edit label {
+	clear: left;
+	width: 200px;
+}
+
+.edit input,
+.edit textarea,
+.edit select {
+	clear: right;
+	clear: right;
+}
+
+/* Make select and input fields the same width */
+.edit input[type="text"],
+.edit input[type="password"],
+.edit select {
+	width: 150px;
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	    -ms-box-sizing: border-box;
+	     -o-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+
+
+
+/**
+ * Admin Login
+ */
+#login input[type='text'],
+#login input[type='password'] {
+	display: block;
+	margin: 10px 0;
+	width: 150px;
+}
+#login input[type='submit'] {
+	margin-top: 15px;
+}
+
+
+
+/**
+ * Client Overview
+ */
+#clientlist li.disabled {
+	color: #888;
+	display: none;
+}
+#clientlist li.disabled strong {
+	text-decoration: line-through;
+}
+
+#clientlist li .enable {
+	display: none;
+}
+#clientlist li .disable {
+	display: inline;
+}
+#clientlist li.disabled .enable {
+	display: inline;
+}
+#clientlist li.disabled .disable {
+	display: none;
+}
+
+
+/**
+ * Display options
+ */
+#display-options {
+	float: right;
+	clear: both;
+	margin-top: -20px;
+	text-align: left;
+	font-size: 13px;
+	font-size: 1.3rem;
+}
+#display-options label {
+	display: inline-block;
+	margin-right: 0.5em;
+	width: 130px;
+}
+#display-options select {
+	display: inline-block;
+}
+
+
+/* The client name */
+#cName {
+	width: 300px;
+}
+
+/* The access link for a client */
+#content label[for='cLink'] {
+	margin-top: 2px;
+}
+.edit #cLink {
+	background-color: transparent;
+	border: none;
+
+	float: none;
+	width: auto;
+	display: inline-block;
+	background-color: #FECC00;
+	padding: 3px 4px;
+	font-size: 16px;
+	font-size: 1.6rem;
+	font-weight: bold;
+	
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	    -ms-border-radius: 5px;
+	     -o-border-radius: 5px;
+	        border-radius: 5px;
+}
+
+.edit #submit {
+	display: block;
+	float: none;
+	clear: both;
+}
+
+.edit .dates,
+.edit .members,
+.edit .memberships {
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+
+.edit .members ul,
+.edit .memberships ul {
+	margin: 0 0 20px 0;
+	padding: 0 0 0 1em;
+	display: block;
+	clear: both;
+}
+
+.edit .members ul li,
+.edit .memberships ul li {
+	
+}
+
+.edit .members ul li span,
+.edit .memberships ul li span {
+	text-align: left;
+}
+
+.edit .members ul li a,
+.edit .memberships ul li a {
+	text-align: right;
+}
+
+.edit .members ul .mail {
+	font-style: italic;
+
+}
+.edit .members .general-list li > span {
+	min-width: 328px;
+}
+
+.edit .memberships .general-list li > span {
+	min-width: 375px;
+}
+
+.edit .dates {
+	overflow-y: auto;
+	max-height: 250px;
+	width: 500px;
+}
+
+.edit .dates div {
+	overflow: hidden;
+}
+
+.edit .dates input,
+.edit .dates a,
+.edit .dates button {
+	float: left;
+	margin-right: 5px;
+}
+
+.edit .dates input {
+	clear: left;
+}
+
+.edit .dates .delete {
+	clear: right;
+	margin-top: 2px;
+}
+
+.edit .dates .date-masseur {
+	margin-left: 20px;
+}
+
+.edit br {
+	clear: both;
+	height: 0;
+	line-height: 0;
+}
+
+.row-date-section .dates {
+	width: 600px;
+}
+
+#generateSlots {
+	margin-bottom: 50px;
+}
+
+/* Date blocks */
+#generateSlots div.block {
+	overflow: hidden;
+	padding: 5px;
+	width: 620px;
+	/*background-color: #FFFF00;*/
+}
+
+#generateSlots div.block .delete {
+	margin-left: 40px;
+}
+
+/* Add a new block */
+#generateSlots #addBlock {
+	margin: 20px 0 10px 0;
+}
+
+#slots {
+	margin: 0 0 0 0;
+	padding: 0 0 0 2em;
+}
+#slots li {
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}
+
+#slots span,
+#slots a {
+	display: inline-block;
+	padding: 0 5px;
+}
+#slots span.name {
+	width: 250px;
+}
+#slots a {
+	
+}
+
+
+
+/*** Date Picker ***/
+/* makes the input field shorter once the date picker code
+ * has run (to allow space for the calendar icon
+ */
+input.dp-applied {
+	width: 140px;
+	float: left;
+}
+
+/* Text too big in the date picker */
+div.ui-datepicker {
+	font-size: 11px;
+	font-size: 1.1rem;
+}
+
+
+/* Checkboxes */
+div#formwrapper label.ui-checkbox {
+	padding-right: 24px;
+}
+
+
+/* Adjust the icons to the text in the navigation bar */
+#pager div.ui-pg-div span.ui-icon {
+	margin-top: -1px;
+}
+
+
+/* Pagination */
+ul.pagination {
+	font-family: tahoma;
+	text-align: center;
+	list-style: none;
+	clear: both;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+ul.pagination li {
+	display: block;
+	float: left;
+	font-size: 10px;
+	font-size: 1.0rem;
+	line-height: 13px;
+	margin: 2px 6px 2px 0;
+}
+
+ul.pagination li a {
+	display: block;
+	background-color: #FFF;
+	border: 1px solid #888;
+	color: #303030;
+	padding: 1px 5px 2px 5px;
+	text-decoration: none;
+}
+
+ul.pagination li a:hover,
+ul.pagination li a:active,
+ul.pagination li a:focus {
+	background-color: #BBB;
+	border: 1px solid #101010;
+}
+
+ul.pagination li.cur a {
+	background-color: #101010;
+	border: 1px solid #101010;
+	color: #FFF;
+	font-size: 11px;
+	font-size: 1.1rem;
+	padding: 1px 5px 2px 5px;
+}
+ul.pagination li.back    { margin-left: 0; }
+ul.pagination li.forward { margin-right: 0; }
+
+
+
+/**
+ * Add user to a group / client
+ */
+.memberships {
+	min-width: 600px;
+}
+.memberships h4 {
+	margin: 0 0 0 0;
+	padding: 2px 0 2px 8px;
+	font-size: 15px;
+	font-size: 1.5rem;
+	background-color: #FECC00;
+}
+
+.memberships h4 a {
+	float: right;
+	font-size: 12px;
+}
+
+.memberships .addLink {
+	text-align: right;
+}
+
+.addToCont {
+	clear: both;
+	display: none;
+	margin-bottom: 20px;
+	width: 100%;
+}
+
+.addToCont select {
+	margin-right: 10px;
+	margin-bottom: 5px;
+	display: block;
+	float: none;
+}
+
+.addToCont button {
+	cursor: pointer;
+	line-height: 22px;
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	    -ms-border-radius: 3px;
+	     -o-border-radius: 3px;
+	        border-radius: 3px;
+}
+
+.addToCont .add {
+	background-color: #80FF80;
+	color: #004000;
+	border: 1px solid #008000;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #80FF80), color-stop(100%, #00BB00));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#80FF80), to(#00BB00));
+	background-image: -webkit-linear-gradient(top,       #80FF80, #00BB00);
+	background-image:    -moz-linear-gradient(to bottom, #80FF80, #00BB00);
+	background-image:     -ms-linear-gradient(top,       #80FF80, #00BB00);
+	background-image:      -o-linear-gradient(top,       #80FF80, #00BB00);
+	background-image:         linear-gradient(to bottom, #80FF80, #00BB00);
+}
+.addToCont .cancel {
+	background-color: #BBBBBB;
+	border: 1px solid #777777;
+
+	background-repeat: repeat-x;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F7F7F7), color-stop(100%, #BBBBBB));
+	background-image:  -khtml-gradient(linear, left top, left bottom, from(#F7F7F7), to(#BBBBBB));
+	background-image: -webkit-linear-gradient(top,       #F7F7F7, #BBBBBB);
+	background-image:    -moz-linear-gradient(to bottom, #F7F7F7, #BBBBBB);
+	background-image:     -ms-linear-gradient(top,       #F7F7F7, #BBBBBB);
+	background-image:      -o-linear-gradient(top,       #F7F7F7, #BBBBBB);
+	background-image:         linear-gradient(to bottom, #F7F7F7, #BBBBBB);
+}
+
+
+/**
+ * Upload an image
+ */
+#imageLinks {
+	display: inline-block;
+}
+#previewImage {
+	margin: 10px 0 0 153px;
+}
+#previewImage a {
+	display: inline-block;
+	padding: 0;
+}
+#previewImage img {
+	display: block;
+	max-width: 200px;
+	max-height: 150px;
+	border: none;
+	margin: 0;
+}
+#previewImage button {
+	margin-left: 10px;
+	display: inline-block;
+}
+
+#editClient #submit {
+	margin-top: 30px;
+	margin-bottom: 80px;
+}
+
+#saveImageCont {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.pp_price {
+	height: 24px;
+    width: 100px;
+    margin-top: 56px;
+    margin-left: 37px;
+    font-size: 20px;
+    padding: 2px;
+    color: #e02525;
+}
