@@ -1,5 +1,6 @@
 <?php
 /* —— UTF-8: charset=utf-8 —— encoding="utf-8" —— */
+
 /**
  * landingpage.tpl.php
  * Default page for index.php
@@ -17,211 +18,233 @@ $gText  = $client["greeting_text"];
 ?>
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title><?= $title ?> | Neckattack</title>
 
-    <link href="/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="/bootstrap/vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
-    <link href="/bootstrap/css/stylish-portfolio.css" rel="stylesheet">
-    <style>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title><?= $title ?> | Neckattack</title>
 
-      .disabled span {
-        color: #dee2e6;
-      }
+	<link href="/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+	<link href="/bootstrap/vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+	<link href="/bootstrap/css/stylish-portfolio.css" rel="stylesheet">
+	<style>
+		.disabled span {
+			color: #dee2e6;
+		}
 
-	  .modal-dialog {
-		margin-top: 50vh;
-    	transform: translateY(-50%) !important;
-	  }
+		.modal-dialog {
+			margin-top: 50vh;
+			transform: translateY(-50%) !important;
+		}
 
-	  .pay-list {
-		 float: right;
-	  }
+		.pay-list {
+			float: right;
+		}
 
-	  .pay-list__button-wrapper {
-	     margin: 0.7rem 0;
-	  }
+		.pay-list__button-wrapper {
+			margin: 0.7rem 0;
+		}
 
-	  .pay-list__title {
-	     margin: 0.5rem 0;
-	  }
-    </style>
-  </head>
-  <body id="page-top">
+		.pay-list__title {
+			margin: 0.5rem 0;
+		}
+		.lang-switcher select {
+			padding: 3px;
+			width: 100px;
+			border-radius: 5px;
+		}
+	</style>
+</head>
 
-    <!-- Header -->
-    <header class="masthead d-flex">
-      <div class="container text-center my-auto">
-        <div><img class="logo" alt="<?php echo $title; ?>" src="/bootstrap/img/logo.png"></div>
-      </div>
-      <div class="overlay"></div>
-    </header>
+<body id="page-top">
 
-    <section class="elow">
+	<?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
+	<!-- Header -->
+	<header class="masthead d-flex">
+		<div class="container text-center my-auto">
+			<div class="header-main d-flex justify-content-center align-items-center">
+				<img class="logo" alt="<?php echo $title; ?>" src="/bootstrap/img/logo.png">
+				<?php language_switcher(); ?>
+			</div>
+		</div>
+		<div class="overlay"></div>
+	</header>
+
+	<section class="elow">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-				    <div class="col-md-12">
-				    <?php
-				    	if (!empty($client["image"])) { ?>
-						<img src="/get_group_logo.php?id=<?=$client['id']?>&type=client"
-     alt="Logo for <?php echo $title; ?>"
-     style="margin: 9px 0 9px 25px; float: right; width: auto; height: 130px; border: 2px solid #ccc; padding: 5px; background: #fff;"/>				    
-									<?php } ?>
-				        <h1 class="mb-1"><?php echo $title; ?></h1>
-				        <h3 class="mb-5"><span style="white-space:pre-line;"><em><?php echo $gText; ?></em></span></h3>
-				    </div>
-				</div>
-			</div>
-		</div>
-    </section>
-
-    <!-- Content -->
-      <section class="container text-center content-block">
-		<?php $price = ($client["price"]) ? floatval(str_replace(',','.',$client['price'])) : 0;
-		if ($price ==0 || empty($price)) { ?>
-			<form id="register" method="post" action="<?=$_SERVER["REQUEST_URI"]?>">
-		<?php } ?>
-
-        <div class="row">
-			<div class="col-md-12">
-			<!-- Error Message(s) -->
-			<div style="display:none;" id="errorMsg" <?=($error > 0) ? 'style="display: block;"' : ''?>>
-				<ul>
-					<?php if ($error > 0) {?>
-					<?php foreach ($messages AS $msg) {?>
-						<li><?=$msg?></strong></li>
-					<?php }?>
-					<?php } else {?>
-						<li>Bitte wählen Sie mindestens einen Termin aus</li>
-					<?php }?>
-				</ul>
-			</div>
-
-			<p id="toolate" <?=($toolate === true) ? 'style="display: block;"': ''?>>Leider sind einige Ihrer gewünschten Termine inzwischen bereits vergeben. Bitte überprüfen Sie Ihre Auswahl.</p>
-			<p id="error">Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut!</p>
-			<p id="success" <?=($success === true) ? 'style="display: block;"': ''?>>Sie haben sich erfolgreich für die markierten Termine eingetragen.</p>
-
-			</div>
-		</div>
-
-        <div class="row">
-			<div class="col-md-12">
-				<div style="display: none;" class="my_chek_name">Bitte geben Sie Ihren Namen an<br/></div>
-				<div style="display: none;" class="my_chek_email">Bitte geben Sie eine gültige E-Mail-Adresse an<br/></div>
-				<div style="display: none;" class="my_chek_chebox">Bitte wählen Sie mindestens einen Termin aus<br/></div>
-				<div style="display: none;" class="my_chek_payment"></div>
-			</div>
-			<!-- Error Message(s) -->
-		</div>
-        <div class="row">
-              <div class="col-md-4">
-				<div class="fLeft dates">
-					<h3>Datum:</h3>
-					<?php if ($result !== false) {
-						foreach ($result["dates"] AS $key => $date) {
-					?>
-					<div class="form-check">
-						<label for="date_<?=$date["id"]?>">
-							<input type="radio" id="date_<?=$date["id"]?>" name="date" <?=((int)$date["id"] === $date_id) ? 'checked="checked"': ""?> value="<?=$date["id"]?>" />
-							<span><?=$date["date"]?></span><sup class="datetimescount"></sup>
-						</label>
+					<div class="col-md-12">
+						<?php
+						if (!empty($client["image"])) { ?>
+							<img src="/get_group_logo.php?id=<?= $client['id'] ?>&type=client"
+								alt="Logo for <?php echo $title; ?>"
+								style="margin: 9px 0 9px 25px; float: right; width: auto; height: 130px; border: 2px solid #ccc; padding: 5px; background: #fff;" />
+						<?php } ?>
+						<h1 class="mb-1"><?php echo $title; ?></h1>
+						<h3 class="mb-5"><span style="white-space:pre-line;"><em><?php echo $gText; ?></em></span></h3>
 					</div>
-					<?php } } ?>
-					<noscript><p><input type="submit" name="select_date" value="Anzeigen" /></p></noscript>
 				</div>
-              </div>
+			</div>
+		</div>
+	</section>
 
-              <div class="col-md-4">
-				<div class="fLeft times tni">
-					<h3>Termin auswählen:</h3>
-					<?php if ($result !== false) {
-						foreach ($result["dates"] AS $key => $date) {
-					?>
-					<div id="times_<?=$date["id"]?>" data-date-id="<?=$date["id"]?>" class="timesCont" <?= ((int)$date["id"] !== $date_id) ? 'hidden' : '' ?>>
-						<?php if (isset($result["times_assoc"][$date["id"]])) {
-							foreach ($result["times_assoc"][$date["id"]] AS $time) {
-								$class1 = (isset($time["taken"])) ? "disabled" : "";
-								$class2 = ($success === true && isset($reserved["times"]) && in_array($time["id"], $reserved["times"])) ? " success" : "";
-								$class3 = ($toolate === true && isset($taken) && in_array($time["id"], $taken)) ? " toolate" : "";
+	<!-- Content -->
+	<section class="container text-center content-block">
+		<?php $price = ($client["price"]) ? floatval(str_replace(',', '.', $client['price'])) : 0;
+		if ($price == 0 || empty($price)) { ?>
+			<form id="register" method="post" action="<?= $_SERVER["REQUEST_URI"] ?>">
+			<?php } ?>
+
+			<div class="row">
+				<div class="col-md-12">
+					<!-- Error Message(s) -->
+					<div style="display:none;" id="errorMsg" <?= ($error > 0) ? 'style="display: block;"' : '' ?>>
+						<ul>
+							<?php if ($error > 0) { ?>
+								<?php foreach ($messages as $msg) { ?>
+									<li><?= $msg ?></strong></li>
+								<?php } ?>
+							<?php } else { ?>
+								<li><?php echo __t('check_time_message'); ?></li>
+							<?php } ?>
+						</ul>
+					</div>
+
+					<p id="toolate" <?= ($toolate === true) ? 'style="display: block;"' : '' ?>>
+						<?= __t('toolate_message'); ?>
+					</p>
+					<p id="error">
+						<?= __t('error_message'); ?>
+					</p>
+					<p id="success" <?= ($success === true) ? 'style="display: block;"' : '' ?>>
+						<?= __t('success_message'); ?>
+					</p>
+
+
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div style="display: none;" class="my_chek_name"><?php echo __t('check_name_message'); ?><br /></div>
+					<div style="display: none;" class="my_chek_email"><?php echo __t('check_email_message'); ?><br /></div>
+					<div style="display: none;" class="my_chek_chebox"><?php echo __t('check_time_message'); ?><br /></div>
+					<div style="display: none;" class="my_chek_payment"></div>
+				</div>
+				<!-- Error Message(s) -->
+			</div>
+			<div class="row">
+				<div class="col-md-4">
+					<div class="fLeft dates">
+						<h3><?php echo __t('date_text'); ?></h3>
+						<?php if ($result !== false) {
+							foreach ($result["dates"] as $key => $date) {
 						?>
-							<div class="form-check">
-								<label class="<?=$class1?><?=$class2?><?=$class3?>" for="time_<?=$time["id"]?>">
-									<?php
-							if($client['one_time_booking']){
-?>
-									<input type="radio" id="time_<?=$time["id"]?>" name="times[]" value="<?=$time["id"]?>" <?=(isset($time["taken"]))?" disabled=\"disabled\"":""?> />
-<?php
-							}else{
-								?>
-																	<input type="checkbox" id="time_<?=$time["id"]?>" name="times[]" value="<?=$time["id"]?>"<?=(isset($time["taken"]))?" disabled=\"disabled\"":""?> />
-								<?php
-							}
-							?>
-									<span ><?=$time["time_start"]?> - <?=$time["time_end"]?></span>
-								</label>
-							</div>
-
-						<?php } } ?>
+								<div class="form-check">
+									<label for="date_<?= $date["id"] ?>">
+										<input type="radio" id="date_<?= $date["id"] ?>" name="date" <?= ((int)$date["id"] === $date_id) ? 'checked="checked"' : "" ?> value="<?= $date["id"] ?>" />
+										<span><?= $date["date"] ?></span><sup class="datetimescount"></sup>
+									</label>
+								</div>
+						<?php }
+						} ?>
+						<noscript>
+							<p><input type="submit" name="select_date" value="Anzeigen" /></p>
+						</noscript>
 					</div>
-					<?php } } ?>
 				</div>
-              </div>
 
-             <div class="col-md-4">
+				<div class="col-md-4">
+					<div class="fLeft times tni">
+						<h3><?php echo __t('select_date'); ?></h3>
+						<?php if ($result !== false) {
+							foreach ($result["dates"] as $key => $date) {
+						?>
+								<div id="times_<?= $date["id"] ?>" data-date-id="<?= $date["id"] ?>" class="timesCont" <?= ((int)$date["id"] !== $date_id) ? 'hidden' : '' ?>>
+									<?php if (isset($result["times_assoc"][$date["id"]])) {
+										foreach ($result["times_assoc"][$date["id"]] as $time) {
+											$class1 = (isset($time["taken"])) ? "disabled" : "";
+											$class2 = ($success === true && isset($reserved["times"]) && in_array($time["id"], $reserved["times"])) ? " success" : "";
+											$class3 = ($toolate === true && isset($taken) && in_array($time["id"], $taken)) ? " toolate" : "";
+									?>
+											<div class="form-check">
+												<label class="<?= $class1 ?><?= $class2 ?><?= $class3 ?>" for="time_<?= $time["id"] ?>">
+													<?php
+													if ($client['one_time_booking']) {
+													?>
+														<input type="radio" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> />
+													<?php
+													} else {
+													?>
+														<input type="checkbox" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> />
+													<?php
+													}
+													?>
+													<span><?= $time["time_start"] ?> - <?= $time["time_end"] ?></span>
+												</label>
+											</div>
 
-                <div class="fRight registerMe">
-					<h3>Anmelden als:</h3>
+									<?php }
+									} ?>
+								</div>
+						<?php }
+						} ?>
+					</div>
+				</div>
 
-					<?php
+				<div class="col-md-4">
 
-					if ($price ==0 || empty($price)) { ?>
+					<div class="fRight registerMe">
+						<h3><?php echo __t('register_as'); ?></h3>
+
+						<?php
+
+						if ($price == 0 || empty($price)) { ?>
 							<div class="cnt">
-								<input type="text" id="name" name="name" value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" /><br />
+								<input type="text" id="name" name="name" value="<?= (isset($P["name"])) ? $P["name"] : "Name" ?>" placeholder="Name" /><br />
 							</div>
 							<div class="cnt">
-								<input type="text" id="email" name="email" value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" /><br />
+								<input type="text" id="email" name="email" value="<?= (isset($P["email"])) ? $P["email"] : "E-Mail" ?>" placeholder="E-Mail" /><br />
 							</div>
 
 							<div class="form-group text-left times_info_block">
-								<div class="text-warning">Bitte wählen Sie mindestens einen Termin aus</div>
+								<div class="text-warning"><?php echo __t('check_time_message'); ?></div>
 								<div class="text-info"></div>
 							</div>
 
 							<div class="form-group text-left small">
-								Hiermit bestätige ich, die <a href="http://neckattack.net/datenschutz/" rel="nofollow" target="_blank">Datenschutzbestimmungen</a> gelesen zu haben und akzeptiere diese.
+								<?= __t('privacy_policy_confirmation'); ?>
 							</div>
 
-							<input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="Anmelden" />
+							<input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="<?= __t('sign_in_button'); ?>" />
 
-					<?php } else { ?>
+						<?php } else { ?>
 
 							<div class="form-group">
-								<input type="text" id="name" class="form-control"   value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" />
+								<input type="text" id="name" class="form-control" value="<?= (isset($P["name"])) ? $P["name"] : "Name" ?>" placeholder="Name" />
 							</div>
 
 							<div class="form-group">
-								<input type="text" id="email" class="form-control"  value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" />
+								<input type="text" id="email" class="form-control" value="<?= (isset($P["email"])) ? $P["email"] : "E-Mail" ?>" placeholder="E-Mail" />
 							</div>
 
 							<div class="form-group text-left times_info_block">
-								<div class="text-warning">Bitte wählen Sie mindestens einen Termin aus</div>
+								<div class="text-warning"><?php echo __t('check_time_message'); ?></div>
 								<div class="text-info"></div>
 							</div>
 
 							<div class="form-group text-left small">
-								Hiermit bestätige ich, die <a href="http://neckattack.net/datenschutz/" rel="nofollow" target="_blank">Datenschutzbestimmungen</a> gelesen zu haben und akzeptiere diese.
+								<?= __t('privacy_policy_confirmation'); ?>
 							</div>
 
 							<div class="form-group clearfix" style="position: relative;">
 
-                                <!--
+								<!--
                                 <div class="pay-list text-right">
 									<div class="pay-list__title">Jetzt bezahlen:</div>
 									<div class="pay-list__button-wrapper">
@@ -234,9 +257,9 @@ $gText  = $client["greeting_text"];
 											<input type="hidden" name="amount" value="<?php echo $price; ?>">
 											<input id="ctm_name" type="hidden" name="item_name" value="<?php echo $title; ?>" />
 											<input id="ctm_email" type="hidden" name="custom" value="" />
-											<input type="hidden" name="return" value="<?= ABSURL.'thanks.php?hash='.$client["hashlink"] ?>" />
-											<input type="hidden" name="cancel_return" value="<?= ABSURL.$client["hashlink"] ?>" />
-											<input type="hidden" name="notify_url" value="<?php echo ABSURL.'pay.php'; ?>" />
+											<input type="hidden" name="return" value="<?= ABSURL . 'thanks.php?hash=' . $client["hashlink"] ?>" />
+											<input type="hidden" name="cancel_return" value="<?= ABSURL . $client["hashlink"] ?>" />
+											<input type="hidden" name="notify_url" value="<?php echo ABSURL . 'pay.php'; ?>" />
 											<input type="hidden" name="item_number" value="<?php echo $client["hashlink"]; ?>">
 											<input type="submit" hidden="hidden" name="submit" value="PayPal" />
 											<button class="btn btn-warning" type="submit" id="submit"><i class="fa fa-paypal"></i> &nbsp; PayPal</button>
@@ -248,150 +271,148 @@ $gText  = $client["greeting_text"];
 								</div>
                                 -->
 
-                                <div id="smart-button-container">
-                                    <div style="text-align: center;">
-                                        <div id="paypal-button-container"></div>
-                                    </div>
-                                </div>
-                                <script src="https://www.paypal.com/sdk/js?client-id=<?= $config['paypal_client_id'] ?>&enable-funding=venmo&currency=<?= $config['paypal_currency'] ?>" data-sdk-integration-source="button-factory"></script>
-                                <script>
+								<div id="smart-button-container">
+									<div style="text-align: center;">
+										<div id="paypal-button-container"></div>
+									</div>
+								</div>
+								<script src="https://www.paypal.com/sdk/js?client-id=<?= $config['paypal_client_id'] ?>&enable-funding=venmo&currency=<?= $config['paypal_currency'] ?>" data-sdk-integration-source="button-factory"></script>
+								<script>
+									function initPayPalButton() {
+
+										var form_data = {};
+
+										paypal.Buttons({
+											style: {
+												shape: 'rect',
+												color: 'gold',
+												layout: 'vertical',
+												label: 'paypal',
+											},
+
+											createOrder: function(data, actions) {
+
+												console.log('Create Order');
+
+												var pp = $(".price").data('price');
+
+												var times = [];
+												jQuery('input[name="times[]"]:checked').each(function() {
+													times.push($(this).val());
+												});
+
+												var amount = pp * times.length;
+												if (amount == 0) {
+													amount = pp;
+												}
+												amount = Math.round(amount * 1000) / 1000;
+
+												console.log('Amount: ', amount);
+
+												var clientName = "<?= $title ?>";
+												var hashlink = "<?= $client["hashlink"] ?>";
+												var name = $("#name").val();
+												var email = $("#email").val();
+
+												var description = "[" + hashlink + "] \"" + (clientName.length > 25 ? clientName.substr(0, 25) + "…" : clientName) + "\"";
+												var times_info_block_text = $('.times_info_block .text-info').text().replace(/\s+/g, '');
+
+												description += " ::: on " + times_info_block_text;
+												description += " by " + name + " (" + email + ")";
+
+												var payment_data = {
+													"description": description,
+													"amount": {
+														"currency_code": "<?= $config['paypal_currency'] ?>",
+														"value": amount
+													}
+												};
+
+												return actions.order.create({
+													purchase_units: [payment_data]
+												});
+
+											},
+
+											onApprove: function(data, actions) {
+												return actions.order.capture().then(function(orderData) {
+													// Full available details
+													console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+													// Show a success message within this page, e.g.
+													const element = document.getElementById('paypal-button-container');
+													element.innerHTML = "";
+													element.innerHTML = "<h3>Thank you for your payment!</h3>";
+
+													var hashlink = "<?= $client["hashlink"] ?>";
+													var clientId = "<?= $clientId ?>";
+													var itemId = "";
+													var name = $("#name").val();
+													var email = $("#email").val();
+
+													var times = [];
+													jQuery('input[name="times[]"]:checked').each(function() {
+														times.push($(this).val());
+													});
+
+													var pp = $(".price").data('price');
+
+													var amount = pp * times.length;
+													if (amount == 0) {
+														amount = pp;
+													}
+													amount = Math.round(amount * 1000) / 1000;
+
+													var custom = {
+														h: hashlink,
+														id: clientId,
+														name: name,
+														email: email,
+														times: times
+													};
+
+													console.log('custom', custom);
+
+													var data = {
+														custom: JSON.stringify(custom),
+														mc_gross: amount,
+														mc_currency: "<?= $config['paypal_currency']; ?>",
+														payment_status: orderData.status,
+														item_number: hashlink,
+													};
+
+													console.log('data', data);
+
+													console.log('Go ajaxL');
+
+													jQuery.post('/pay.php', data, function(response) {
+														console.log(response);
+
+														jQuery('input[name="times[]"]:checked').each(function() {
+															jQuery(this).prop('checked', false);
+															jQuery(this).attr('checked', false);
+															jQuery(this).attr('disabled', true);
+															jQuery(this).parent().addClass('disabled');
+														});
 
 
-                                    function initPayPalButton() {
+													});
 
-                                        var form_data = {};
+												});
+											},
 
-                                            paypal.Buttons({
-                                            style: {
-                                                shape: 'rect',
-                                                color: 'gold',
-                                                layout: 'vertical',
-                                                label: 'paypal',
-                                            },
+											onError: function(err) {
+												console.log(err);
+											}
 
-                                            createOrder: function(data, actions) {
-
-                                                console.log('Create Order');
-
-                                                var pp = $(".price").data('price');
-
-                                                var times = [];
-                                                jQuery('input[name="times[]"]:checked').each(function() {
-                                                    times.push($(this).val());
-                                                });
-
-                                                var amount = pp * times.length;
-                                                if ( amount == 0 ) {
-                                                    amount = pp;
-                                                }
-                                                amount = Math.round(amount * 1000) / 1000;
-
-                                                console.log('Amount: ', amount);
-
-                                                var clientName = "<?= $title ?>";
-                                                var hashlink = "<?=$client["hashlink"]?>";
-                                                var name = $("#name").val();
-                                                var email = $("#email").val();
-
-                                                var description = "[" + hashlink + "] \"" + (clientName.length > 25 ? clientName.substr(0,25)+"…" :  clientName) +"\"";
-                                                var times_info_block_text = $('.times_info_block .text-info').text().replace(/\s+/g,'');
-
-                                                description += " ::: on " + times_info_block_text;
-                                                description += " by " + name + " ("+email+")";
-
-                                                var payment_data = {
-                                                    "description": description,
-                                                    "amount":{
-                                                        "currency_code":"<?= $config['paypal_currency'] ?>",
-                                                        "value":amount
-                                                    }
-                                                };
-
-                                                return actions.order.create({
-                                                    purchase_units: [payment_data]
-                                                });
-
-                                            },
-
-                                            onApprove: function(data, actions) {
-                                                return actions.order.capture().then(function(orderData) {
-                                                    // Full available details
-                                                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-
-                                                    // Show a success message within this page, e.g.
-                                                    const element = document.getElementById('paypal-button-container');
-                                                    element.innerHTML = "";
-                                                    element.innerHTML = "<h3>Thank you for your payment!</h3>";
-
-                                                    var hashlink = "<?=$client["hashlink"]?>";
-                                                    var clientId = "<?=$clientId?>";
-                                                    var itemId = "";
-                                                    var name = $("#name").val();
-                                                    var email = $("#email").val();
-
-                                                    var times = [];
-                                                    jQuery('input[name="times[]"]:checked').each(function() {
-                                                        times.push($(this).val());
-                                                    });
-
-                                                    var pp = $(".price").data('price');
-
-                                                    var amount = pp * times.length;
-                                                    if ( amount == 0 ) {
-                                                        amount = pp;
-                                                    }
-                                                    amount = Math.round(amount * 1000) / 1000;
-
-                                                    var custom = {
-                                                        h: hashlink,
-                                                        id: clientId,
-                                                        name: name,
-                                                        email: email,
-                                                        times: times
-                                                    };
-
-                                                    console.log('custom',custom);
-
-                                                    var data = {
-                                                        custom: JSON.stringify(custom),
-                                                        mc_gross: amount,
-                                                        mc_currency: "<?=$config['paypal_currency']; ?>",
-                                                        payment_status: orderData.status,
-                                                        item_number: hashlink,
-                                                    };
-
-                                                    console.log('data', data);
-
-                                                    console.log('Go ajaxL');
-
-                                                    jQuery.post('/pay.php', data, function(response){
-                                                        console.log(response);
-
-                                                        jQuery('input[name="times[]"]:checked').each(function() {
-                                                            jQuery(this).prop('checked', false);
-                                                            jQuery(this).attr('checked', false);
-                                                            jQuery(this).attr('disabled', true);
-                                                            jQuery(this).parent().addClass('disabled');
-                                                        });
-
-
-                                                    });
-
-                                                });
-                                            },
-
-                                            onError: function(err) {
-                                                console.log(err);
-                                            }
-
-                                        }).render('#paypal-button-container');
-                                    }
-                                    initPayPalButton();
-                                </script>
+										}).render('#paypal-button-container');
+									}
+									initPayPalButton();
+								</script>
 
 
 
-                                <?php /*
+								<?php /*
 								<div class="dropdown pay-list">
 									<button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">Jetzt bezahlen
 									<span class="caret"></span></button>
@@ -418,24 +439,30 @@ $gText  = $client["greeting_text"];
 								</div>
 								*/ ?>
 
-								<div class="pp_price"><div class="nki">€</div><div class="price" data-price="<?= $price ?>"><?= number_format($price, 2, ',', ''); ?></div></div>
+								<div class="pp_price">
+									<div class="nki">€</div>
+									<div class="price" data-price="<?= $price ?>"><?= number_format($price, 2, ',', ''); ?></div>
+								</div>
 							</div>
-					<?php } ?>
-								<input type="hidden" name="h" value="<?=$client["hashlink"]?>" />
-								<input type="hidden" name="id" value="<?=$clientId?>" />
+						<?php } ?>
+						<input type="hidden" name="h" value="<?= $client["hashlink"] ?>" />
+						<input type="hidden" name="id" value="<?= $clientId ?>" />
+					</div>
 				</div>
-             </div>
 
-        </div>
-
-		<?php if ($price ==0 || empty($price)) { ?> </form> <?php } ?>
-
-        <div class="row">
-			<div class="col-md-12">
-				<div class="text-center footer"><p>© NeckAttack® Mobile Massage | <a rel="external" href="http://www.neckattack.net/kontakt/impressum/" target="_blank">Impressum</a></p></div>
 			</div>
-        </div>
-      </section>
+
+			<?php if ($price == 0 || empty($price)) { ?>
+			</form> <?php } ?>
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="text-center footer">
+					<p><?= __t('footer_copyright'); ?></p>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	<script src="/js/jquery-1.8.3.js"></script>
 	<script src="/js/jquery-ui-1.9.2.min.js"></script>
@@ -448,190 +475,198 @@ $gText  = $client["greeting_text"];
 	<script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
 	<script src="/bootstrap/vendor/bootstrap/js/bootstrap.js"></script>
 
+	<script type="text/javascript">
+		window.translations = <?php echo json_encode($lang); ?>;
+	</script>
 
 	<script>
 		var clientName = "<?= $title ?>";
 		var gOptions = {
-			dateFormat  : "dd.mm.yy"
+			dateFormat: "dd.mm.yy"
 		};
 		var pp = <?= $price ?>;
 	</script>
 	<script src="/js/page.js?ver=<?= time() ?>"></script>
 
-<?php if ($price !=0 && !empty($price)) { ?>
-	<script>
-		jQuery(document).ready(function ($) {
+	<?php if ($price != 0 && !empty($price)) { ?>
+		<script>
+			jQuery(document).ready(function($) {
 
-          	$("#submit").on('click', function(event) {
-            	if ( $(".price").text() !== '' ) {
+				$("#submit").on('click', function(event) {
+					if ($(".price").text() !== '') {
 
+						var dateId = $('input[name="date"]:checked').val();
+
+						if ($("#name").val() == 'Name') {
+							$(".my_chek_name").show().delay(2000).fadeOut();
+							event.preventDefault();
+						}
+
+						var pattern = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i;
+						if (pattern.test($("#email").val())) {
+							$(this).css({
+								'border': '1px solid #569b44'
+							});
+						} else {
+							$(".my_chek_email").show().delay(2000).fadeOut();
+							event.preventDefault();
+						}
+
+						if (!$('input[name="times[]"]').is(":checked")) {
+							$(".my_chek_chebox").show().delay(2000).fadeOut();
+							event.preventDefault();
+						}
+
+						var hashlink = "<?= $client["hashlink"] ?>";
+						var clientId = "<?= $clientId ?>";
+						var name = $("#name").val();
+						var email = $("#email").val();
+
+
+						var times = [];
+						jQuery('input[name="times[]"]:checked').each(function() {
+							times.push($(this).val());
+						});
+
+						var times_info_block_text = $('.times_info_block .text-info').text().replace(/\s+/g, '');
+
+						var custom = {
+							h: hashlink,
+							id: clientId,
+							name: name,
+							email: email,
+							times: times
+						};
+
+						var description = "[" + hashlink + "] \"" + (clientName.length > 25 ? clientName.substr(0, 25) + "…" : clientName) + "\"";
+
+						description += " ::: on " + times_info_block_text;
+						description += " by " + name + " (" + email + ")";
+
+						$('#ctm_name').val(description);
+						$('#ctm_email').val(JSON.stringify(custom));
+
+						// event.preventDefault();
+
+					}
+				});
+			});
+		</script>
+
+		<script src="https://checkout.stripe.com/checkout.js"></script>
+
+
+		<script>
+			var pp = $(".price").data('price');
+
+			var handler = StripeCheckout.configure({
+				key: '<?= $config['stripe_public_token'] ?>',
+				image: '/images/logo-2.png',
+				locale: 'auto',
+				token: function(token) {
 					var dateId = $('input[name="date"]:checked').val();
-
-					if ($("#name").val() == 'Name') {
-						$(".my_chek_name").show().delay(2000).fadeOut();
-						event.preventDefault();
-					}
-
-					var pattern = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i;
-					if(pattern.test($("#email").val())){
-						$(this).css({'border' : '1px solid #569b44'});
-					} else {
-						$(".my_chek_email").show().delay(2000).fadeOut();
-						event.preventDefault();
-					}
-
-					if (!$('input[name="times[]"]').is(":checked")) {
-						$(".my_chek_chebox").show().delay(2000).fadeOut();
-						event.preventDefault();
-					}
-
-					var hashlink = "<?=$client["hashlink"]?>";
-					var clientId = "<?=$clientId?>";
-					var name = $("#name").val();
-					var email = $("#email").val();
-
-
 					var times = [];
 					jQuery('input[name="times[]"]:checked').each(function() {
 						times.push($(this).val());
 					});
 
-					var times_info_block_text = $('.times_info_block .text-info').text().replace(/\s+/g,'');
+					var name = $("#name").val();
+					var hashlink = "<?= $client["hashlink"] ?>";
+					var clientId = "<?= $clientId ?>";
+					var description = "[" + hashlink + "] \"" + (clientName.length > 25 ? clientName.substr(0, 25) + "…" : clientName) + "\"";
 
-					var custom = {
-						h: hashlink,
-						id: clientId,
-						name: name,
-						email: email,
-						times: times
-					};
-
-                    var description = "[" + hashlink + "] \"" + (clientName.length > 25 ? clientName.substr(0,25)+"…" :  clientName) +"\"";
+					var times_info_block_text = $('.times_info_block .text-info').text().replace(/\s+/g, '');
 
 					description += " ::: on " + times_info_block_text;
-					description += " by " + name + " ("+email+")";
+					description += " by " + name + " (" + token.email + ")";
 
-					$('#ctm_name').val(description);
-					$('#ctm_email').val(JSON.stringify(custom));
+					var amount = pp * times.length;
+					if (amount == 0) {
+						amount = pp;
+					}
+					amount = Math.round(amount * 1000) / 10; // convert to rounded cents (1 -> 100)
 
-					// event.preventDefault();
-
-				}
-			});
-		});
-	</script>
-
-	<script src="https://checkout.stripe.com/checkout.js"></script>
-
-
-	<script>
-        var pp = $(".price").data('price');
-
-		var handler = StripeCheckout.configure({
-			key: '<?=$config['stripe_public_token']?>',
-			image: '/images/logo-2.png',
-			locale: 'auto',
-			token: function(token) {
-				var dateId = $('input[name="date"]:checked').val();
-				var times = [];
-				jQuery('input[name="times[]"]:checked').each(function() {
-					times.push($(this).val());
-				});
-
-				var name = $("#name").val();
-				var hashlink = "<?=$client["hashlink"]?>";
-				var clientId = "<?=$clientId?>";
-				var description = "[" + hashlink + "] \"" + (clientName.length > 25 ? clientName.substr(0,25)+"…" :  clientName) +"\"";
-
-				var times_info_block_text = $('.times_info_block .text-info').text().replace(/\s+/g,'');
-
-				description += " ::: on " + times_info_block_text;
-				description += " by " + name + " ("+token.email+")";
-
-				var amount = pp * times.length;
-				if ( amount == 0 ) {
-					amount = pp;
-				}
-				amount = Math.round(amount * 1000) / 10; // convert to rounded cents (1 -> 100)
-
-				$.ajax({
-					method: 'get',
-					url: "/stripe_pay.php",
-					data: {
+					$.ajax({
+						method: 'get',
+						url: "/stripe_pay.php",
+						data: {
 							token: token.id,
 							amount: amount,
-							currency:"<?=$config['stripe_currency']?>",
+							currency: "<?= $config['stripe_currency'] ?>",
 							email: token.email,
 							description: description,
 							name: name,
 							times: times,
 							clientId: clientId,
 						},
-					success: function(data){
-						if(JSON.parse(data).success == true){
-							window.location.replace('thanks.php?hash='+hashlink);
-						} else if ( JSON.parse(data).message ) {
-							$(".my_chek_payment").text(JSON.parse(data).message).show().delay(5000).fadeOut();
-							// do something if not success
-						} else {
-							$(".my_chek_payment").text('Oops! Payment error').show().delay(5000).fadeOut();
+						success: function(data) {
+							if (JSON.parse(data).success == true) {
+								window.location.replace('thanks.php?hash=' + hashlink);
+							} else if (JSON.parse(data).message) {
+								$(".my_chek_payment").text(JSON.parse(data).message).show().delay(5000).fadeOut();
+								// do something if not success
+							} else {
+								$(".my_chek_payment").text('Oops! Payment error').show().delay(5000).fadeOut();
+							}
 						}
-					}
-				});
-				// You can access the token ID with `token.id`.
-				// Get the token ID to your server-side code for use.
-			}
-		});
-
-		document.getElementById('stripeButton').addEventListener('click', function(e) {
-			if ( $(".price").text() !== '' ) {
-				var error = false;
-				var pattern = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i;
-				if(pattern.test($("#email").val())){
-					$(this).css({'border' : '1px solid #569b44'});
-				} else {
-					error = true;
-					$(".my_chek_email").show().delay(2000).fadeOut();
-					e.preventDefault();
-				}
-
-				var dateId = $('input[name="date"]:checked').val();
-				if (!$('input[name="times[]"]').is(":checked")) {
-					error = true;
-					$(".my_chek_chebox").show().delay(2000).fadeOut();
-					e.preventDefault();
-				}
-
-				var email = $("#email").val();
-
-				var umnog = $('.timesCont input[type=checkbox]:checked').length;
-
-				var amount = pp * umnog;
-				if ( amount == 0 ) {
-					amount = pp;
-				}
-				amount = Math.round(amount * 1000) / 10; // convert to rounded cents (1 -> 100)
-
-				if(!error) {
-					// Open Checkout with further options:
-					handler.open({
-						name: "<?=$config['stripe_email']?>",
-						description: '',
-						amount: amount,
-						currency: "<?=$config['stripe_currency']?>",
-						email: email
 					});
-					e.preventDefault();
-
+					// You can access the token ID with `token.id`.
+					// Get the token ID to your server-side code for use.
 				}
-			}
-		});
+			});
 
-		// Close Checkout on page navigation:
-		window.addEventListener('popstate', function() {
-			handler.close();
-		});
-	</script>
-<?php } ?>
+			document.getElementById('stripeButton').addEventListener('click', function(e) {
+				if ($(".price").text() !== '') {
+					var error = false;
+					var pattern = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i;
+					if (pattern.test($("#email").val())) {
+						$(this).css({
+							'border': '1px solid #569b44'
+						});
+					} else {
+						error = true;
+						$(".my_chek_email").show().delay(2000).fadeOut();
+						e.preventDefault();
+					}
+
+					var dateId = $('input[name="date"]:checked').val();
+					if (!$('input[name="times[]"]').is(":checked")) {
+						error = true;
+						$(".my_chek_chebox").show().delay(2000).fadeOut();
+						e.preventDefault();
+					}
+
+					var email = $("#email").val();
+
+					var umnog = $('.timesCont input[type=checkbox]:checked').length;
+
+					var amount = pp * umnog;
+					if (amount == 0) {
+						amount = pp;
+					}
+					amount = Math.round(amount * 1000) / 10; // convert to rounded cents (1 -> 100)
+
+					if (!error) {
+						// Open Checkout with further options:
+						handler.open({
+							name: "<?= $config['stripe_email'] ?>",
+							description: '',
+							amount: amount,
+							currency: "<?= $config['stripe_currency'] ?>",
+							email: email
+						});
+						e.preventDefault();
+
+					}
+				}
+			});
+
+			// Close Checkout on page navigation:
+			window.addEventListener('popstate', function() {
+				handler.close();
+			});
+		</script>
+	<?php } ?>
 </body>
+
 </html>

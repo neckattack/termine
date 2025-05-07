@@ -1,6 +1,15 @@
 /* —— UTF-8: charset=utf-8 —— encoding="utf-8" —— */
 jQuery(document).ready(function() {
 	/**
+	 * Fetch translation by key
+	 * @param {string} key - The translation key
+	 * @returns {string} - The translated text or the key if not found
+	 */
+	function __t(key) {
+		return window.translations[key] || key;
+	}
+
+	/**
 	 * Disable caching of AJAX responses
 	 */
 	$.ajaxSetup({
@@ -287,9 +296,9 @@ jQuery(document).ready(function() {
 		
 		// Error messages
 		messages: {
-			"name"    : "Bitte geben Sie Ihren Namen an",
-			"email"   : "Bitte geben Sie eine gültige E-Mail-Adresse an",
-			"times[]" : "Bitte wählen Sie mindestens einen Termin aus"
+			"name"    : __t('check_name_message'),
+			"email"   : __t('check_email_message'),
+			"times[]" : __t('check_time_message')
 		},
 		
 		// Show Errors in box
