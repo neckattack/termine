@@ -1,6 +1,6 @@
 <?php
 
-// English Language File (en_US)
+// German Language File (en_US)
 
 $lang = [
     'welcome_message' => 'Welcome',
@@ -25,6 +25,20 @@ $lang = [
     'privacy_policy_confirmation' => 'Hiermit bestätige ich, die <a href="http://neckattack.net/datenschutz/" rel="nofollow" target="_blank">Datenschutzbestimmungen</a> gelesen zu haben und akzeptiere diese.',
     'footer_copyright' => '© NeckAttack® Mobile Massage | <a rel="external" href="http://www.neckattack.net/kontakt/impressum/" target="_blank">Impressum</a>',
     'sign_in_button' => 'Anmelden',
+    'welcome_back' => 'Willkommen zurück',
+    'manage_your_booking' => 'Hier können Sie Ihre Buchung verwalten',
+    'your_bookings' => 'Ihre Buchungen',
+    'booking_date' => 'Buchungsdatum',
+    'start_time' => 'Startzeit',
+    'end_time' => 'Endzeit',
+    'actions' => 'Aktionen',
+    'no_bookings_for_you' => 'Keine Buchungen für Sie',
+    'check_the_link' => 'Überprüfen Sie den Link',
+    'move' => 'Verschieben',
+    'cancel' => 'Stornieren',
+    'confirm_delete' => 'Sind Sie sicher, dass Sie diese Reservierung stornieren möchten?',
+    'delete_success' => 'Reservierung erfolgreich gelöscht',
+    'delete_error'   => 'Die Reservierung konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
 ];
 
 ?>

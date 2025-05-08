@@ -25,6 +25,20 @@ $lang = [
     'privacy_policy_confirmation' => 'I confirm that I have read and accept the <a href="http://neckattack.net/datenschutz/" rel="nofollow" target="_blank">Privacy Policy</a>.',
     'footer_copyright' => '© NeckAttack® Mobile Massage | <a rel="external" href="http://www.neckattack.net/kontakt/impressum/" target="_blank">Imprint</a>',
     'sign_in_button' => 'Sign in',
+    'welcome_back' => 'Welcome back',
+    'manage_your_booking' => 'Here you can manage your booking',
+    'your_bookings' => 'Your Bookings',
+    'booking_date' => 'Booking Date',
+    'start_time' => 'Start Time',
+    'end_time' => 'End Time',
+    'actions' => 'Actions',
+    'no_bookings_for_you' => 'No bookings for you',
+    'check_the_link' => 'Check the link',
+    'move' => 'Move',
+    'cancel' => 'Cancel',
+    'confirm_delete' => 'Are you sure you want to cancel this reservation?',
+    'delete_success' => 'Reservation successfully deleted',
+    'delete_error'   => 'The reservation could not be deleted. Please try again.',
 ];
 
 ?>

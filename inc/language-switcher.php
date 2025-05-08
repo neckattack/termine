@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 // Always set German (de_DE) as default on page load
 $_SESSION['lang'] = 'de_DE';

@@ -6,6 +6,7 @@
  * @param  $title  string  Title to be displayed
  * @param  $gText  string  (optional) Greeting text to be displayed
  */
+include_once __DIR__ . '/../inc/language-switcher.php';
 ?>
 
 <!DOCTYPE html>
@@ -15,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Hier können Sie Ihre Buchung verwalten</title>
+    <title><?= __t('welcome_back'); ?></title>
 
     <link href="/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -84,6 +85,11 @@
 	  .dropdown-menu {
 		min-width: 146px;
 	  }
+	  .lang-switcher select {
+			padding: 3px;
+			width: 100px;
+			border-radius: 5px;
+		}
     </style>
   </head>
   <body id="page-top">
@@ -91,7 +97,10 @@
     <!-- Header -->
     <header class="masthead d-flex">
       <div class="container text-center my-auto">
-        <div><img class="logo" alt="Neckattack logo" src="/bootstrap/img/logo.png"></div>
+	  	<div class="header-main d-flex justify-content-center align-items-center">
+        	<div><img class="logo" alt="Neckattack logo" src="/bootstrap/img/logo.png"></div>
+			<?php language_switcher(); ?>
+		</div>
       </div>
       <div class="overlay"></div>
     </header>
@@ -106,8 +115,8 @@
 
 	<div class="col-md-12">
       	<div style="padding-bottom: 30px;" class="text-center">
-      		<h2 class="text-info">Willkommen zurück <?= $reservations[0]['name'] ?>!</h2>
-          	<h5>Hier können Sie Ihre Buchung verwalten</h5>
+      		<h2 class="text-info"><?= __t('welcome_back') ?> <?= $reservations[0]['name'] ?>!</h2>
+          	<h5><?= __t('manage_your_booking') ?></h5>
 	    </div>
   	</div>
 
@@ -132,14 +141,14 @@
         <section class="container text-center content-block">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="text-center">Ihre Buchungen</h2>
+                    <h2 class="text-center"><?= __t('your_bookings') ?></h2>
                         <table class="table table-bordered">
                             <thead>
                             <tr class="text-center">
-                                <th>Buchungsdatum</th>
-                                <th>Startzeit</th>
-                                <th>Endzeit</th>
-                                <th>Aktionen</th>
+								<th><?= __t('booking_date') ?></th>
+								<th><?= __t('start_time') ?></th>
+								<th><?= __t('end_time') ?></th>
+								<th><?= __t('actions') ?></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -151,8 +160,8 @@
                                     <td class="text-center"><?= $reservation['time_start'] ?></td>
                                     <td class="text-center"><?= $reservation['time_end'] ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo $edit_link; ?>"><button class="btn btn-success">Verschieben</button></a>
-                                        <button onclick="deletereservation(<?= $reservation['id'] ?>)" class="btn btn-danger">Stornieren</button>
+                                        <a href="<?php echo $edit_link; ?>"><button class="btn btn-success"><?= __t('move') ?></button></a>
+                                        <button onclick="deletereservation(<?= $reservation['id'] ?>)" class="btn btn-danger"><?= __t('cancel') ?></button>
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -197,7 +206,7 @@
 
 	<script>
 		function deletereservation(reservationId) {
-			if (confirm('Sind Sie sicher, dass Sie diese Reservierung stornieren möchten?')) {
+			if (confirm('<?= __t('confirm_delete') ?>')) {
 				// Send AJAX request to delete reservation
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', '/web/admin/ajax/editslots.php', true);
@@ -208,12 +217,12 @@
 						console.log(response);
 						if (response.success === 1) {
 							// Reservation deleted successfully, you can perform any additional actions here if needed
-							alert('Reservierung erfolgreich gelöscht');
+							alert('<?= __t('delete_success') ?>');
 							// Reload or update the page as needed
 							location.reload(); // Reload the page
 						} else {
 							// Failed to delete reservation, handle error
-							alert('Die Reservierung konnte nicht gelöscht werden. Bitte versuche es erneut.');
+							alert('<?= __t('delete_error') ?>');
 						}
 					}
 				};
@@ -226,8 +235,8 @@
 		
 	<div class="col-md-12">
       	<div style="padding-top: 50px;" class="text-center">
-      		<h1 class="text-danger">Keine Buchungen für Sie</h1>
-          	<h3>Überprüfen Sie den Link</h3>
+			<h1 class="text-danger"><?= __t('no_bookings_for_you') ?></h1>
+			<h3><?= __t('check_the_link') ?></h3>
 	    </div>
   	</div>
 	
