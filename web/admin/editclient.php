@@ -86,5 +86,18 @@ else {
 }
 
 
+// Speicherlogik für Massageraum (minimalinvasiv)
+if (isset($_REQUEST['massageraum']) && is_array($_REQUEST['massageraum'])) {
+    require_once ROOT.'/inc/db.php'; // Stellt sicher, dass $db (PDO) verfügbar ist
+    foreach ($_REQUEST['massageraum'] as $date_id => $raum) {
+        $date_id = (int)$date_id;
+        $raum = trim($raum);
+        if ($date_id > 0) {
+            $stmt = $db->prepare("UPDATE dates SET massageraum = ? WHERE id = ?");
+            $stmt->execute([$raum, $date_id]);
+        }
+    }
+}
+
 // Include the template
 require ROOT."/tpl/_include.php";
