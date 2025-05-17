@@ -82,8 +82,6 @@ require ROOT."/tpl/header-tpl.php";
 								<option value="<?=$contact["id"]?>" <?=($day["masseur_id"] == $contact["id"]) ? 'selected="selected"' : ''?>><?=$contact["name"]?></option>
 								<?php }?>
 							</select>
-							<label for="massageraum_<?= $day["id"] ?>">Massageraum</label>
-							<input type="text" id="massageraum_<?= $day["id"] ?>" name="massageraum[<?= $day["id"] ?>]" value="<?= isset($day["massageraum"]) ? htmlspecialchars($day["massageraum"]) : '' ?>" size="20" />
 							<?php }?>
 						</div>
 						<?php }?>
