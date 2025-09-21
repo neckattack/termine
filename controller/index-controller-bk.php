@@ -293,8 +293,8 @@ function getReservationsForEmailHash($emailHash, $timesIds) {
 
 	$sql = "SELECT `r`.*, `d`.`client_id`, `d`.`date`, `t`.`date_id`, `t`.`time_start`, `t`.`time_end`";
 	$sql .= " FROM `reservations` AS `r`";
-	$sql .= " JOIN `times` AS `t` ON (`r`.`time_id` = `t`.`id`) ";
-	$sql .= " JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
+	$sql .= " LEFT JOIN `times` AS `t` ON (`r`.`time_id` = `t`.`id`) ";
+	$sql .= " LEFT JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
 	$sql .= " WHERE `r`.`time_id` IN ('".$idStr."')";
 	$sql .= " AND `d`.`date` > CURDATE() "; // if need to check reservation date less than today
 	$sql .= " AND md5(`r`.`email`) = '".$emailHash."' ";
@@ -305,36 +305,6 @@ function getReservationsForEmailHash($emailHash, $timesIds) {
 }
 
 
-function getAllReservationsForEmailHash($emailHash) {
-	global $DB;	// The database Object
-
-	$sql = "SELECT `r`.*, `d`.`client_id`, `d`.`date`, `t`.`date_id`, `t`.`time_start`, `t`.`time_end`";
-	$sql .= " FROM `reservations` AS `r`";
-	$sql .= " JOIN `times` AS `t` ON (`r`.`time_id` = `t`.`id`) ";
-	$sql .= " JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
-	$sql .= " AND `d`.`date` > CURDATE() "; // if need to check reservation date less than today
-	$sql .= " AND md5(`r`.`email`) = '".$emailHash."' ";
-
-	$reservations  = $DB->PreparedSelect($sql, array(), false, false);
-
-	return $reservations;
-}
-
-
-function getSelectedReservation($id) {
-	global $DB;	// The database Object
-
-	$sql = "SELECT `r`.*, `d`.`client_id`, `d`.`date`, `t`.`date_id`, `t`.`time_start`, `t`.`time_end`";
-	$sql .= " FROM `reservations` AS `r`";
-	$sql .= " JOIN `times` AS `t` ON (`r`.`time_id` = `t`.`id`) ";
-	$sql .= " JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
-	$sql .= " WHERE `r`.`time_id` IN ('".$id."')";
-	
-
-	$reservation  = $DB->PreparedSelect($sql, array(), false, false);
-	return $reservation;
-
-}
 /**
  * Get timeFormat for emails
  * @return $timeFormat assocc array or false if error
@@ -351,8 +321,7 @@ function getTimeFormatForEmail($dateFormat, $timeStr){
 	$sql  = "SELECT \n";
 	$sql .= "DATE_FORMAT(`d`.`date`, '".$dateStr."') AS `date`, \n";
 	$sql .= "TIME_FORMAT(`t`.`time_start`, '%H:%i') AS `time_start`, \n";
-	$sql .= "TIME_FORMAT(`t`.`time_end`, '%H:%i') AS `time_end`, \n";
-	$sql .= "`t`.`id` AS `id` \n";
+	$sql .= "TIME_FORMAT(`t`.`time_end`, '%H:%i') AS `time_end` \n";
 	$sql .= "FROM `times` AS `t` ";
 	$sql .= "LEFT JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
 	$sql .= "WHERE `t`.`id` IN ('".$timeStr."') ";
@@ -367,8 +336,7 @@ function getTimeFormatForEmail($dateFormat, $timeStr){
 	foreach ($select AS $row) {
 		$timeFormat[$row["date"]][] = array(
 			"start" => $row["time_start"],
-			"end"   => $row["time_end"],
-			"id"	=> $row['id']
+			"end"   => $row["time_end"]
 		);
 	}
 
@@ -449,8 +417,7 @@ function sendConfirmationMail($email, $name, $times=array(), $contact=null, $mes
 			$message_time .= "\n";
 		}
 
-		// $terminate_link = ABSURL."web/terminate.php?e=".md5($email)."&t=".implode("I", $times);
-		$terminate_link = ABSURL."web/bookings.php?e=".md5($email);
+		$terminate_link = ABSURL."web/terminate.php?e=".md5($email)."&t=".implode("I", $times);
 
 		// The variables to look for
 		// And their values
@@ -562,8 +529,7 @@ function sendReminderMail($email, $name, $times=array(), $contact=null, $message
 			$message_time .= "\n";
 		}
 
-		// $terminate_link = ABSURL."web/terminate.php?e=".md5($email)."&t=".implode("I", $times);
-		$terminate_link = "https://termine.neckattack.net/web/bookings.php?e=".md5($email);
+		$terminate_link = ABSURL."web/terminate.php?e=".md5($email)."&t=".implode("I", $times);
 
 		// The variables to look for
 		// And their values
@@ -694,8 +660,7 @@ function sendTerminateMail($email, $name, $times=array(), $times_to_add=array(),
 		}
 	}
 
-	// $terminate_link = ABSURL."web/terminate.php?e=".md5($email)."&t=".implode("I", $times);
-	$terminate_link = ABSURL."web/bookings.php?e=".md5($email);
+	$terminate_link = ABSURL."web/terminate.php?e=".md5($email)."&t=".implode("I", $times);
 
 	// The variables to look for
 	// And their values
@@ -775,13 +740,8 @@ function sendTherapistListMail($massuer, $res_group, $reservations_date, $subjec
 	foreach ($res_group AS $key => $res) {
 		$t_s = substr($res['time_start'], 0, -3);
 		$t_e = substr($res['time_end'], 0, -3);
-		if(!empty($res['email'])) {
-			$message_time .= ($key+1).$_tab_del.$t_s." - ".$t_e.$_tab_del.$res['name'].$_tab_del.$res['email']."\n";
-			$csvArray[] = [$key+1,$reservations_date,$t_s,$t_e,$res['name'],$res['email']];
-		} else {
-			$message_time .= ($key+1).$_tab_del.$t_s." - ".$t_e.$_tab_del.'Still Available'.$_tab_del.''."\n";
-			$csvArray[] = [$key+1,$reservations_date,$t_s,$t_e,'Still Available',''];
-		}
+		$message_time .= ($key+1).$_tab_del.$t_s." - ".$t_e.$_tab_del.$res['name'].$_tab_del.$res['email']."\n";
+		$csvArray[] = [$key+1,$reservations_date,$t_s,$t_e,$res['name'],$res['email']];
 	}
 	$csvFileName = "neckattack--".$reservations_date."--".$res_group[0]["client_hashlink"].".csv";
 
@@ -811,7 +771,7 @@ function sendTherapistListMail($massuer, $res_group, $reservations_date, $subjec
 	// But may cause trouble if spaces are used for alignment
 	// $message = preg_replace("# {2}#", " ", $message);
 
-	$success = sendMail($email, $name, $from, $subject, $message, null, false, $csvFileName, $csvArray, 'termine@neckattack.net');
+	$success = sendMail($email, $name, $from, $subject, $message, null, false, $csvFileName, $csvArray, 'hallo@neckattack.net, s.kalinchuk@gmail.com');
 
 	return $success;
 }
@@ -849,7 +809,7 @@ function create_csv_string($data) {
  */
 function sendMail($to, $name, $from, $subject, $message, $replyTo=null, $html=true, $csvFileName=null, $csvArray=null, $cc='') {
         if (defined('DEVELOPMENT_ENVIRONMENT') && DEVELOPMENT_ENVIRONMENT === true) {
-            $to = 'termine@neckattack.net';
+            $to = 'hallo@neckattack.net';
         }
 		$headers   = array();
 		$headers[] = "MIME-Version: 1.0";

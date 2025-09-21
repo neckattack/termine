@@ -26,7 +26,9 @@
 		dateFormat  : "<?=$jsDatestr?>"
 	};
 </script>
-
+<script type="text/javascript">
+	window.translations = <?php echo json_encode($lang); ?>;
+</script>
 <!-- Include custom code -->
 <script type="text/javascript" src="<?=WEBDIR?>js/page.js"></script>
 

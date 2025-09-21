@@ -262,7 +262,6 @@ jQuery(document).ready(function() {
 	$(".delete, .enable").live("click", clickLinkHandler);
 	$(".copydate, .enable").live("click", clickLinkHandler);
 	
-	
 
 	/**
 	 * Edit/Add a client

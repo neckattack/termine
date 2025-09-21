@@ -33,18 +33,23 @@ function getImage($id, $type="client") {
  * @param mixed $image The image stream
  * @return void
  */
-function displayImage($image=false) {
-	if ($image === false) {
-		$path  = "images/no-image.png";
-		$image = file_get_contents($path);
-	}
 
-	//$info = getimagesizefromstring($image);
-	//$mime = image_type_to_mime_type($info[2]);
-
-	// Display image
-	header("Content-type: image/jpeg");
-	echo $image;
-	exit;
+ function displayImage($image=false) {
+    if ($image === false) {
+        $path  = "images/no-image.png";
+        $image = file_get_contents($path);
+        $info = getimagesize($path);
+        header("Content-type: " . $info['mime']);
+        echo $image;
+        exit;
+    }
+    $info = getimagesizefromstring($image);
+    if ($info && isset($info['mime'])) {
+        header("Content-type: " . $info['mime']);
+    } else {
+        header("Content-type: image/jpeg");
+    }
+    echo $image;
+    exit;
 }
 ?>

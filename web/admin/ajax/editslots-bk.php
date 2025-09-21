@@ -10,12 +10,8 @@ $AJAX = true;
 $PAGE = basename(__FILE__);
 require "_root_.php";					// Defines the ROOT constant
 require ROOT."/inc/_include.php";
+require ROOT."/inc/admincheck.php";		// Check if admin logged in
 
-$cancelRequestByUser = isset($_REQUEST['byUser']) ? 1 : '';
-
-if(!$cancelRequestByUser) {
-	require ROOT."/inc/admincheck.php";		// Check if admin logged in
-} 
 
 $R = $_REQUEST;
 $P = $_POST;
@@ -45,10 +41,10 @@ if (isset($R["action"])) {
 		// Will leave the time entry
 		case "deletereservation":
 			$id = (int) $R["id"];
-			// $allowed = checkIfAllowed_Reservation($_SESSION["userid"], $id);
-			// if ($allowed !== true) {
-			// 	break;
-			// }
+			$allowed = checkIfAllowed_Reservation($_SESSION["userid"], $id);
+			if ($allowed !== true) {
+				break;
+			}
 
 			$deleted = false;
 			$deleted = deleteReservation($id);

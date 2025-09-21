@@ -44,6 +44,7 @@ $infos = getDayInfos($date_id);
 $slots = array();
 $slots = $infos;
 
+
 // Include the template
 $infoText = "Reservierungen am ".$infos[0]["date"]." (".$infos[0]["client_name"].")";
 require ROOT."/tpl/_include.php";

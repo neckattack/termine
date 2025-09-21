@@ -34,15 +34,8 @@ switch ($R["action"]) {
 		$name     = @$R["name"];
 		$email    = @strtolower($R["email"]);
 		$message  = $client["email_text"];
-		// $adminID  = isset($_SESSION["userid"]) ? (int)$_SESSION["userid"] : 0;
-		// echo $email;
-		// print_r(canBook($clientID, $email));
-		// ✅ One-Time Booking Check
-		if (!canBook($clientID, $email)) {
-			$output["errors"] = "Die einmalige Buchung ist aktiviert. Es besteht bereits eine Reservierung.";
-			break;
-		}
-
+		
+		
 		// Register to times
 		$checkAvail = checkTimesAvailable($times);
 		

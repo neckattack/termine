@@ -87,7 +87,7 @@ require ROOT."/tpl/header-tpl.php";
 						<?php }?>
 						<a href="#" id="addDate">Hinzufügen</a>
 					</div>
-					<div id='copyDate' style="display:none; position: absolute; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 50%); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray;">
+					<div id='copyDate' style="display:none; position: fixed; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 50%); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray;">
 						<span class='close-modal' style="text-align: right; height: 25px; width: 25px; color: red; margin-bottom: 50px; cursor: pointer; position: relative; top: -20px; right: -20px; font-weight: 600;">X</span>
 						<label>Select New Date</label> <br>
 						<input type="text" class="datePicker" name="newDate[]" value="<?=isset($day["date"]) ? $day["date"] : ""?>" />
@@ -152,12 +152,6 @@ require ROOT."/tpl/header-tpl.php";
 				<div class="row">
 					<label for="payment">Bezahlfunktion</label>
 					<input type="checkbox" id="chek_payment" name="chek_payment"<?php if(!empty($price)) { echo "checked";} ?> value="1" />
-
-				</div>
-				
-				<div class="row">
-					<label for="payment">Nur einmalige Buchung</label>
-					<input type="checkbox" name="one_time_booking" value="1" <?= ($client['one_time_booking']) ? 'checked' : '' ?>>
 
 				</div>
 
@@ -305,8 +299,11 @@ require ROOT."/tpl/footer-tpl.php";
 	})
 
 	function showModal(id) {
+		console.log(1)
 		$('#copyDate').show();
+		console.log(2)
 		$('.copy-data').attr('data-id', id);
+		console.log(3)
 	}
 
 	$('.close-modal').click(function() {

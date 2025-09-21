@@ -29,6 +29,7 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	</head>
 <body>
 <div class="page <?=PAGE?>">
+<?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
 	<div id="header">
   		<?php /* The logo */ ?>
 		<a href="<?=ABSURL?>" class="logo"><img src="<?=WEBDIR?>images/logo.png" alt="Logo" /></a>

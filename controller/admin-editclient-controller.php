@@ -12,7 +12,7 @@ function getClientInfos($id) {
 	$id = (int)$id;
 
 	$sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, \n";
-	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`one_time_booking` ";
+	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price` ";
 	$sql .= "FROM `clients` AS `c` ";
 	$sql .= "WHERE `c`.`id` = :id ";
 
@@ -170,7 +170,6 @@ function editClient($data) {
 	$enabled            = @(int)$data["cEnabled"];
 	$group_id           = (isset($data["group_id"])) ? (int) $data["group_id"] : 0;
 	$price				= $data["price"];
-	$one_time_booking = isset($data["one_time_booking"]) ? (int)$data["one_time_booking"] : 0;
 	$user_ids           = (isset($data["user_ids"])) ? $data["user_ids"] : array();
 	$existing_contacts  = false;
 	$params             = array(
@@ -180,8 +179,7 @@ function editClient($data) {
 		"contact_client_id"  => $contact_client_id,
 		"enabled"            => $enabled,
 		"group_id"           => $group_id,
-		"price"				 => $price,
-		"one_time_booking" => $one_time_booking,
+		"price"				 => $price
 	);
 
 
@@ -191,8 +189,8 @@ function editClient($data) {
 	switch ($id) {
 		// Add
 		case 0:
-			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`, `one_time_booking`) \n";
-			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price, :one_time_booking)";
+			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`) \n";
+			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price)";
 
 			$params["name"] = $name;
 			$params["hash"] = $hash;
@@ -209,7 +207,7 @@ function editClient($data) {
 
 			$sql  = "UPDATE `clients` SET \n";
 			$sql .= "`greeting_text` = :text, `email_text` = :mailtext, `contact_masseur_id` = :contact_masseur_id, `contact_client_id` = :contact_client_id, \n";
-			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price, `one_time_booking` = :one_time_booking  \n";
+			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price \n";
 			$sql .= "WHERE `id` = :id";
 
 			$params["id"] = $id;

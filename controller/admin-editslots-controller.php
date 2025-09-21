@@ -42,6 +42,8 @@ function checkIfAllowed($user, $date) {
 		$id = (int) $entry["admin_id"];
 		$assocs[$id] = $id;
 	}
+	
+
 
 
 	// Super admins may edit anything
@@ -215,12 +217,8 @@ function deleteReservation($id) {
 	$params = array("id" => $id);
 	
 	$delete = $DB->PreparedStatement($sql, $params, false, false);
-
-	if ($delete == 0 || is_null($delete)) {
-		return false;
-	}
-
-	return true;
+	
+	return $delete;
 }
 
 

@@ -94,7 +94,7 @@ function getAllClients($group_id=null) {
 	$today = date('Y-m-d');
 	$sortBy = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'alphabetical';
 
-	if($sortBy == 'upcoming') {
+		if($sortBy == 'upcoming') {
 		$sql  = "SELECT `c`.`id`, TRIM(`c`.`name`) AS `name`, `c`.`hashlink`, `c`.`enabled`, `d`.`date` AS `first`, `d`.`date` AS `last`, `d`.`id` AS `date_id`\n";
 		$sql .= "FROM `clients` AS `c` \n";
 		$sql .= "LEFT JOIN `dates` AS `d` ON (`c`.`id` = `d`.`client_id`) \n";
@@ -172,12 +172,6 @@ function getAllClients($group_id=null) {
 		}
 	}
 	
-	// 	echo '<pre>';
-	// echo "clients data:\n";
-	// print_r($clients);
-	// echo '</pre>';
-
-	// die();
 
 	return $clients;
 }

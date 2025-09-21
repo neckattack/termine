@@ -17,7 +17,7 @@ Array
     [custom] => 26159
     [payer_status] => unverified
     [business] => chris@neckattack.net
-    [address_country] => Ukraine
+    [address_country] => Germany
     [address_city] => Zaporizhia
     [quantity] => 1
     [verify_sign] => ASQtLetib.e0K9765E3BEEHDRnytAObx9OEdi99ZXUhCtyKh-VcP6v3k

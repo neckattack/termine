@@ -17,8 +17,8 @@ $id     = (isset($R["id"]))   ? $R["id"]   : 0;
 $type   = (isset($R["type"])) ? $R["type"] : "";
 
 // Parameters may be base64 encoded
-$string = @base64_decode($R["s"]);
-$params = @parse_str($string);		// Directly allocates the given variables
+// $string = @base64_decode($R["s"]);
+// $params = @parse_str($string);		// Directly allocates the given variables
 
 $id     = (int) $id;
 $image  =  getImage($id, $type);

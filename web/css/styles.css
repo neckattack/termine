@@ -146,7 +146,7 @@ div.tooltip dd {
  * Multiselects
  */
 .is-multiselect {
-	font size: 13px;
+	font-size: 13px;
 	font-size: 1.3rem;
 }
 
@@ -345,7 +345,6 @@ div.is-multiselect a:active {
  * The page container
  */
 .page {
-	/* width: 960px; */
 	width: 1060px;
 	margin: 20px auto;
 	border: 1px solid #888;
