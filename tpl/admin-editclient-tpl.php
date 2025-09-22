@@ -102,6 +102,31 @@ require ROOT."/tpl/header-tpl.php";
 				<div class="row">
 					<label for="cText">Begrüßungstext</label>
 					<textarea id="cText" name="cText" rows="7" cols="70"><?=$cText?></textarea>
+
+<div class="row">
+    <label for="booking_deadline_hours">Buchungs-/Stornofrist</label>
+    <select id="booking_deadline_hours" name="booking_deadline_hours">
+        <option value="0" <?=($booking_deadline_hours==0||$booking_deadline_hours==null)?'selected="selected"':''?>>Immer möglich</option>
+        <option value="24" <?=($booking_deadline_hours==24)?'selected="selected"':''?>>Bis 24h vorher</option>
+        <option value="48" <?=($booking_deadline_hours==48)?'selected="selected"':''?>>Bis 48h vorher</option>
+        <option value="custom">Benutzerdefiniert</option>
+    </select>
+    <input type="number" min="1" step="1" id="booking_deadline_hours_custom" name="booking_deadline_hours_custom" style="display:none;width:80px;" placeholder="Stunden" value="<?=($booking_deadline_hours!=0&&$booking_deadline_hours!=24&&$booking_deadline_hours!=48)?$booking_deadline_hours:''?>" />
+</div>
+<script>
+$(function(){
+    $('#booking_deadline_hours').change(function(){
+        if($(this).val()==='custom') {
+            $('#booking_deadline_hours_custom').show();
+        } else {
+            $('#booking_deadline_hours_custom').hide();
+        }
+    });
+    if($('#booking_deadline_hours').val()==='custom') {
+        $('#booking_deadline_hours_custom').show();
+    }
+});
+</script>
 				</div>
 
 				<div class="row">
