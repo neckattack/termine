@@ -172,6 +172,16 @@ function editClient($data) {
 	$price				= $data["price"];
 	$user_ids           = (isset($data["user_ids"])) ? $data["user_ids"] : array();
 	$existing_contacts  = false;
+	// Buchungsfrist ermitteln (Dropdown oder custom)
+	$booking_deadline_hours = 0;
+	if (isset($data["booking_deadline_hours"])) {
+		if ($data["booking_deadline_hours"] === "custom" && isset($data["booking_deadline_hours_custom"])) {
+			$booking_deadline_hours = (int)$data["booking_deadline_hours_custom"];
+		} else {
+			$booking_deadline_hours = (int)$data["booking_deadline_hours"];
+		}
+	}
+
 	$params             = array(
 		"text"               => $text,
 		"mailtext"           => $mailtext,
@@ -179,7 +189,8 @@ function editClient($data) {
 		"contact_client_id"  => $contact_client_id,
 		"enabled"            => $enabled,
 		"group_id"           => $group_id,
-		"price"				 => $price
+		"price"			 => $price,
+		"booking_deadline_hours" => $booking_deadline_hours
 	);
 
 
@@ -189,8 +200,8 @@ function editClient($data) {
 	switch ($id) {
 		// Add
 		case 0:
-			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`) \n";
-			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price)";
+			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`, `booking_deadline_hours`) \n";
+			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price, :booking_deadline_hours)";
 
 			$params["name"] = $name;
 			$params["hash"] = $hash;
@@ -207,7 +218,7 @@ function editClient($data) {
 
 			$sql  = "UPDATE `clients` SET \n";
 			$sql .= "`greeting_text` = :text, `email_text` = :mailtext, `contact_masseur_id` = :contact_masseur_id, `contact_client_id` = :contact_client_id, \n";
-			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price \n";
+			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price, `booking_deadline_hours` = :booking_deadline_hours \n";
 			$sql .= "WHERE `id` = :id";
 
 			$params["id"] = $id;
