@@ -181,7 +181,13 @@ $gText  = $client["greeting_text"];
 													<?php
 													} else {
 													?>
-														<input type="checkbox" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> />
+														<?php
+$deadline = (int)$client['booking_deadline_hours'];
+$slotTime = strtotime($date['date'].' '.$time['time_start']);
+$now = time();
+$buchbar = ($deadline === 0 || ($slotTime - $now) > $deadline * 3600);
+?>
+<input type="checkbox" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> <?= !$buchbar ? "disabled=\"disabled\" title=\"Buchung nur bis $deadline Stunden vor Termin möglich\"" : "" ?> />
 													<?php
 													}
 													?>

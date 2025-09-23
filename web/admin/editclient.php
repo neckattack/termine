@@ -62,6 +62,9 @@ if ($clientID > 0) {
 		$hasImage           = ( isset($client["image"][10]) );
 		$associated_users   = $client["contacts"]["mixed"];
 
+		// Buchungs-/Stornofrist korrekt setzen
+		$booking_deadline_hours = isset($client["booking_deadline_hours"]) ? $client["booking_deadline_hours"] : 0;
+
 		// All users that are directly associated with this client
 		$user_ids           = $client["contacts"]["direct"];
 	}

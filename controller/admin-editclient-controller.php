@@ -12,7 +12,7 @@ function getClientInfos($id) {
 	$id = (int)$id;
 
 	$sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, \n";
-	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price` ";
+	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours` ";
 	$sql .= "FROM `clients` AS `c` ";
 	$sql .= "WHERE `c`.`id` = :id ";
 
