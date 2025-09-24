@@ -175,22 +175,25 @@ $gText  = $client["greeting_text"];
 											<div class="form-check">
 												<label class="<?= $class1 ?><?= $class2 ?><?= $class3 ?>" for="time_<?= $time["id"] ?>">
 													<?php
-													if ($client['one_time_booking']) {
-													?>
-														<input type="radio" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> />
-													<?php
-													} else {
-													?>
-														<?php
 $deadline = (int)$client['booking_deadline_hours'];
 $slotTime = strtotime($date['date'].' '.$time['time_start']);
 $now = time();
 $buchbar = ($deadline === 0 || ($slotTime - $now) > $deadline * 3600);
+// Minimalinvasiver Debug-Kommentar per ?dbg=1
+if (isset($_GET['dbg']) && $_GET['dbg'] == '1') {
+    echo "<!-- time_id={$time['id']} date={$date['date']} start={$time['time_start']} deadline={$deadline} slotTime={$slotTime} now={$now} buchbar=".($buchbar?'1':'0')." -->";
+}
+
+if ($client['one_time_booking']) {
 ?>
-<input type="checkbox" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> <?= !$buchbar ? "disabled=\"disabled\" title=\"Buchung nur bis $deadline Stunden vor Termin möglich\"" : "" ?> />
-													<?php
-													}
-													?>
+												<input type="radio" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> <?= !$buchbar ? "disabled=\"disabled\" title=\"Buchung nur bis $deadline Stunden vor Termin möglich\"" : "" ?> />
+											<?php
+} else {
+?>
+												<input type="checkbox" id="time_<?= $time["id"] ?>" name="times[]" value="<?= $time["id"] ?>" <?= (isset($time["taken"])) ? " disabled=\"disabled\"" : "" ?> <?= !$buchbar ? "disabled=\"disabled\" title=\"Buchung nur bis $deadline Stunden vor Termin möglich\"" : "" ?> />
+											<?php
+}
+											?>
 													<span><?= $time["time_start"] ?> - <?= $time["time_end"] ?></span>
 												</label>
 											</div>
