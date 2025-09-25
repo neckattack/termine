@@ -88,6 +88,28 @@ else {
 				$name  = $P["name"];
 				$email = $P["email"];
 
+                // Tag: stornovorlauf – Backend-Fristprüfung (Buchungs-/Stornofrist)
+                $deadline = isset($client["booking_deadline_hours"]) ? (int)$client["booking_deadline_hours"] : 0;
+                if ($deadline > 0 && is_array($times) && count($times) > 0) {
+                    $idStr = implode("', '", array_map('intval', $times));
+                    $sql   = "SELECT `t`.`id`, `d`.`date`, `t`.`time_start` FROM `times` AS `t` LEFT JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) WHERE `t`.`id` IN ('".$idStr."')";
+                    $res   = $DB->PreparedSelect($sql, array(), false, false);
+                    $tooSoon = array();
+                    $nowTs = time();
+                    foreach ($res as $row) {
+                        // d.date ist Y-m-d, time_start HH:MM:SS
+                        $slotTs = strtotime($row['date'].' '.$row['time_start']);
+                        if (($slotTs - $nowTs) <= ($deadline * 3600)) {
+                            $tooSoon[] = (int)$row['id'];
+                        }
+                    }
+                    if (count($tooSoon) > 0) {
+                        $toolate = true;
+                        $taken   = $tooSoon; // Wiederverwendung der bestehenden Anzeige-Logik
+                        break; // Abbrechen ohne Reservierung
+                    }
+                }
+
 				// Register to times
 				$checkAvail = checkTimesAvailable($times);
 
