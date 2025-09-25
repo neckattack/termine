@@ -175,8 +175,14 @@ $gText  = $client["greeting_text"];
 											<div class="form-check">
 												<label class="<?= $class1 ?><?= $class2 ?><?= $class3 ?>" for="time_<?= $time["id"] ?>">
 													<?php
-$deadline = (int)$client['booking_deadline_hours'];
-$slotTime = strtotime($date['date'].' '.$time['time_start']);
+$deadline = isset($client['booking_deadline_hours']) ? (int)$client['booking_deadline_hours'] : 0;
+$rawDate = $date['date'];
+$rawTime = $time['time_start'];
+// Versuche, lokales Datumsformat (z.B. d.m.Y) robust zu parsen
+$dt = DateTime::createFromFormat('d.m.Y H:i:s', $rawDate.' '.$rawTime);
+if (!$dt) { $dt = DateTime::createFromFormat('d.m.Y H:i', $rawDate.' '.substr($rawTime,0,5)); }
+if (!$dt) { $dt = DateTime::createFromFormat('Y-m-d H:i:s', $rawDate.' '.$rawTime); }
+$slotTime = $dt ? $dt->getTimestamp() : strtotime($rawDate.' '.$rawTime);
 $now = time();
 $buchbar = ($deadline === 0 || ($slotTime - $now) > $deadline * 3600);
 // Minimalinvasiver Debug-Kommentar per ?dbg=1
