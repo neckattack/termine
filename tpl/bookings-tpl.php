@@ -199,6 +199,15 @@ include_once __DIR__ . '/../inc/language-switcher.php';
 	</script>
 	<script src="/js/page.js"></script>
 	<script>
+		// Erfolgspopup nach Verschieben
+		(function(){
+			var p = new URLSearchParams(window.location.search);
+			if (p.get('moved') === '1') {
+				alert('Reservierung erfolgreich verschoben');
+			}
+		})();
+	</script>
+	<script>
 		jQuery(document).ready(function ($) {
 			$('.tni input').trigger('change');
 

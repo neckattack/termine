@@ -91,8 +91,8 @@ if ( $reservations && !empty($_POST) && isset($_POST['h']) && isset($_POST['id']
     }
 
     if ( $success ) {
-        // Tag: stornovorlauf – Nach erfolgreichem Verschieben zur Übersicht aller Buchungen springen
-        header("Location: /web/bookings.php?e=".$emailHash);
+        // Tag: stornovorlauf – Nach erfolgreichem Verschieben zur Übersicht aller Buchungen springen (mit Erfolgsflag)
+        header("Location: /web/bookings.php?e=".$emailHash."&moved=1");
         exit();
     }
 }
