@@ -174,8 +174,8 @@
           	</div>
 
           	<div class="col-md-4">
-				<h5 class='select-a-date'>Neues Datum wählen</h5>
-				<div class="fLeft times tni my-times" style="display:none;">
+				<h5 class='select-a-date'>Neues Datum                <?php // Tag: stornovorlauf – my-times initial sichtbar, wenn serverseitig ein $date_id gewählt ist ?>
+                <div class="fLeft times tni my-times" style="<?= ((int)$date_id>0)?'':'display:none;' ?>">
 					<h3>Termin auswählen:</h3>
 					<?php if ($result !== false) {
 						foreach ($result["dates"] AS $key => $date) {
@@ -183,20 +183,32 @@
 					<div id="times_<?=$date["id"]?>" data-date-id="<?=$date["id"]?>" class="timesCont" <?= ((int)$date["id"] !== $date_id) ? 'hidden' : '' ?>>
 						<?php if (isset($result["times_assoc"][$date["id"]])) {
 							foreach ($result["times_assoc"][$date["id"]] AS $time) {
-								$class1 = (isset($time["taken"])) ? "disabled" : "";
-								$class2 = "";
-								$disabledText = ($class1) ? " disabled=\"disabled\"" : "";
-								// if ( $disabledText && in_array($time["id"], $reservations_times) ){
-								// 	$disabledText = " checked=\"checked\"";
-								// 	$class2 = " text-info";
-								// } 
-						?>
-							<div class="form-check">
-								<label class="<?=$class1?>" for="time_<?=$time["id"]?>">
-									<input type="checkbox" id="time_<?=$time["id"]?>" name="times[]" value="<?=$time["id"]?>" <?= $disabledText ?> />
-									<span class=""><?=$time["time_start"]?> - <?=$time["time_end"]?></span>
-								</label>
-							</div>
+                                $class1 = (isset($time["taken"])) ? "disabled" : "";
+                                $class2 = "";
+                                $disabledText = ($class1) ? " disabled=\"disabled\"" : "";
+                                // Tag: stornovorlauf – Fristprüfung pro Slot
+                                $deadline = isset($client['booking_deadline_hours']) ? (int)$client['booking_deadline_hours'] : 0;
+                                $rawDate = $date['date'];
+                                $rawTime = $time['time_start'];
+                                $dt = DateTime::createFromFormat('d.m.Y H:i:s', $rawDate.' '.$rawTime);
+                                if (!$dt) { $dt = DateTime::createFromFormat('d.m.Y H:i', $rawDate.' '.substr($rawTime,0,5)); }
+                                if (!$dt) { $dt = DateTime::createFromFormat('Y-m-d H:i:s', $rawDate.' '.$rawTime); }
+                                $slotTime = $dt ? $dt->getTimestamp() : strtotime($rawDate.' '.$rawTime);
+                                $now = time();
+                                $buchbar = ($deadline === 0 || ($slotTime - $now) > $deadline * 3600);
+                                if (!$buchbar) {
+                                    $disabledText = ' disabled="disabled" title="Buchung nur bis '.$deadline.' Stunden vor Termin möglich"';
+                                }
+                                if (isset($_GET['dbg']) && $_GET['dbg']=='1') {
+                                    echo "<!-- move_row time_id={$time['id']} date={$rawDate} start={$rawTime} deadline={$deadline} slotTs={$slotTime} nowTs={$now} allow=".($buchbar?'1':'0')." -->";
+                                }
+                        ?>
+                            <div class="form-check">
+                                <label class="<?=$class1?>" for="time_<?=$time["id"]?>">
+                                    <input type="checkbox" id="time_<?=$time["id"]?>" name="times[]" value="<?=$time["id"]?>" <?= $disabledText ?> />
+                                    <span class=""><?=$time["time_start"]?> - <?=$time["time_end"]?></span>
+                                </label>
+                            </div>
 
 						<?php } } ?>
 					</div>
