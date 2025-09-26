@@ -154,14 +154,24 @@ include_once __DIR__ . '/../inc/language-switcher.php';
                             <tbody>
                             <?php foreach ($reservations as $reservation) {
                                 $edit_link = ABSURL."web/terminate.php?e=".md5($reservation['email'])."&t=".$reservation['time_id'];
+                                // Tag: stornovorlauf – Fristprüfung pro Eintrag
+                                $deadline = isset($client['booking_deadline_hours']) ? (int)$client['booking_deadline_hours'] : 0;
+                                $slotTs   = strtotime($reservation['date'].' '.$reservation['time_start']);
+                                $nowTs    = time();
+                                $allowActions = ($deadline === 0 || ($slotTs - $nowTs) > $deadline * 3600);
+                                if (isset($_GET['dbg']) && $_GET['dbg'] == '1') {
+                                    echo "<!-- booking_row time_id={$reservation['time_id']} date={$reservation['date']} start={$reservation['time_start']} deadline={$deadline} slotTs={$slotTs} nowTs={$nowTs} allow=".($allowActions?'1':'0')." -->";
+                                }
                                 ?>
                                 <tr>
                                     <td class="text-center"><?= date('d.m.Y', strtotime($reservation['date'])) ?></td>
                                     <td class="text-center"><?= $reservation['time_start'] ?></td>
                                     <td class="text-center"><?= $reservation['time_end'] ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo $edit_link; ?>"><button class="btn btn-success"><?= __t('move') ?></button></a>
-                                        <button onclick="deletereservation(<?= $reservation['id'] ?>)" class="btn btn-danger"><?= __t('cancel') ?></button>
+                                        <a href="<?php echo $edit_link; ?>">
+                                            <button class="btn btn-success" <?= $allowActions ? '' : 'disabled title="'.__t('check_time_message').'"' ?>><?= __t('move') ?></button>
+                                        </a>
+                                        <button onclick="deletereservation(<?= $reservation['id'] ?>)" class="btn btn-danger" <?= $allowActions ? '' : 'disabled title="'.__t('check_time_message').'"' ?>><?= __t('cancel') ?></button>
                                     </td>
                                 </tr>
                             <?php } ?>
