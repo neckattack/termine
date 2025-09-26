@@ -229,9 +229,10 @@
 							
 						</div>
 
-						<div class="form-group text-right">
-							<button class="btn btn-warning submit-form" type="button">Anwenden</button>
-						</div>
+						                        <div class="form-group text-right">
+                            <!-- Tag: stornovorlauf – nativer Submit für zuverlässige Übermittlung -->
+                            <button class="btn btn-warning submit-form" type="submit">Anwenden</button>
+                        </div>
 
 						<input type="hidden" name="h" value="<?=$client["hashlink"]?>" />
 						<input type="hidden" name="id" value="<?=$client["id"]?>" />
@@ -264,28 +265,26 @@
 		var pp = <?= $price ?>;
 	</script>
 	<script src="/js/page.js"></script>
-	<script>
-		jQuery(document).ready(function ($) {
-			$('.submit-form').on('click', function(e){
-				e.preventDefault();
-				$('.select-one-timeslot').hide();
-				var umnog = $('input[name="times[]"]:checked').length;
-				if(umnog >= 1) {
-					setTimeout(function() {
-						$('.my-form').submit();
-						alert('Datum und Uhrzeit der Reservierung erfolgreich aktualisiert');
-					}, 2000)
-				} else {
-					$('.select-one-timeslot').show();
-				}
-			});
-			
-			$('.my-date').on('click', function() {
-				$('.select-a-date').hide();
-				$('.my-times').show();
-			})
-		});
-	</script>
+    <script>
+        jQuery(document).ready(function ($) {
+            $('.submit-form').on('click', function(e){
+                e.preventDefault();
+                $('.select-one-timeslot').hide();
+                var checkedCount = $('input[name="times[]"]:checked').length;
+                console.log('[terminate] apply clicked, checkedCount=', checkedCount);
+                if (checkedCount >= 1) {
+                    $('.my-form').trigger('submit');
+                } else {
+                    $('.select-one-timeslot').show();
+                }
+            });
+
+            $('.my-date').on('click', function() {
+                $('.select-a-date').hide();
+                $('.my-times').show();
+            });
+        });
+    </script>
 	<script>
 		jQuery(document).ready(function ($) {
 			$('.tni input').trigger('change');
