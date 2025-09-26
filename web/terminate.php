@@ -38,7 +38,26 @@ if ( $emailHash && $times ) {
 		$client = getClientInfos($reservations[0]["client_id"]);
 
 		$result = getDates($client["id"], false, true); // array of ["dates", "times", "times_assoc"]
-		$date_id  = (isset($result["dates"][0])) ? (int) $result["dates"][0]["id"] : 0;
+        $date_id  = (isset($result["dates"][0])) ? (int) $result["dates"][0]["id"] : 0;
+
+        // Tag: stornovorlauf – Standardauswahl: Nächstes mögliches Datum mit buchbarem Slot
+        $deadline = isset($client['booking_deadline_hours']) ? (int)$client['booking_deadline_hours'] : 0;
+        $nowTs = time();
+        if (!empty($result["dates"])) {
+            foreach ($result["dates"] as $d) {
+                $did = (int)$d['id'];
+                if (isset($result['times_assoc'][$did])) {
+                    foreach ($result['times_assoc'][$did] as $t) {
+                        if (!isset($t['taken'])) { // frei
+                            // $t['date'] ist Y-m-d aus getTimesForDate, $t['time_start'] ist HH:MM
+                            $slotTs = strtotime($t['date'].' '.$t['time_start']);
+                            $buchbar = ($deadline === 0 || ($slotTs - $nowTs) > $deadline*3600);
+                            if ($buchbar) { $date_id = $did; break 2; }
+                        }
+                    }
+                }
+            }
+        }
 		
 		//getting data for selected date time to update
 		$selected_reservation = getSelectedReservation($_GET['t']);

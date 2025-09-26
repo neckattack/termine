@@ -129,18 +129,19 @@
     </section>
 
     <!-- Content -->
-	<section class="container text-center content-block">
+    <section class="container text-center content-block">
 
+            <!-- Tag: stornovorlauf – Überschrift und Untertitel für bessere UX -->
             <div class="row">
                 <div class="col-md-12">
-                    <a href="<?php echo ABSURL."web/bookings.php?e=".$_REQUEST['e']; ?>">
-                        <button class="btn btn-danger" type="button">Gehen Sie zurück zu allen Buchungen</button>
-                    </a>
+                    <h2 class="text-center">Terminverschiebung</h2>
+                    <div class="text-muted" style="margin-top:4px;">Bitte einen neuen Termin aussuchen</div>
                 </div>
             </div>
-			<br>
-			<div class="row">
-				<div class="col-md-12 text-info">
+            <br>
+
+            <div class="row">
+                <div class="col-md-12 text-info">
 					<strong>Alter Termin: <?php echo date('d.m.Y', strtotime($selected_reservation[0]['date'])) . ': (' . $selected_reservation[0]['time_start'] . '-' . $selected_reservation[0]['time_end'] . ')' ?></strong>
 				</div>
 			</div>
@@ -174,9 +175,10 @@
           	</div>
 
           	<div class="col-md-4">
-				<h5 class='select-a-date'>Neues Datum                <?php // Tag: stornovorlauf – my-times initial sichtbar, wenn serverseitig ein $date_id gewählt ist ?>
-                <div class="fLeft times tni my-times" style="<?= ((int)$date_id>0)?'':'display:none;' ?>">
-					<h3>Termin auswählen:</h3>
+				<!-- Tag: stornovorlauf – Infozeile ausgeblendet (Neues Datum wählen) -->
+                <h5 class='select-a-date' style="display:none;"></h5>
+				<div class="fLeft times tni my-times" style="<?= ((int)$date_id>0)?'':'display:none;' ?>">
+					<h3>Neuen Termin auswählen:</h3>
 					<?php if ($result !== false) {
 						foreach ($result["dates"] AS $key => $date) {
 					?>
@@ -232,6 +234,11 @@
 						                        <div class="form-group text-right">
                             <!-- Tag: stornovorlauf – nativer Submit für zuverlässige Übermittlung -->
                             <button class="btn btn-warning submit-form" type="submit">Anwenden</button>
+                        </div>
+
+                        <!-- Tag: stornovorlauf – Zurück zur Übersicht unter Anwenden platzieren -->
+                        <div class="form-group text-right" style="margin-top: 12px;">
+                            <a href="<?php echo ABSURL."web/bookings.php?e=".$_REQUEST['e']; ?>" class="btn btn-danger">Zurück zur Übersicht</a>
                         </div>
 
 						<input type="hidden" name="h" value="<?=$client["hashlink"]?>" />
