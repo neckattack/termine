@@ -3,8 +3,13 @@
 // Minimalinvasiver AJAX-Endpunkt zum Versenden von E-Mails an Ansprechpartner (Kunde)
 // Tag: stornovorlauf_admin_preview – bulk_mail_contacts
 
+error_reporting(0);
+$AJAX  = true;
+$PAGE  = basename(__FILE__);
+
 require __DIR__ . '/_root_.php';
 require ROOT . '/inc/_include.php';
+require ROOT . '/inc/admincheck.php'; // Admin-Login erzwingen, analog zu anderen AJAX-Files
 require ROOT . '/controller/index-controller.php'; // enthält sendMail()
 
 header('Content-Type: application/json; charset=utf-8');
