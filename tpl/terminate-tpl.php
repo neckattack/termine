@@ -87,6 +87,10 @@ include_once __DIR__ . '/../inc/language-switcher.php';
 	  .dropdown-menu {
 		min-width: 146px;
 	  }
+      /* Tag: stornovorlauf – Rechts-Spalte linksbündig angleichen */
+      .registerMe.text-left h3 { text-align: left; }
+      .registerMe.text-left .btn { min-width: 180px; }
+      .registerMe.text-left .form-group { text-align: left; }
     </style>
   </head>
   <body id="page-top">
@@ -230,7 +234,8 @@ include_once __DIR__ . '/../inc/language-switcher.php';
 
          	<div class="col-md-4">
 
-                <div class="fRight registerMe">
+                <!-- Tag: stornovorlauf – rechte Spalte linksbündig ausrichten -->
+                <div class="fRight registerMe text-left">
 					<h3><?= __t('your_booking') ?></h3>
 
 						<div class="form-group text-left times_info_block">
@@ -241,13 +246,13 @@ include_once __DIR__ . '/../inc/language-switcher.php';
 							
 						</div>
 
-						                        <div class="form-group text-right">
+						                        <div class="form-group text-left">
                             <!-- Tag: stornovorlauf – nativer Submit für zuverlässige Übermittlung -->
                             <button class="btn btn-warning submit-form" type="submit"><?= __t('apply_button') ?></button>
                         </div>
 
                         <!-- Tag: stornovorlauf – Zurück zur Übersicht unter Anwenden platzieren -->
-                        <div class="form-group text-right" style="margin-top: 12px;">
+                        <div class="form-group text-left" style="margin-top: 12px;">
                             <a href="<?php echo ABSURL."web/bookings.php?e=".$_REQUEST['e']; ?>" class="btn btn-danger"><?= __t('back_to_overview') ?></a>
                         </div>
 
