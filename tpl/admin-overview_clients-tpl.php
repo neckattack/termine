@@ -84,8 +84,8 @@ if($sortBy != 'alphabetical') {
 			.card-menu__menu a{display:block;padding:8px 10px;text-decoration:none;color:#333}
 			.card-menu__menu a:hover{background:#f7f7f7}
 		</style>
-		<?php foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; ?>
-		<div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>">
+		<?php foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; $enabledVal = $isDisabled ? 0 : 1; ?>
+		<div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>" data-enabled="<?= $enabledVal ?>">
 			<div class="admin-card__row">
 				<div class="admin-card__left">
 					<div class="admin-card__date"><?=htmlspecialchars($range,ENT_QUOTES,'UTF-8')?></div>
@@ -119,6 +119,28 @@ if($sortBy != 'alphabetical') {
 		</div>
 		<?php } ?>
 		<?php }?>
+
+        <!-- Tag: stornovorlauf_admin_preview – JS-Filter: Kacheln an "Deaktivierte Anzeigen" binden -->
+        <script>
+        (function(){
+            function applyCardFilters(){
+                var sel = document.getElementById('showDisabled');
+                if(!sel) return;
+                var showDisabled = sel.value; // "0" oder "1"
+                document.querySelectorAll('.admin-card').forEach(function(card){
+                    var enabled = card.getAttribute('data-enabled') === '1';
+                    if (showDisabled === '0' && !enabled) {
+                        card.style.display = 'none';
+                    } else {
+                        card.style.display = '';
+                    }
+                });
+            }
+            document.addEventListener('DOMContentLoaded', applyCardFilters);
+            var sel = document.getElementById('showDisabled');
+            if (sel) sel.addEventListener('change', applyCardFilters);
+        })();
+        </script>
 
 		<a href="editclient.php">Kunde Hinzufügen</a>
 
