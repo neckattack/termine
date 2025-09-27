@@ -61,6 +61,7 @@ if($sortBy != 'alphabetical') {
 			.admin-card__name{font-size:18px;font-weight:700;margin:0}
 			.admin-card__actions a{display:inline-block;margin-left:6px;padding:6px 10px;border-radius:6px;text-decoration:none;font-size:13px}
 			.admin-card__actions{white-space:nowrap;margin-left:auto}
+			.admin-time{color:#000;font-weight:700;margin-right:10px}
 			.primary{background:#007bff;color:#fff}
 			.secondary{background:#f0f0f0;color:#333}
 			.danger{background:#dc3545;color:#fff}
@@ -73,9 +74,18 @@ if($sortBy != 'alphabetical') {
 					<h3 class="admin-card__name"><a href="editclient.php?cid=<?=(int)$c['id']?>"><?=htmlspecialchars($c['name'],ENT_QUOTES,'UTF-8')?></a></h3>
 				</div>
 				<div class="admin-card__actions">
+					<?php 
+					// Tag: stornovorlauf_admin_preview – gebuchte Zeit wie in Liste anzeigen (nur bei sort_by=upcoming)
+					if (isset($_GET['sort_by']) && $_GET['sort_by'] === 'upcoming') {
+					    $totalBookedTime = $c['total_booked_time'] ?? null; // Minuten
+					    if ($totalBookedTime !== null) {
+					        $timeFormatted = sprintf('%02d:%02d', floor($totalBookedTime/60), $totalBookedTime%60);
+					        echo '<span class="admin-time">'.htmlspecialchars($timeFormatted, ENT_QUOTES, 'UTF-8').'</span>';
+					    }
+					}
+					?>
 					<a class="primary" href="<?=ABSURL.'web/admin/editslots.php?id='.(int)$c['date_id']?>">Slots bearbeiten</a>
 					<a class="secondary" href="export.php?cid=<?=(int)$c['id']?>">Export CSV</a>
-					<a class="secondary" href="editclient.php?cid=<?=(int)$c['id']?>">Ändern</a>
 					<?php if((int)$c['enabled']===1){?>
 						<a class="danger" href="editclient.php?action=disableclient&id=<?=(int)$c['id']?>">Deaktivieren</a>
 					<?php } else {?>
