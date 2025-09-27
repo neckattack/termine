@@ -165,7 +165,8 @@
 					?>
 					<div class="form-check my-date">
 						<label for="date_<?=$date["id"]?>">
-							<input type="radio" id="date_<?=$date["id"]?>" name="date" value="<?=$date["id"]?>" />
+							<!-- Tag: stornovorlauf – vorausgewähltes Datum markieren -->
+                            <input type="radio" id="date_<?=$date["id"]?>" name="date" value="<?=$date["id"]?>" <?= ((int)$date["id"] === (int)$date_id) ? 'checked="checked"' : '' ?> />
 							<span><?=$date["date"]?></span><sup class="datetimescount"></sup>
 						</label>
 					</div>

@@ -148,7 +148,25 @@ else {
 	// Get the date id of the first entry, only if date_id is 0
 	if ($date_id === 0) {
 		$date_id  = (isset($result["dates"][0])) ? (int) $result["dates"][0]["id"] : 0;
-	}
+
+        // Tag: stornovorlauf – Standardauswahl auf nächstmögliches Datum mit buchbarem Slot setzen
+        $deadline = isset($client['booking_deadline_hours']) ? (int)$client['booking_deadline_hours'] : 0;
+        $nowTs = time();
+        if (!empty($result["dates"])) {
+            foreach ($result["dates"] as $d) {
+                $did = (int)$d['id'];
+                if (isset($result['times_assoc'][$did])) {
+                    foreach ($result['times_assoc'][$did] as $t) {
+                        if (!isset($t['taken'])) { // frei
+                            $slotTs = strtotime($t['date'].' '.$t['time_start']);
+                            $buchbar = ($deadline === 0 || ($slotTs - $nowTs) > $deadline*3600);
+                            if ($buchbar) { $date_id = $did; break 2; }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
 	// Get the image
