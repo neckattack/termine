@@ -52,7 +52,15 @@ if($sortBy != 'alphabetical') {
 		<div style="clear: both;"></div>
 
 		<!-- Tag: stornovorlauf_admin_preview – Vorschau-Kacheln für die ersten 3 Einträge (aktuelle Sortierung) -->
-		<?php if (!empty($clientList)) { $previewClients = array_slice($clientList, 0, 3); ?>
+		<?php if (!empty($clientList)) { 
+		    // Filter: Deaktivierte ausblenden, wenn nicht explizit angefordert
+		    $showDisabledParam = isset($_GET['showDisabled']) ? (int)$_GET['showDisabled'] : 0; // 0: Nein, 1: Ja
+		    $filtered = array_values(array_filter($clientList, function($it) use ($showDisabledParam){
+		        if ($showDisabledParam === 1) return true; // alle
+		        return ((int)($it['enabled'] ?? 1)) === 1; // nur aktive
+		    }));
+		    $previewClients = array_slice($filtered, 0, 3);
+		?>
 		<style>
 			.admin-card{margin:16px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);clear:both}
 			.admin-card__row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
@@ -65,6 +73,12 @@ if($sortBy != 'alphabetical') {
 			.primary{background:#007bff;color:#fff}
 			.secondary{background:#f0f0f0;color:#333}
 			.danger{background:#dc3545;color:#fff}
+			/* Burger Dropdown */
+			.card-menu{position:relative;display:inline-block}
+			.card-menu button{background:#f0f0f0;border:1px solid #ddd;border-radius:6px;padding:6px 10px;cursor:pointer}
+			.card-menu__menu{position:absolute;right:0;top:110%;min-width:160px;background:#fff;border:1px solid #e5e5e5;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.12);display:none;z-index:10}
+			.card-menu__menu a{display:block;padding:8px 10px;text-decoration:none;color:#333}
+			.card-menu__menu a:hover{background:#f7f7f7}
 		</style>
 		<?php foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); ?>
 		<div class="admin-card">
@@ -85,12 +99,17 @@ if($sortBy != 'alphabetical') {
 					}
 					?>
 					<a class="primary" href="<?=ABSURL.'web/admin/editslots.php?id='.(int)$c['date_id']?>">Slots bearbeiten</a>
-					<a class="secondary" href="export.php?cid=<?=(int)$c['id']?>">Export CSV</a>
-					<?php if((int)$c['enabled']===1){?>
-						<a class="danger" href="editclient.php?action=disableclient&id=<?=(int)$c['id']?>">Deaktivieren</a>
-					<?php } else {?>
-						<a class="primary" href="editclient.php?action=enableclient&id=<?=(int)$c['id']?>">Aktivieren</a>
-					<?php }?>
+					<div class="card-menu">
+						<button type="button" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block' ? 'none' : 'block'">⋯</button>
+						<div class="card-menu__menu" onclick="this.style.display='none'">
+							<a href="export.php?cid=<?=(int)$c['id']?>">Export CSV</a>
+							<?php if((int)$c['enabled']===1){?>
+								<a href="editclient.php?action=disableclient&id=<?=(int)$c['id']?>">Deaktivieren</a>
+							<?php } else {?>
+								<a href="editclient.php?action=enableclient&id=<?=(int)$c['id']?>">Aktivieren</a>
+							<?php }?>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
