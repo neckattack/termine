@@ -63,9 +63,7 @@ if($sortBy != 'alphabetical') {
 				</div>
 			</div>
 		</div>
-			<li><a href="<?php echo $url; ?>"><?php echo $label; ?></a></li>
-		</ul>
-		
+
 		<div id="display-options">
 			<label for="showGroup">Gruppe Anzeigen:</label>
 			<select id="showGroup" name="showGroup">
