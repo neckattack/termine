@@ -28,6 +28,27 @@ if($sortBy != 'alphabetical') {
 			<li><a href="overview_groups.php">&raquo; Gruppenverwaltung</a></li>
 			<li><a href="overview_users.php">&raquo; Benutzerverwaltung</a></li>
 			<?php }?>
+
+		<!-- Tag: stornovorlauf_admin_preview – Mail-Popup (ohne Funktion) -->
+		<div id="mailModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mailModalTitle">
+			<div class="modal">
+				<header id="mailModalTitle">Mail an ausgewählte Kunden</header>
+				<div class="body">
+					<div style="margin-bottom:8px;">
+						<label for="mailSubject" style="display:block;margin-bottom:4px;">Betreff</label>
+						<input type="text" id="mailSubject" value="Kommender Termin bitte bewerben">
+					</div>
+					<div>
+						<label for="mailMessage" style="display:block;margin-bottom:4px;">Nachricht</label>
+						<textarea id="mailMessage" placeholder=""></textarea>
+					</div>
+				</div>
+				<div class="footer">
+					<button type="button" id="mailCancel">Schließen</button>
+					<button type="button" id="mailSend">Senden</button>
+				</div>
+			</div>
+		</div>
 			<li><a href="<?php echo $url; ?>"><?php echo $label; ?></a></li>
 		</ul>
 		
@@ -50,6 +71,17 @@ if($sortBy != 'alphabetical') {
 
 		<!-- Tag: stornovorlauf_admin_preview – Layout-Fix: Kachel unter die Filter setzen -->
 		<div style="clear: both;"></div>
+
+		<!-- Tag: stornovorlauf_admin_preview – Mehrfachaktion-Leiste -->
+		<div id="bulk-actions" style="display:flex;align-items:center;gap:8px;margin:6px 0 10px 0;">
+			<label for="bulkAction" style="font-weight:600;">Mehrfachaktion</label>
+			<select id="bulkAction" style="padding:4px 6px;">
+				<option value="">– Bitte wählen –</option>
+				<option value="mail">Mail</option>
+				<option value="cancel">Canceln</option>
+			</select>
+			<button type="button" id="applyBulk" style="padding:6px 10px;">Anwenden</button>
+		</div>
 
 		        <!-- Tag: stornovorlauf_admin_preview – Kacheln mit Pagination (30 pro Seite) in aktueller Sortierung -->
         <?php if (!empty($clientList)) { 
@@ -80,6 +112,14 @@ if($sortBy != 'alphabetical') {
 			.card-menu__menu{position:absolute;right:0;top:110%;min-width:160px;background:#fff;border:1px solid #e5e5e5;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.12);display:none;z-index:10}
 			.card-menu__menu a{display:block;padding:8px 10px;text-decoration:none;color:#333}
 			.card-menu__menu a:hover{background:#f7f7f7}
+			/* Modal */
+			.modal-backdrop{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+			.modal{background:#fff;border-radius:10px;max-width:520px;width:92%;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+			.modal header{padding:12px 16px;border-bottom:1px solid #eee;font-weight:700}
+			.modal .body{padding:12px 16px}
+			.modal .footer{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:8px;justify-content:flex-end}
+			.modal input[type="text"], .modal textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
+			.modal textarea{min-height:120px}
 		</style>
 		        <?php $__k=0; foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; $enabledVal = $isDisabled ? 0 : 1; $__k++; ?>
         <div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>" data-enabled="<?= $enabledVal ?>" data-idx="<?= $__k ?>">
@@ -128,7 +168,7 @@ if($sortBy != 'alphabetical') {
             <button type="button" id="pager-next" style="padding:4px 8px;">»</button>
         </div>
 
-        <!-- Tag: stornovorlauf_admin_preview – JS-Filter/Pagination: Kacheln an "Deaktivierte Anzeigen" binden und 30 pro Seite anzeigen -->
+        <!-- Tag: stornovorlauf_admin_preview – JS-Filter/Pagination + Mehrfachaktion/Modal -->
         <script>
         (function(){
             var state = { page: 1, pageSize: 30 };
@@ -167,6 +207,33 @@ if($sortBy != 'alphabetical') {
             var next = document.getElementById('pager-next');
             if (prev) prev.addEventListener('click', function(){ if (state.page>1){ state.page--; applyCardFilters(); }});
             if (next) next.addEventListener('click', function(){ state.page++; applyCardFilters(); });
+
+			// Mehrfachaktion anwenden
+			function getSelectedClientIds(){
+				var ids=[]; document.querySelectorAll('.admin-card input.admin-card__check:checked').forEach(function(cb){ ids.push(cb.value); });
+				return ids;
+			}
+			document.getElementById('applyBulk').addEventListener('click', function(){
+				var action = document.getElementById('bulkAction').value;
+				var ids = getSelectedClientIds();
+				if (!action) { alert('Bitte eine Aktion wählen.'); return; }
+				if (ids.length===0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
+				if (action==='mail') {
+					document.getElementById('mailModalBackdrop').style.display='flex';
+				} else if (action==='cancel') {
+					alert('Canceln (Mehrfach) – noch ohne Funktion. Ausgewählt: '+ids.join(', '));
+				}
+			});
+
+			// Modal-Buttons
+			document.getElementById('mailCancel').addEventListener('click', function(){
+				document.getElementById('mailModalBackdrop').style.display='none';
+			});
+			document.getElementById('mailSend').addEventListener('click', function(){
+				// Platzhalter – noch ohne Funktion
+				alert('Mail wird später versendet. Betreff: '+document.getElementById('mailSubject').value);
+				document.getElementById('mailModalBackdrop').style.display='none';
+			});
         })();
         </script>
 
