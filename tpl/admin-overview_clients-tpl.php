@@ -60,11 +60,13 @@ if($sortBy != 'alphabetical') {
 			.admin-card{margin:16px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);clear:both}
 			.admin-card__row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
 			.admin-card__left{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+			.admin-card__check{margin-right:6px;}
 			.admin-card__date{color:#0aa;font-weight:700}
 			.admin-card__name{font-size:18px;font-weight:700;margin:0}
 			.admin-card__actions a{display:inline-block;margin-left:6px;padding:6px 10px;border-radius:6px;text-decoration:none;font-size:13px}
 			.admin-card__actions{white-space:nowrap;margin-left:auto}
 			.admin-time{color:#000;font-weight:700;margin-right:10px}
+			.admin-time--low{background:#dc3545;color:#fff;padding:3px 6px;border-radius:4px}
 			/* Disabled Look */
 			.admin-card--disabled{background:#f7f7f7}
 			.admin-card--disabled .admin-card__name a{color:#666; text-decoration: line-through;}
@@ -83,6 +85,7 @@ if($sortBy != 'alphabetical') {
         <div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>" data-enabled="<?= $enabledVal ?>" data-idx="<?= $__k ?>">
 			<div class="admin-card__row">
 				<div class="admin-card__left">
+					<input type="checkbox" class="admin-card__check" name="select_client[]" value="<?=(int)$c['id']?>" aria-label="Select <?=htmlspecialchars($c['name'],ENT_QUOTES,'UTF-8')?>">
 					<div class="admin-card__date"><?=htmlspecialchars($range,ENT_QUOTES,'UTF-8')?></div>
 					<h3 class="admin-card__name"><a href="editclient.php?cid=<?=(int)$c['id']?>"><?=htmlspecialchars($c['name'],ENT_QUOTES,'UTF-8')?></a></h3>
 				</div>
@@ -93,7 +96,9 @@ if($sortBy != 'alphabetical') {
 					    $totalBookedTime = $c['total_booked_time'] ?? null; // Minuten
 					    if ($totalBookedTime !== null) {
 					        $timeFormatted = sprintf('%02d:%02d', floor($totalBookedTime/60), $totalBookedTime%60);
-					        echo '<span class="admin-time">'.htmlspecialchars($timeFormatted, ENT_QUOTES, 'UTF-8').'</span>';
+					        $isLow = ((int)$totalBookedTime) < 120; // < 02:00 Stunden
+					        $cls = $isLow ? 'admin-time admin-time--low' : 'admin-time';
+					        echo '<span class="'.$cls.'">'.htmlspecialchars($timeFormatted, ENT_QUOTES, 'UTF-8').'</span>';
 					    }
 					}
 					?>
