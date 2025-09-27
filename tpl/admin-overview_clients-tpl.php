@@ -28,6 +28,20 @@ if($sortBy != 'alphabetical') {
 			<li><a href="overview_groups.php">&raquo; Gruppenverwaltung</a></li>
 			<li><a href="overview_users.php">&raquo; Benutzerverwaltung</a></li>
 			<?php }?>
+			<li><a href="<?php echo $url; ?>"><?php echo $label; ?></a></li>
+		</ul>
+
+		<!-- Tag: stornovorlauf_admin_preview – Mehrfachaktion-Leiste (unter Menü) -->
+		<div id="bulk-actions" style="display:flex;align-items:center;gap:8px;margin:6px 0 10px 0;">
+			<label for="bulkAction" style="font-weight:600;">Mehrfachaktion</label>
+			<select id="bulkAction" style="padding:4px 6px;">
+				<option value="">– Bitte wählen –</option>
+				<option value="mail">Mail</option>
+				<option value="cancel">Canceln</option>
+			</select>
+
+			<button type="button" id="applyBulk" style="padding:6px 10px;">Anwenden</button>
+		</div>
 
 		<!-- Tag: stornovorlauf_admin_preview – Mail-Popup (ohne Funktion) -->
 		<div id="mailModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mailModalTitle">
@@ -71,17 +85,6 @@ if($sortBy != 'alphabetical') {
 
 		<!-- Tag: stornovorlauf_admin_preview – Layout-Fix: Kachel unter die Filter setzen -->
 		<div style="clear: both;"></div>
-
-		<!-- Tag: stornovorlauf_admin_preview – Mehrfachaktion-Leiste -->
-		<div id="bulk-actions" style="display:flex;align-items:center;gap:8px;margin:6px 0 10px 0;">
-			<label for="bulkAction" style="font-weight:600;">Mehrfachaktion</label>
-			<select id="bulkAction" style="padding:4px 6px;">
-				<option value="">– Bitte wählen –</option>
-				<option value="mail">Mail</option>
-				<option value="cancel">Canceln</option>
-			</select>
-			<button type="button" id="applyBulk" style="padding:6px 10px;">Anwenden</button>
-		</div>
 
 		        <!-- Tag: stornovorlauf_admin_preview – Kacheln mit Pagination (30 pro Seite) in aktueller Sortierung -->
         <?php if (!empty($clientList)) { 
