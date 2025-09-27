@@ -230,11 +230,28 @@ if($sortBy != 'alphabetical') {
 				document.getElementById('mailModalBackdrop').style.display='none';
 			});
 			document.getElementById('mailSend').addEventListener('click', function(){
-				// Platzhalter – noch ohne Funktion
-				alert('Mail wird später versendet. Betreff: '+document.getElementById('mailSubject').value);
-				document.getElementById('mailModalBackdrop').style.display='none';
-			});
-        })();
+                var subject = document.getElementById('mailSubject').value || 'Kommender Termin bitte bewerben';
+                var message = document.getElementById('mailMessage').value || '';
+                var ids = [];
+                document.querySelectorAll('.admin-card input.admin-card__check:checked').forEach(function(cb){ ids.push(cb.value); });
+                if (ids.length === 0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
+                fetch('ajax/bulk_mail_contacts.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ client_ids: ids, subject: subject, message: message })
+                }).then(function(r){ return r.json(); }).then(function(res){
+                    if (res && res.ok) {
+                        alert('Gesendet: '+res.sent+' | Übersprungen: '+(res.skipped?res.skipped.length:0));
+                    } else {
+                        alert('Fehler beim Senden: '+(res && res.error ? res.error : 'Unbekannt'));
+                    }
+                }).catch(function(err){
+                    alert('Netzwerk-/Serverfehler: '+err);
+                }).finally(function(){
+                    document.getElementById('mailModalBackdrop').style.display='none';
+                });
+            });
+();
         </script>
 
 		<a href="editclient.php">Kunde Hinzufügen</a>
