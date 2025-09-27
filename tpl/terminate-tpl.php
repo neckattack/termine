@@ -6,6 +6,8 @@
  * @param  $title  string  Title to be displayed
  * @param  $gText  string  (optional) Greeting text to be displayed
  */
+// Tag: stornovorlauf – language-switcher früh einbinden, bevor __t() verwendet wird
+include_once __DIR__ . '/../inc/language-switcher.php';
 ?>
 
 <!DOCTYPE html>
