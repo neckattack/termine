@@ -45,6 +45,11 @@ $lang = [
     'select_new_time' => 'Select new time:',
     'apply_button' => 'Apply',
     'back_to_overview' => 'Back to overview',
+    'your_booking' => 'Your booking:',
+    'old_appointment' => 'Old appointment',
+    'cancel_all_question' => 'Cancel all?',
+    'not_more_than_one' => 'You cannot select more than the allowed number.',
+    'select_one_timeslot' => 'You must select a time slot.',
 ];
 
 ?>

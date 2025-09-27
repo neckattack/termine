@@ -15,7 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Hier können Sie Ihre Buchung verwalten</title>
+    <!-- Tag: stornovorlauf – i18n Seitentitel -->
+    <title><?= __t('manage_your_booking') ?></title>
 
     <link href="/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -111,8 +112,8 @@
 
 	<div class="col-md-12">
       	<div style="padding-bottom: 30px;" class="text-center">
-      		<h2 class="text-info">Willkommen zurück <?= $reservations[0]['name'] ?>!</h2>
-          	<h5>Hier können Sie Ihre Buchung verwalten</h5>
+      		<h2 class="text-info"><?= __t('welcome_back') ?> <?= $reservations[0]['name'] ?>!</h2>
+          	<h5><?= __t('manage_your_booking') ?></h5>
 	    </div>
   	</div>
 
@@ -319,8 +320,8 @@
 		
 	<div class="col-md-12">
       	<div style="padding-top: 50px;" class="text-center">
-      		<h1 class="text-danger">Keine Buchungen für Sie</h1>
-          	<h3>Überprüfen Sie den Link</h3>
+      		<h1 class="text-danger"><?= __t('no_bookings_for_you') ?></h1>
+          	<h3><?= __t('check_the_link') ?></h3>
 	    </div>
   	</div>
 	
