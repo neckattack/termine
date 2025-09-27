@@ -88,8 +88,14 @@ if($sortBy != 'alphabetical') {
 
 		        <!-- Tag: stornovorlauf_admin_preview – Kacheln mit Pagination (30 pro Seite) in aktueller Sortierung -->
         <?php if (!empty($clientList)) { 
-            // Rendern aller Einträge; Anzeige/Limit via JS (Filter + Pagination)
-            $previewClients = $clientList;
+            // Serverseitige Filterung: Deaktivierte ausblenden, wenn showDisabled=0
+            $showDisabledParam = isset($_GET['showDisabled']) ? (string)$_GET['showDisabled'] : '0';
+            $previewClients = array_values(array_filter($clientList, function($row) use ($showDisabledParam){
+                $enabledRaw = isset($row['enabled']) ? (string)$row['enabled'] : '1';
+                $enabled = ($enabledRaw === '1');
+                if ($showDisabledParam === '1') return true; // alle
+                return $enabled; // nur aktive
+            }));
         ?>
 		<style>
 			.admin-card{margin:16px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);clear:both}
@@ -245,11 +251,17 @@ if($sortBy != 'alphabetical') {
                         var message = (q('mailMessage') && q('mailMessage').value) || '';
                         var ids = getSelectedClientIds();
                         if (ids.length === 0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
-                        fetch('ajax/bulk_mail_contacts.php', {
+                        fetch('<?= ABSURL.'web/admin/ajax/bulk_mail_contacts.php' ?>', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ client_ids: ids, subject: subject, message: message })
-                        }).then(function(r){ return r.json(); }).then(function(res){
+                        }).then(async function(r){
+                            if (!r.ok) {
+                                var t = await r.text();
+                                throw new Error('HTTP '+r.status+': '+t.substring(0,200));
+                            }
+                            return r.json();
+                        }).then(function(res){
                             if (res && res.ok) {
                                 alert('Gesendet: '+res.sent+' | Übersprungen: '+(res.skipped?res.skipped.length:0));
                             } else {
