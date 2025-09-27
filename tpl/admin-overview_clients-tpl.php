@@ -53,14 +53,10 @@ if($sortBy != 'alphabetical') {
 
 		<!-- Tag: stornovorlauf_admin_preview – Vorschau-Kacheln für die ersten 3 Einträge (aktuelle Sortierung) -->
 		<?php if (!empty($clientList)) { 
-		    // Filter: Deaktivierte ausblenden, wenn nicht explizit angefordert
-		    $showDisabledParam = isset($_GET['showDisabled']) ? (int)$_GET['showDisabled'] : 0; // 0: Nein, 1: Ja
-		    $filtered = array_values(array_filter($clientList, function($it) use ($showDisabledParam){
-		        if ($showDisabledParam === 1) return true; // alle
-		        return ((int)($it['enabled'] ?? 1)) === 1; // nur aktive
-		    }));
-		    $previewClients = array_slice($filtered, 0, 3);
-		?>
+            // Keine Server-Filterung -> identische Reihenfolge wie alte Liste beibehalten.
+            // Mehr Karten rendern (Top 20), JS zeigt dann nur die ersten 3 passenden gemäß Filter.
+            $previewClients = array_slice($clientList, 0, 20);
+        ?>
 		<style>
 			.admin-card{margin:16px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);clear:both}
 			.admin-card__row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
@@ -120,19 +116,23 @@ if($sortBy != 'alphabetical') {
 		<?php } ?>
 		<?php }?>
 
-        <!-- Tag: stornovorlauf_admin_preview – JS-Filter: Kacheln an "Deaktivierte Anzeigen" binden -->
+        <!-- Tag: stornovorlauf_admin_preview – JS-Filter: Kacheln an "Deaktivierte Anzeigen" binden und nur die ersten 3 passenden anzeigen -->
         <script>
         (function(){
             function applyCardFilters(){
                 var sel = document.getElementById('showDisabled');
                 if(!sel) return;
                 var showDisabled = sel.value; // "0" oder "1"
-                document.querySelectorAll('.admin-card').forEach(function(card){
+                var cards = Array.prototype.slice.call(document.querySelectorAll('.admin-card'));
+                var shown = 0;
+                cards.forEach(function(card){
                     var enabled = card.getAttribute('data-enabled') === '1';
-                    if (showDisabled === '0' && !enabled) {
-                        card.style.display = 'none';
-                    } else {
+                    var passes = (showDisabled === '1') ? true : enabled;
+                    if (passes && shown < 3) {
                         card.style.display = '';
+                        shown++;
+                    } else {
+                        card.style.display = 'none';
                     }
                 });
             }
