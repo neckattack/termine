@@ -1,3 +1,9 @@
 .ftpquota
 .idea
 config/config.php
+
+# macOS/Editor
+.DS_Store
+
+# Lokale Dokumente versehentlich einsortiert (z. B. Ghost Games / Need for Speed)
+web/Documents/
