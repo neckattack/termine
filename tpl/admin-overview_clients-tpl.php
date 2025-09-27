@@ -48,16 +48,19 @@ if($sortBy != 'alphabetical') {
 			</select>
 		</div>
 
+		<!-- Tag: stornovorlauf_admin_preview – Layout-Fix: Kachel unter die Filter setzen -->
+		<div style="clear: both;"></div>
+
 		<!-- Tag: stornovorlauf_admin_preview – Vorschau-Kachel für ersten Termin/Client -->
 		<?php if (!empty($clientList)) { $first=$clientList[0]; $range=formatStartEndDate($first['first'],$first['last']); ?>
 		<style>
-			.admin-card{margin:12px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}
-			.admin-card__row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+			.admin-card{margin:16px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);clear:both}
+			.admin-card__row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
 			.admin-card__left{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 			.admin-card__date{color:#0aa;font-weight:700}
 			.admin-card__name{font-size:18px;font-weight:700;margin:0}
 			.admin-card__actions a{display:inline-block;margin-left:6px;padding:6px 10px;border-radius:6px;text-decoration:none;font-size:13px}
-			.admin-card__actions{white-space:nowrap}
+			.admin-card__actions{white-space:nowrap;margin-left:auto}
 			.primary{background:#007bff;color:#fff}
 			.secondary{background:#f0f0f0;color:#333}
 			.danger{background:#dc3545;color:#fff}
