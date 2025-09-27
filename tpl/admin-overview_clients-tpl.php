@@ -70,6 +70,10 @@ if($sortBy != 'alphabetical') {
 			.admin-card__actions a{display:inline-block;margin-left:6px;padding:6px 10px;border-radius:6px;text-decoration:none;font-size:13px}
 			.admin-card__actions{white-space:nowrap;margin-left:auto}
 			.admin-time{color:#000;font-weight:700;margin-right:10px}
+			/* Disabled Look */
+			.admin-card--disabled{background:#f7f7f7}
+			.admin-card--disabled .admin-card__name a{color:#666; text-decoration: line-through;}
+			.admin-card--disabled .admin-card__date{color:#888}
 			.primary{background:#007bff;color:#fff}
 			.secondary{background:#f0f0f0;color:#333}
 			.danger{background:#dc3545;color:#fff}
@@ -80,8 +84,8 @@ if($sortBy != 'alphabetical') {
 			.card-menu__menu a{display:block;padding:8px 10px;text-decoration:none;color:#333}
 			.card-menu__menu a:hover{background:#f7f7f7}
 		</style>
-		<?php foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); ?>
-		<div class="admin-card">
+		<?php foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; ?>
+		<div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>">
 			<div class="admin-card__row">
 				<div class="admin-card__left">
 					<div class="admin-card__date"><?=htmlspecialchars($range,ENT_QUOTES,'UTF-8')?></div>
