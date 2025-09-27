@@ -251,21 +251,33 @@ if($sortBy != 'alphabetical') {
                         var message = (q('mailMessage') && q('mailMessage').value) || '';
                         var ids = getSelectedClientIds();
                         if (ids.length === 0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
-                        fetch('<?= ABSURL.'web/admin/ajax/bulk_mail_contacts.php' ?>', {
+                        var formData = new URLSearchParams();
+                        formData.set('action','sendbulkmail');
+                        ids.forEach(function(id){ formData.append('client_ids[]', id); });
+                        formData.set('subject', subject);
+                        formData.set('message', message);
+                        fetch('<?= ABSURL.'web/admin/ajax/editclient.php' ?>', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ client_ids: ids, subject: subject, message: message })
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                            body: formData.toString()
                         }).then(async function(r){
                             if (!r.ok) {
                                 var t = await r.text();
                                 throw new Error('HTTP '+r.status+': '+t.substring(0,200));
                             }
+                            var ct = r.headers.get('content-type') || '';
+                            if (ct.indexOf('application/json') === -1) {
+                                var t = await r.text();
+                                throw new Error('Unerwartetes Format: '+t.substring(0,200));
+                            }
                             return r.json();
                         }).then(function(res){
-                            if (res && res.ok) {
-                                alert('Gesendet: '+res.sent+' | Übersprungen: '+(res.skipped?res.skipped.length:0));
+                            if (res && (res.success === 1 || res.ok === true)) {
+                                var sent = res.sent || 0;
+                                var skippedLen = res.skipped ? res.skipped.length : 0;
+                                alert('Gesendet: '+sent+' | Übersprungen: '+skippedLen);
                             } else {
-                                alert('Fehler beim Senden: '+(res && res.error ? res.error : 'Unbekannt'));
+                                alert('Fehler beim Senden: '+(res && (res.error || res.message) ? (res.error || res.message) : 'Unbekannt'));
                             }
                         }).catch(function(err){
                             alert('Netzwerk-/Serverfehler: '+err);

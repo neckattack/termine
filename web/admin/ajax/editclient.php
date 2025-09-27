@@ -45,6 +45,52 @@ if (isset($_REQUEST["action"])) {
 		break;
 
 
+		// Send bulk mail to client contacts
+		case "sendbulkmail":
+			$clientIds = array();
+			if (isset($_POST['client_ids']) && is_array($_POST['client_ids'])) {
+				$clientIds = array_map('intval', $_POST['client_ids']);
+			} elseif (isset($_REQUEST['client_ids'])) {
+				$clientIds = array_map('intval', explode(',', $_REQUEST['client_ids']));
+			}
+			$clientIds = array_values(array_filter($clientIds, function($v){ return $v > 0; }));
+			$subject = isset($_REQUEST['subject']) ? trim($_REQUEST['subject']) : '';
+			$message = isset($_REQUEST['message']) ? (string)$_REQUEST['message'] : '';
+			if ($subject === '') { $subject = 'Kommender Termin bitte bewerben'; }
+
+			if (count($clientIds) === 0) {
+				$output['success'] = 0;
+				$output['message'] = 'No valid client ids';
+				break;
+			}
+
+			global $DB;
+			$idStr = implode("', '", $clientIds);
+			$sql = "SELECT c.id AS client_id, c.name AS client_name, a.email, a.first_name, a.last_name
+			        FROM clients c
+			        LEFT JOIN admin a ON a.id = c.contact_client_id
+			        WHERE c.id IN ('".$idStr."')";
+			$rows = $DB->PreparedSelect($sql, array(), false, false);
+
+			$sent = 0; $skipped = array();
+			if (is_array($rows)) {
+				foreach ($rows as $row) {
+					$to = trim(isset($row['email']) ? $row['email'] : '');
+					if ($to === '') { $skipped[] = (int)$row['client_id']; continue; }
+					$name = trim((isset($row['first_name'])?$row['first_name']:'') . ' ' . (isset($row['last_name'])?$row['last_name']:''));
+					if ($name === '') { $name = isset($row['client_name']) ? $row['client_name'] : 'Ansprechpartner'; }
+					$from = 'neckAttack Ltd. <termine@neckattack.net>';
+					$ok = sendMail($to, $name, $from, $subject, $message, null, false);
+					if ($ok) { $sent++; } else { $skipped[] = (int)$row['client_id']; }
+				}
+			}
+
+			$output['success'] = 1;
+			$output['sent'] = $sent;
+			$output['skipped'] = $skipped;
+		break;
+
+
 		// Get a new hash link
 		case "newHash":
 			$output["hash"] = generateHashLink();
