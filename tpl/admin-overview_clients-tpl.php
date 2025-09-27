@@ -116,7 +116,7 @@ if($sortBy != 'alphabetical') {
 			.card-menu__menu a{display:block;padding:8px 10px;text-decoration:none;color:#333}
 			.card-menu__menu a:hover{background:#f7f7f7}
 			/* Modal */
-			.modal-backdrop{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+			.modal-backdrop{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:9999}
 			.modal{background:#fff;border-radius:10px;max-width:520px;width:92%;box-shadow:0 10px 30px rgba(0,0,0,.2)}
 			.modal header{padding:12px 16px;border-bottom:1px solid #eee;font-weight:700}
 			.modal .body{padding:12px 16px}
@@ -124,7 +124,7 @@ if($sortBy != 'alphabetical') {
 			.modal input[type="text"], .modal textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
 			.modal textarea{min-height:120px}
 		</style>
-		        <?php $__k=0; foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; $enabledVal = $isDisabled ? 0 : 1; $__k++; ?>
+		        <?php $__k=0; foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $enabledRaw = isset($c['enabled']) ? (string)$c['enabled'] : '1'; $enabledVal = ($enabledRaw === '1') ? 1 : 0; $isDisabled = ($enabledVal === 0); $__k++; ?>
         <div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>" data-enabled="<?= $enabledVal ?>" data-idx="<?= $__k ?>">
 			<div class="admin-card__row">
 				<div class="admin-card__left">
@@ -174,90 +174,101 @@ if($sortBy != 'alphabetical') {
         <!-- Tag: stornovorlauf_admin_preview – JS-Filter/Pagination + Mehrfachaktion/Modal -->
         <script>
         (function(){
-            var state = { page: 1, pageSize: 30 };
-            function getFilters(){
-                var sel = document.getElementById('showDisabled');
-                var v = sel ? (sel.value+'' ) : '0';
-                if (v !== '0' && v !== '1') { v = (v.toLowerCase().indexOf('ja')===0 ? '1' : '0'); }
-                return { showDisabled: v };
-            }
-            function applyCardFilters(){
-                var filters = getFilters();
-                var cards = Array.prototype.slice.call(document.querySelectorAll('.admin-card'));
-                // Sort by data-idx to preserve server order
-                cards.sort(function(a,b){return (parseInt(a.getAttribute('data-idx'))||0)-(parseInt(b.getAttribute('data-idx'))||0)});
-                var filtered = cards.filter(function(card){
-                    var enabledAttr = card.getAttribute('data-enabled');
-                    var enabled = (enabledAttr !== null) ? (enabledAttr === '1') : !card.classList.contains('admin-card--disabled');
-                    return (filters.showDisabled === '1') ? true : enabled;
-                });
-                var total = filtered.length;
-                var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
-                if (state.page > totalPages) state.page = totalPages;
-                var start = (state.page - 1) * state.pageSize;
-                var end = start + state.pageSize;
-                var visibleSet = new Set(filtered.slice(start, end));
-                cards.forEach(function(card){ card.style.display = visibleSet.has(card) ? '' : 'none'; });
-                // Update pager info
-                var info = document.getElementById('pager-info');
-                if (info) info.textContent = 'Seite ' + state.page + ' / ' + totalPages + ' (' + total + ' Einträge)';
-                var prev = document.getElementById('pager-prev');
-                var next = document.getElementById('pager-next');
-                if (prev) prev.disabled = (state.page <= 1);
-                if (next) next.disabled = (state.page >= totalPages);
-            }
-            document.addEventListener('DOMContentLoaded', applyCardFilters);
-            window.addEventListener('load', applyCardFilters);
-            var sel = document.getElementById('showDisabled');
-            if (sel) sel.addEventListener('change', function(){ state.page = 1; applyCardFilters(); });
-            var prev = document.getElementById('pager-prev');
-            var next = document.getElementById('pager-next');
-            if (prev) prev.addEventListener('click', function(){ if (state.page>1){ state.page--; applyCardFilters(); }});
-            if (next) next.addEventListener('click', function(){ state.page++; applyCardFilters(); });
+            try {
+                var state = { page: 1, pageSize: 30 };
+                function q(id){ return document.getElementById(id); }
+                function getFilters(){
+                    var sel = q('showDisabled');
+                    if (!sel) return { showDisabled: '0' };
+                    var v = (sel.value+'' );
+                    if (v !== '0' && v !== '1') { v = (v.toLowerCase().indexOf('ja')===0 ? '1' : '0'); }
+                    return { showDisabled: v };
+                }
+                function applyCardFilters(){
+                    var filters = getFilters();
+                    var cards = Array.prototype.slice.call(document.querySelectorAll('.admin-card'));
+                    cards.sort(function(a,b){return (parseInt(a.getAttribute('data-idx'))||0)-(parseInt(b.getAttribute('data-idx'))||0)});
+                    var filtered = cards.filter(function(card){
+                        var enabledAttr = card.getAttribute('data-enabled');
+                        var enabled = (enabledAttr !== null) ? (enabledAttr === '1') : !card.classList.contains('admin-card--disabled');
+                        return (filters.showDisabled === '1') ? true : enabled;
+                    });
+                    var total = filtered.length;
+                    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+                    if (state.page > totalPages) state.page = totalPages;
+                    var start = (state.page - 1) * state.pageSize;
+                    var end = start + state.pageSize;
+                    var visibleSet = new Set(filtered.slice(start, end));
+                    cards.forEach(function(card){ card.style.display = visibleSet.has(card) ? '' : 'none'; });
+                    var info = q('pager-info');
+                    if (info) info.textContent = 'Seite ' + state.page + ' / ' + totalPages + ' (' + total + ' Einträge)';
+                    var prev = q('pager-prev'); var next = q('pager-next');
+                    if (prev) prev.disabled = (state.page <= 1);
+                    if (next) next.disabled = (state.page >= totalPages);
+                }
+                document.addEventListener('DOMContentLoaded', applyCardFilters);
+                window.addEventListener('load', applyCardFilters);
+                var sel = q('showDisabled');
+                if (sel) sel.addEventListener('change', function(){ state.page = 1; applyCardFilters(); });
+                var selGroup = q('showGroup');
+                if (selGroup) selGroup.addEventListener('change', function(){ state.page = 1; applyCardFilters(); });
+                var prev = q('pager-prev'); var next = q('pager-next');
+                if (prev) prev.addEventListener('click', function(){ if (state.page>1){ state.page--; applyCardFilters(); }});
+                if (next) next.addEventListener('click', function(){ state.page++; applyCardFilters(); });
 
-			// Mehrfachaktion anwenden
-			function getSelectedClientIds(){
-				var ids=[]; document.querySelectorAll('.admin-card input.admin-card__check:checked').forEach(function(cb){ ids.push(cb.value); });
-				return ids;
-			}
-			document.getElementById('applyBulk').addEventListener('click', function(){
-				var action = document.getElementById('bulkAction').value;
-				var ids = getSelectedClientIds();
-				if (!action) { alert('Bitte eine Aktion wählen.'); return; }
-				if (ids.length===0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
-				if (action==='mail') {
-					document.getElementById('mailModalBackdrop').style.display='flex';
-				} else if (action==='cancel') {
-					alert('Canceln (Mehrfach) – noch ohne Funktion. Ausgewählt: '+ids.join(', '));
-				}
-			});
-
-			// Modal-Buttons
-			document.getElementById('mailCancel').addEventListener('click', function(){
-				document.getElementById('mailModalBackdrop').style.display='none';
-			});
-			document.getElementById('mailSend').addEventListener('click', function(){
-                var subject = document.getElementById('mailSubject').value || 'Kommender Termin bitte bewerben';
-                var message = document.getElementById('mailMessage').value || '';
-                var ids = [];
-                document.querySelectorAll('.admin-card input.admin-card__check:checked').forEach(function(cb){ ids.push(cb.value); });
-                if (ids.length === 0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
-                fetch('ajax/bulk_mail_contacts.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ client_ids: ids, subject: subject, message: message })
-                }).then(function(r){ return r.json(); }).then(function(res){
-                    if (res && res.ok) {
-                        alert('Gesendet: '+res.sent+' | Übersprungen: '+(res.skipped?res.skipped.length:0));
-                    } else {
-                        alert('Fehler beim Senden: '+(res && res.error ? res.error : 'Unbekannt'));
-                    }
-                }).catch(function(err){
-                    alert('Netzwerk-/Serverfehler: '+err);
-                }).finally(function(){
-                    document.getElementById('mailModalBackdrop').style.display='none';
+                function getSelectedClientIds(){
+                    var ids=[]; document.querySelectorAll('.admin-card input.admin-card__check:checked').forEach(function(cb){ ids.push(cb.value); });
+                    return ids;
+                }
+                var applyBtn = q('applyBulk');
+                if (applyBtn) applyBtn.addEventListener('click', function(){
+                    try {
+                        var actionSel = q('bulkAction');
+                        var action = actionSel ? actionSel.value : '';
+                        var ids = getSelectedClientIds();
+                        if (!action) { alert('Bitte eine Aktion wählen.'); return; }
+                        if (ids.length===0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
+                        if (action==='mail') {
+                            var mb = q('mailModalBackdrop'); if (mb) mb.style.display='flex';
+                        } else if (action==='cancel') {
+                            alert('Canceln (Mehrfach) – noch ohne Funktion. Ausgewählt: '+ids.join(', '));
+                        }
+                    } catch(e){ alert('Fehler (Bulk): '+e.message); }
                 });
-            });
+
+                var btnCancel = q('mailCancel');
+                if (btnCancel) btnCancel.addEventListener('click', function(){ var mb = q('mailModalBackdrop'); if (mb) mb.style.display='none'; });
+                var btnSend = q('mailSend');
+                if (btnSend) btnSend.addEventListener('click', function(){
+                    try {
+                        var subject = (q('mailSubject') && q('mailSubject').value) || 'Kommender Termin bitte bewerben';
+                        var message = (q('mailMessage') && q('mailMessage').value) || '';
+                        var ids = getSelectedClientIds();
+                        if (ids.length === 0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
+                        fetch('ajax/bulk_mail_contacts.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ client_ids: ids, subject: subject, message: message })
+                        }).then(function(r){ return r.json(); }).then(function(res){
+                            if (res && res.ok) {
+                                alert('Gesendet: '+res.sent+' | Übersprungen: '+(res.skipped?res.skipped.length:0));
+                            } else {
+                                alert('Fehler beim Senden: '+(res && res.error ? res.error : 'Unbekannt'));
+                            }
+                        }).catch(function(err){
+                            alert('Netzwerk-/Serverfehler: '+err);
+                        }).finally(function(){
+                            var mb = q('mailModalBackdrop'); if (mb) mb.style.display='none';
+                        });
+                    } catch(e){ alert('Fehler (Mail senden): '+e.message); }
+                });
+
+                // erste Anwendung forcieren
+                applyCardFilters();
+            } catch(err){
+                alert('Initialisierungsfehler: '+err.message);
+            }
+        })();
         </script>
 
 		<a href="editclient.php">Kunde Hinzufügen</a>
