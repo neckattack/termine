@@ -48,6 +48,33 @@ if($sortBy != 'alphabetical') {
 			</select>
 		</div>
 
+		<!-- Tag: stornovorlauf_admin_preview – Vorschau-Kachel für ersten Termin/Client -->
+		<?php if (!empty($clientList)) { $first=$clientList[0]; $range=formatStartEndDate($first['first'],$first['last']); ?>
+		<style>
+			.admin-card{margin:12px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+			.admin-card h3{margin:4px 0 6px;font-size:18px}
+			.admin-card .meta{color:#0aa;font-weight:600}
+			.admin-card .actions a{display:inline-block;margin-right:6px;padding:6px 10px;border-radius:6px;text-decoration:none;font-size:13px}
+			.admin-card .primary{background:#007bff;color:#fff}
+			.admin-card .secondary{background:#f0f0f0;color:#333}
+			.admin-card .danger{background:#dc3545;color:#fff}
+		</style>
+		<div class="admin-card">
+			<div class="meta"><?=htmlspecialchars($range,ENT_QUOTES,'UTF-8')?></div>
+			<h3><a href="editclient.php?cid=<?=(int)$first['id']?>"><?=htmlspecialchars($first['name'],ENT_QUOTES,'UTF-8')?></a></h3>
+			<div class="actions">
+				<a class="primary" href="<?=ABSURL.'web/admin/editslots.php?id='.(int)$first['date_id']?>">Slots bearbeiten</a>
+				<a class="secondary" href="export.php?cid=<?=(int)$first['id']?>">Export CSV</a>
+				<a class="secondary" href="editclient.php?cid=<?=(int)$first['id']?>">Ändern</a>
+				<?php if((int)$first['enabled']===1){?>
+					<a class="danger" href="editclient.php?action=disableclient&id=<?=(int)$first['id']?>">Deaktivieren</a>
+				<?php } else {?>
+					<a class="primary" href="editclient.php?action=enableclient&id=<?=(int)$first['id']?>">Aktivieren</a>
+				<?php }?>
+			</div>
+		</div>
+		<?php }?>
+
 		<a href="editclient.php">Kunde Hinzufügen</a>
 
 		<ul id="clientlist" class="general-list">
