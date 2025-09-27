@@ -147,7 +147,7 @@
 
             <div class="row">
                 <div class="col-md-12 text-info">
-					<strong>Alter Termin: <?php echo date('d.m.Y', strtotime($selected_reservation[0]['date'])) . ': (' . $selected_reservation[0]['time_start'] . '-' . $selected_reservation[0]['time_end'] . ')' ?></strong>
+					<strong><?= __t('old_appointment') ?>: <?php echo date('d.m.Y', strtotime($selected_reservation[0]['date'])) . ': (' . $selected_reservation[0]['time_start'] . '-' . $selected_reservation[0]['time_end'] . ')' ?></strong>
 				</div>
 			</div>
             <br>
@@ -158,13 +158,14 @@
 		<div class="col-md-12">
 			<form method="post" action="<?=$_SERVER["REQUEST_URI"]?>" class="my-form">
 			
-			<p id="toolate" <?=($toolate === true) ? 'style="display: block;"': ''?>>Leider sind einige Ihrer gewünschten Termine inzwischen bereits vergeben. Bitte überprüfen Sie Ihre Auswahl.</p>
-			<p id="error" <?=($error === true) ? 'style="display: block;"': ''?>>Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut!</p>
-			<p id="success" <?=($success === true) ? 'style="display: block;"': ''?>>Sie haben sich erfolgreich für die markierten Termine eingetragen.</p>
+			<!-- Tag: stornovorlauf – i18n Meldungen -->
+            <p id="toolate" <?=($toolate === true) ? 'style="display: block;"': ''?>><?= __t('toolate_message') ?></p>
+            <p id="error" <?=($error === true) ? 'style="display: block;"': ''?>><?= __t('error_message') ?></p>
+            <p id="success" <?=($success === true) ? 'style="display: block;"': ''?>><?= __t('success_message') ?></p>
 
           	<div class="col-md-4">
 				<div class="fLeft dates">
-					<h3>Datum:</h3>
+					<h3><?= __t('date_text') ?></h3>
 					<?php if ($result !== false) {
 						foreach ($result["dates"] AS $key => $date) {
 					?>
@@ -227,13 +228,13 @@
          	<div class="col-md-4">
 
                 <div class="fRight registerMe">
-					<h3>Ihre Buchung:</h3>
+					<h3><?= __t('your_booking') ?></h3>
 
 						<div class="form-group text-left times_info_block">
-							<div class="text-warning" style="display: none;">Alles abbrechen?</div>
+							<div class="text-warning" style="display: none;"><?= __t('cancel_all_question') ?></div>
 							<div class="text-info"></div>
-							<div class="text-danger not-more-than-one" style="display: none;">Sie können nicht mehr als <?= count($reservations_times) ?> auswählen.</div>
-							<div class="text-danger select-one-timeslot" style="display: none;">Sie müssen ein Zeitfenster auswählen.</div>
+							<div class="text-danger not-more-than-one" style="display: none;"><?= __t('not_more_than_one') ?></div>
+							<div class="text-danger select-one-timeslot" style="display: none;"><?= __t('select_one_timeslot') ?></div>
 							
 						</div>
 

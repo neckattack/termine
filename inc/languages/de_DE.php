@@ -45,6 +45,11 @@ $lang = [
     'select_new_time' => 'Neuen Termin auswählen:',
     'apply_button' => 'Anwenden',
     'back_to_overview' => 'Zurück zur Übersicht',
+    'old_appointment' => 'Alter Termin',
+    'your_booking' => 'Ihre Buchung:',
+    'cancel_all_question' => 'Alles abbrechen?',
+    'not_more_than_one' => 'Sie können nicht mehr als die erlaubte Anzahl auswählen.',
+    'select_one_timeslot' => 'Sie müssen ein Zeitfenster auswählen.',
 ];
 
 ?>

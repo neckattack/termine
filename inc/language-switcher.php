@@ -1,7 +1,9 @@
 <?php
 
-// Always set German (de_DE) as default on page load
-$_SESSION['lang'] = 'de_DE';
+// Session-Default nur setzen, wenn noch keine Sprache gesetzt ist
+if (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'de_DE';
+}
 
 // Language switcher logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lang'])) {
