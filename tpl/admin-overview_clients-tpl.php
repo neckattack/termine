@@ -51,11 +51,10 @@ if($sortBy != 'alphabetical') {
 		<!-- Tag: stornovorlauf_admin_preview – Layout-Fix: Kachel unter die Filter setzen -->
 		<div style="clear: both;"></div>
 
-		<!-- Tag: stornovorlauf_admin_preview – Vorschau-Kacheln für die ersten 3 Einträge (aktuelle Sortierung) -->
-		<?php if (!empty($clientList)) { 
-            // Keine Server-Filterung -> identische Reihenfolge wie alte Liste beibehalten.
-            // Mehr Karten rendern (Top 20), JS zeigt dann nur die ersten 3 passenden gemäß Filter.
-            $previewClients = array_slice($clientList, 0, 20);
+		        <!-- Tag: stornovorlauf_admin_preview – Kacheln mit Pagination (30 pro Seite) in aktueller Sortierung -->
+        <?php if (!empty($clientList)) { 
+            // Rendern aller Einträge; Anzeige/Limit via JS (Filter + Pagination)
+            $previewClients = $clientList;
         ?>
 		<style>
 			.admin-card{margin:16px 0 20px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);clear:both}
@@ -80,8 +79,8 @@ if($sortBy != 'alphabetical') {
 			.card-menu__menu a{display:block;padding:8px 10px;text-decoration:none;color:#333}
 			.card-menu__menu a:hover{background:#f7f7f7}
 		</style>
-		<?php foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; $enabledVal = $isDisabled ? 0 : 1; ?>
-		<div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>" data-enabled="<?= $enabledVal ?>">
+		        <?php $__k=0; foreach ($previewClients as $c) { $range = formatStartEndDate($c['first'],$c['last']); $isDisabled = (int)($c['enabled'] ?? 1) !== 1; $enabledVal = $isDisabled ? 0 : 1; $__k++; ?>
+        <div class="admin-card<?= $isDisabled ? ' admin-card--disabled' : '' ?>" data-enabled="<?= $enabledVal ?>" data-idx="<?= $__k ?>">
 			<div class="admin-card__row">
 				<div class="admin-card__left">
 					<div class="admin-card__date"><?=htmlspecialchars($range,ENT_QUOTES,'UTF-8')?></div>
@@ -116,29 +115,53 @@ if($sortBy != 'alphabetical') {
 		<?php } ?>
 		<?php }?>
 
-        <!-- Tag: stornovorlauf_admin_preview – JS-Filter: Kacheln an "Deaktivierte Anzeigen" binden und nur die ersten 3 passenden anzeigen -->
+        <!-- Tag: stornovorlauf_admin_preview – Pagination-UI -->
+        <div id="admin-card-pager" style="display:flex;align-items:center;gap:8px;margin:6px 0 16px 0;">
+            <strong style="margin-right:6px;">Pagination</strong>
+            <button type="button" id="pager-prev" style="padding:4px 8px;">«</button>
+            <span id="pager-info" style="min-width:120px;display:inline-block;">–</span>
+            <button type="button" id="pager-next" style="padding:4px 8px;">»</button>
+        </div>
+
+        <!-- Tag: stornovorlauf_admin_preview – JS-Filter/Pagination: Kacheln an "Deaktivierte Anzeigen" binden und 30 pro Seite anzeigen -->
         <script>
         (function(){
-            function applyCardFilters(){
+            var state = { page: 1, pageSize: 30 };
+            function getFilters(){
                 var sel = document.getElementById('showDisabled');
-                if(!sel) return;
-                var showDisabled = sel.value; // "0" oder "1"
+                return { showDisabled: sel ? sel.value : '0' };
+            }
+            function applyCardFilters(){
+                var filters = getFilters();
                 var cards = Array.prototype.slice.call(document.querySelectorAll('.admin-card'));
-                var shown = 0;
-                cards.forEach(function(card){
+                // Sort by data-idx to preserve server order
+                cards.sort(function(a,b){return (parseInt(a.getAttribute('data-idx'))||0)-(parseInt(b.getAttribute('data-idx'))||0)});
+                var filtered = cards.filter(function(card){
                     var enabled = card.getAttribute('data-enabled') === '1';
-                    var passes = (showDisabled === '1') ? true : enabled;
-                    if (passes && shown < 3) {
-                        card.style.display = '';
-                        shown++;
-                    } else {
-                        card.style.display = 'none';
-                    }
+                    return (filters.showDisabled === '1') ? true : enabled;
                 });
+                var total = filtered.length;
+                var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+                if (state.page > totalPages) state.page = totalPages;
+                var start = (state.page - 1) * state.pageSize;
+                var end = start + state.pageSize;
+                var visibleSet = new Set(filtered.slice(start, end));
+                cards.forEach(function(card){ card.style.display = visibleSet.has(card) ? '' : 'none'; });
+                // Update pager info
+                var info = document.getElementById('pager-info');
+                if (info) info.textContent = 'Seite ' + state.page + ' / ' + totalPages + ' (' + total + ' Einträge)';
+                var prev = document.getElementById('pager-prev');
+                var next = document.getElementById('pager-next');
+                if (prev) prev.disabled = (state.page <= 1);
+                if (next) next.disabled = (state.page >= totalPages);
             }
             document.addEventListener('DOMContentLoaded', applyCardFilters);
             var sel = document.getElementById('showDisabled');
-            if (sel) sel.addEventListener('change', applyCardFilters);
+            if (sel) sel.addEventListener('change', function(){ state.page = 1; applyCardFilters(); });
+            var prev = document.getElementById('pager-prev');
+            var next = document.getElementById('pager-next');
+            if (prev) prev.addEventListener('click', function(){ if (state.page>1){ state.page--; applyCardFilters(); }});
+            if (next) next.addEventListener('click', function(){ state.page++; applyCardFilters(); });
         })();
         </script>
 
