@@ -251,7 +251,6 @@ if($sortBy != 'alphabetical') {
                     document.getElementById('mailModalBackdrop').style.display='none';
                 });
             });
-();
         </script>
 
 		<a href="editclient.php">Kunde Hinzufügen</a>
