@@ -89,9 +89,14 @@
   <body id="page-top">
 
     <!-- Header -->
+    <?php // Tag: stornovorlauf – Language Switcher ergänzen (wie in bookings-tpl.php) ?>
+    <?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
     <header class="masthead d-flex">
       <div class="container text-center my-auto">
-        <div><img class="logo" alt="Neckattack logo" src="/bootstrap/img/logo.png"></div>
+        <div class="header-main d-flex justify-content-center align-items-center">
+            <div><img class="logo" alt="Neckattack logo" src="/bootstrap/img/logo.png"></div>
+            <?php language_switcher(); ?>
+        </div>
       </div>
       <div class="overlay"></div>
     </header>
@@ -131,11 +136,11 @@
     <!-- Content -->
     <section class="container text-center content-block">
 
-            <!-- Tag: stornovorlauf – Überschrift und Untertitel für bessere UX -->
+            <!-- Tag: stornovorlauf – Überschrift und Untertitel für bessere UX (i18n) -->
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="text-center">Terminverschiebung</h2>
-                    <div class="text-muted" style="margin-top:4px;">Bitte einen neuen Termin aussuchen</div>
+                    <h2 class="text-center"><?= __t('title_move') ?></h2>
+                    <div class="text-muted" style="margin-top:4px;"><?= __t('subtitle_pick_new') ?></div>
                 </div>
             </div>
             <br>
@@ -179,7 +184,7 @@
 				<!-- Tag: stornovorlauf – Infozeile ausgeblendet (Neues Datum wählen) -->
                 <h5 class='select-a-date' style="display:none;"></h5>
 				<div class="fLeft times tni my-times" style="<?= ((int)$date_id>0)?'':'display:none;' ?>">
-					<h3>Neuen Termin auswählen:</h3>
+					<h3><?= __t('select_new_time') ?></h3>
 					<?php if ($result !== false) {
 						foreach ($result["dates"] AS $key => $date) {
 					?>
@@ -234,12 +239,12 @@
 
 						                        <div class="form-group text-right">
                             <!-- Tag: stornovorlauf – nativer Submit für zuverlässige Übermittlung -->
-                            <button class="btn btn-warning submit-form" type="submit">Anwenden</button>
+                            <button class="btn btn-warning submit-form" type="submit"><?= __t('apply_button') ?></button>
                         </div>
 
                         <!-- Tag: stornovorlauf – Zurück zur Übersicht unter Anwenden platzieren -->
                         <div class="form-group text-right" style="margin-top: 12px;">
-                            <a href="<?php echo ABSURL."web/bookings.php?e=".$_REQUEST['e']; ?>" class="btn btn-danger">Zurück zur Übersicht</a>
+                            <a href="<?php echo ABSURL."web/bookings.php?e=".$_REQUEST['e']; ?>" class="btn btn-danger"><?= __t('back_to_overview') ?></a>
                         </div>
 
 						<input type="hidden" name="h" value="<?=$client["hashlink"]?>" />

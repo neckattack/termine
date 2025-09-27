@@ -39,6 +39,12 @@ $lang = [
     'confirm_delete' => 'Sind Sie sicher, dass Sie diese Reservierung stornieren möchten?',
     'delete_success' => 'Reservierung erfolgreich gelöscht',
     'delete_error'   => 'Die Reservierung konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
+    // Tag: stornovorlauf – i18n für Verschieben-Dialog
+    'title_move' => 'Terminverschiebung',
+    'subtitle_pick_new' => 'Bitte einen neuen Termin aussuchen',
+    'select_new_time' => 'Neuen Termin auswählen:',
+    'apply_button' => 'Anwenden',
+    'back_to_overview' => 'Zurück zur Übersicht',
 ];
 
 ?>

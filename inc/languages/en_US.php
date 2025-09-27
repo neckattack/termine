@@ -39,6 +39,12 @@ $lang = [
     'confirm_delete' => 'Are you sure you want to cancel this reservation?',
     'delete_success' => 'Reservation successfully deleted',
     'delete_error'   => 'The reservation could not be deleted. Please try again.',
+    // Tag: stornovorlauf – i18n for move dialog
+    'title_move' => 'Reschedule Appointment',
+    'subtitle_pick_new' => 'Please choose a new appointment',
+    'select_new_time' => 'Select new time:',
+    'apply_button' => 'Apply',
+    'back_to_overview' => 'Back to overview',
 ];
 
 ?>
