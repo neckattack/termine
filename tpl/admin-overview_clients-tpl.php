@@ -174,7 +174,9 @@ if($sortBy != 'alphabetical') {
             var state = { page: 1, pageSize: 30 };
             function getFilters(){
                 var sel = document.getElementById('showDisabled');
-                return { showDisabled: sel ? sel.value : '0' };
+                var v = sel ? (sel.value+'' ) : '0';
+                if (v !== '0' && v !== '1') { v = (v.toLowerCase().indexOf('ja')===0 ? '1' : '0'); }
+                return { showDisabled: v };
             }
             function applyCardFilters(){
                 var filters = getFilters();
@@ -182,7 +184,8 @@ if($sortBy != 'alphabetical') {
                 // Sort by data-idx to preserve server order
                 cards.sort(function(a,b){return (parseInt(a.getAttribute('data-idx'))||0)-(parseInt(b.getAttribute('data-idx'))||0)});
                 var filtered = cards.filter(function(card){
-                    var enabled = card.getAttribute('data-enabled') === '1';
+                    var enabledAttr = card.getAttribute('data-enabled');
+                    var enabled = (enabledAttr !== null) ? (enabledAttr === '1') : !card.classList.contains('admin-card--disabled');
                     return (filters.showDisabled === '1') ? true : enabled;
                 });
                 var total = filtered.length;
@@ -201,6 +204,7 @@ if($sortBy != 'alphabetical') {
                 if (next) next.disabled = (state.page >= totalPages);
             }
             document.addEventListener('DOMContentLoaded', applyCardFilters);
+            window.addEventListener('load', applyCardFilters);
             var sel = document.getElementById('showDisabled');
             if (sel) sel.addEventListener('change', function(){ state.page = 1; applyCardFilters(); });
             var prev = document.getElementById('pager-prev');
