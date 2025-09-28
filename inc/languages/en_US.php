@@ -50,6 +50,11 @@ $lang = [
     'cancel_all_question' => 'Cancel all?',
     'not_more_than_one' => 'You cannot select more than the allowed number.',
     'select_one_timeslot' => 'You must select a time slot.',
+    // Duplicate booking
+    'duplicate_booking_per_date'   => 'This is a second booking on this date. Unfortunately, this is not permitted.',
+    'duplicate_booking_per_client' => 'This is a second booking in this massage series. Unfortunately, this is not permitted.',
+    'duplicate_booking_in_request_per_client' => 'You selected multiple appointments. Only one booking per person is allowed in this massage series.',
+    'duplicate_booking_in_request_per_date'   => 'You selected multiple times on the same date. Only one booking per person is allowed per date.',
 ];
 
 ?>

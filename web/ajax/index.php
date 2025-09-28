@@ -5,6 +5,7 @@ $AJAX = true;
 $PAGE = basename(__FILE__);
 require "_root_.php";					// Defines the ROOT constant
 require ROOT."/inc/_include.php";
+require ROOT."/inc/language-switcher.php"; // i18n für AJAX-Responses
 
 
 $R      = $_REQUEST;
@@ -64,7 +65,7 @@ switch ($R["action"]) {
 					$output["success"] = 0;
 					$output["error"] = "duplicate_booking_in_request";
 					$output["mode"] = $mode;
-					$output["errors"] = 'Sie haben mehrere Termine ausgewählt. In dieser Massagereihe ist nur eine Buchung pro Person erlaubt.';
+					$output["errors"] = __t('duplicate_booking_in_request_per_client');
 					break;
 				}
 				if ($mode === 'per_date') {
@@ -73,7 +74,7 @@ switch ($R["action"]) {
 							$output["success"] = 0;
 							$output["error"] = "duplicate_booking_in_request";
 							$output["mode"] = $mode;
-							$output["errors"] = 'Sie haben an einem Termin mehrere Zeiten ausgewählt. Pro Termin ist nur eine Buchung pro Person erlaubt.';
+							$output["errors"] = __t('duplicate_booking_in_request_per_date');
 							break 2;
 						}
 					}
@@ -97,8 +98,8 @@ switch ($R["action"]) {
 					$output["error"] = "duplicate_booking";
 					$output["mode"] = $mode;
 					$output["errors"] = ($mode === 'per_date')
-						? 'Dies ist eine zweite Buchung an diesem Termin. Leider ist dies nicht erlaubt.'
-						: 'Dies ist eine zweite Buchung in dieser Massagereihe. Leider ist dies nicht erlaubt.';
+						? __t('duplicate_booking_per_date')
+						: __t('duplicate_booking_per_client');
 					break;
 				}
 			}
