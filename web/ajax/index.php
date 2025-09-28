@@ -43,13 +43,42 @@ switch ($R["action"]) {
 		if ($checkAvail["allAvailable"] === true) {
 			$mode = isset($client['avoid_double_bookings_mode']) ? $client['avoid_double_bookings_mode'] : 'none';
 			if ($mode !== 'none' && is_array($times) && count($times) > 0) {
-				// Ermittele betroffene Daten (YYYY-mm-dd) der gewählten time-IDs
+				// Ermittele betroffene Daten (YYYY-mm-dd) der gewählten time-IDs inkl. Mapping t.id -> d.date
 				$idStr = implode("', '", array_map('intval', $times));
-				$dateRows = $DB->PreparedSelect(
-					"SELECT DISTINCT d.date FROM times t JOIN dates d ON t.date_id = d.id WHERE t.id IN ('".$idStr."') AND d.client_id = :cid",
+				$rows = $DB->PreparedSelect(
+					"SELECT t.id AS time_id, d.date FROM times t JOIN dates d ON t.date_id = d.id WHERE t.id IN ('".$idStr."') AND d.client_id = :cid",
 					array('cid'=>$clientID), false, false
 				);
-				$dates = array(); if (is_array($dateRows)) { foreach ($dateRows as $r) { $dates[] = $r['date']; } }
+				$dates = array();
+				$timesByDate = array();
+				if (is_array($rows)) {
+					foreach ($rows as $r) {
+						$dates[] = $r['date'];
+						$timesByDate[$r['date']] = isset($timesByDate[$r['date']]) ? $timesByDate[$r['date']] : array();
+						$timesByDate[$r['date']][] = (int)$r['time_id'];
+					}
+				}
+
+				// 1) In-Request-Validierung: Doppelte Auswahl gemäß Modus verhindern
+				if ($mode === 'per_client' && count($times) > 1) {
+					$output["success"] = 0;
+					$output["error"] = "duplicate_booking_in_request";
+					$output["mode"] = $mode;
+					$output["errors"] = 'Sie haben mehrere Termine ausgewählt. In dieser Massagereihe ist nur eine Buchung pro Person erlaubt.';
+					break;
+				}
+				if ($mode === 'per_date') {
+					foreach ($timesByDate as $d => $tids) {
+						if (count($tids) > 1) {
+							$output["success"] = 0;
+							$output["error"] = "duplicate_booking_in_request";
+							$output["mode"] = $mode;
+							$output["errors"] = 'Sie haben an einem Termin mehrere Zeiten ausgewählt. Pro Termin ist nur eine Buchung pro Person erlaubt.';
+							break 2;
+						}
+					}
+				}
+
 				$dupFound = false;
 				if ($mode === 'per_date' && count($dates) > 0) {
 					$datesStr = "'".implode("','", $dates)."'";
