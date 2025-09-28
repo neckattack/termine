@@ -17,7 +17,7 @@ function getClientInfos($id) {
 	$id = (int)$id;
 
 	    // Tag: stornovorlauf – booking_deadline_hours für Fristlogik ins Frontend laden
-    $sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, `c`.`contact_masseur_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours` ";
+    $sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, `c`.`contact_masseur_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours`, `c`.`avoid_double_bookings_mode` ";
 	$sql .= "FROM `clients` AS `c` ";
 	$sql .= "LEFT JOIN `admin` AS `a` ON (`a`.`id` = `c`.`contact_masseur_id`) ";
 	$sql .= "WHERE `c`.`id` = :id ";
