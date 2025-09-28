@@ -54,12 +54,12 @@ switch ($R["action"]) {
 				if ($mode === 'per_date' && count($dates) > 0) {
 					$datesStr = "'".implode("','", $dates)."'";
 					$sql = "SELECT 1 FROM reservations r JOIN times t ON r.time_id=t.id JOIN dates d ON t.date_id=d.id \n"
-						."WHERE d.client_id = :cid AND d.date IN (".$datesStr.") AND md5(r.email) = md5(:email) LIMIT 1";
+						."WHERE d.client_id = :cid AND d.date IN (".$datesStr.") AND d.date >= CURDATE() AND LOWER(r.email) = LOWER(:email) LIMIT 1";
 					$dup = $DB->PreparedSelect($sql, array('cid'=>$clientID, 'email'=>$email), false, false);
 					$dupFound = is_array($dup) && count($dup) > 0;
 				} elseif ($mode === 'per_client') {
 					$sql = "SELECT 1 FROM reservations r JOIN times t ON r.time_id=t.id JOIN dates d ON t.date_id=d.id \n"
-						."WHERE d.client_id = :cid AND md5(r.email) = md5(:email) LIMIT 1";
+						."WHERE d.client_id = :cid AND d.date >= CURDATE() AND LOWER(r.email) = LOWER(:email) LIMIT 1";
 					$dup = $DB->PreparedSelect($sql, array('cid'=>$clientID, 'email'=>$email), false, false);
 					$dupFound = is_array($dup) && count($dup) > 0;
 				}
@@ -67,6 +67,9 @@ switch ($R["action"]) {
 					$output["success"] = 0;
 					$output["error"] = "duplicate_booking";
 					$output["mode"] = $mode;
+					$output["errors"] = ($mode === 'per_date')
+						? 'Dies ist eine zweite Buchung an diesem Termin. Leider ist dies nicht erlaubt.'
+						: 'Dies ist eine zweite Buchung in dieser Massagereihe. Leider ist dies nicht erlaubt.';
 					break;
 				}
 			}

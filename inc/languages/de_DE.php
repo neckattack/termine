@@ -50,6 +50,9 @@ $lang = [
     'cancel_all_question' => 'Alles abbrechen?',
     'not_more_than_one' => 'Sie können nicht mehr als die erlaubte Anzahl auswählen.',
     'select_one_timeslot' => 'Sie müssen ein Zeitfenster auswählen.',
+    // Doppelbuchung
+    'duplicate_booking_per_date'   => 'Dies ist eine zweite Buchung an diesem Termin. Leider ist dies nicht erlaubt.',
+    'duplicate_booking_per_client' => 'Dies ist eine zweite Buchung in dieser Massagereihe. Leider ist dies nicht erlaubt.',
 ];
 
 ?>
