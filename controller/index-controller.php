@@ -446,6 +446,7 @@ function sendConfirmationMail($email, $name, $times=array(), $contact=null, $mes
 			$message_time .= $date."\n";
 			foreach ($entries AS $key => $entry) {
 				$message_time .= $entry["start"]." - ".$entry["end"]."\n";
+				$message_time .= "ICS-Link: ".ABSURL."web/ics.php?e=".md5($email)."&t=".$entry["id"]."\n";
 			}
 			$message_time .= "\n";
 		}
