@@ -135,9 +135,9 @@ $(function(){
 				<div class="row">
 					<label for="avoid_double_bookings">Doppelbuchungen vermeiden</label>
 					<select id="avoid_double_bookings" name="avoid_double_bookings">
-						<option value="none" selected="selected">Nie</option>
-						<option value="per_date">pro Datum</option>
-						<option value="per_client">pro Kunde</option>
+						<option value="none" <?=($avoid_double_bookings_mode==='none')?'selected="selected"':''?>>Nie</option>
+						<option value="per_date" <?=($avoid_double_bookings_mode==='per_date')?'selected="selected"':''?>>pro Datum</option>
+						<option value="per_client" <?=($avoid_double_bookings_mode==='per_client')?'selected="selected"':''?>>pro Kunde</option>
 					</select>
 				</div>
 

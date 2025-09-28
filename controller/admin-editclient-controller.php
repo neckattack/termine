@@ -12,7 +12,7 @@ function getClientInfos($id) {
 	$id = (int)$id;
 
 	$sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, \n";
-	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours` ";
+	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours`, `c`.`avoid_double_bookings_mode` ";
 	$sql .= "FROM `clients` AS `c` ";
 	$sql .= "WHERE `c`.`id` = :id ";
 
@@ -170,6 +170,10 @@ function editClient($data) {
 	$enabled            = @(int)$data["cEnabled"];
 	$group_id           = (isset($data["group_id"])) ? (int) $data["group_id"] : 0;
 	$price				= $data["price"];
+    $avoid_double_bookings_mode = isset($data['avoid_double_bookings']) ? trim($data['avoid_double_bookings']) : 'none';
+    if ($avoid_double_bookings_mode !== 'per_date' && $avoid_double_bookings_mode !== 'per_client') {
+        $avoid_double_bookings_mode = 'none';
+    }
 	$user_ids           = (isset($data["user_ids"])) ? $data["user_ids"] : array();
 	$existing_contacts  = false;
 	// Buchungsfrist ermitteln (Dropdown oder custom)
@@ -190,7 +194,8 @@ function editClient($data) {
 		"enabled"            => $enabled,
 		"group_id"           => $group_id,
 		"price"			 => $price,
-		"booking_deadline_hours" => $booking_deadline_hours
+		"booking_deadline_hours" => $booking_deadline_hours,
+        "avoid_double_bookings_mode" => $avoid_double_bookings_mode
 	);
 
 
@@ -200,8 +205,8 @@ function editClient($data) {
 	switch ($id) {
 		// Add
 		case 0:
-			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`, `booking_deadline_hours`) \n";
-			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price, :booking_deadline_hours)";
+			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`, `booking_deadline_hours`, `avoid_double_bookings_mode`) \n";
+			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price, :booking_deadline_hours, :avoid_double_bookings_mode)";
 
 			$params["name"] = $name;
 			$params["hash"] = $hash;
@@ -218,7 +223,7 @@ function editClient($data) {
 
 			$sql  = "UPDATE `clients` SET \n";
 			$sql .= "`greeting_text` = :text, `email_text` = :mailtext, `contact_masseur_id` = :contact_masseur_id, `contact_client_id` = :contact_client_id, \n";
-			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price, `booking_deadline_hours` = :booking_deadline_hours \n";
+			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price, `booking_deadline_hours` = :booking_deadline_hours, `avoid_double_bookings_mode` = :avoid_double_bookings_mode \n";
 			$sql .= "WHERE `id` = :id";
 
 			$params["id"] = $id;

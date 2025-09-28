@@ -64,6 +64,8 @@ if ($clientID > 0) {
 
 		// Buchungs-/Stornofrist korrekt setzen
 		$booking_deadline_hours = isset($client["booking_deadline_hours"]) ? $client["booking_deadline_hours"] : 0;
+		// Doppelbuchungsmodus laden
+		$avoid_double_bookings_mode = isset($client["avoid_double_bookings_mode"]) ? $client["avoid_double_bookings_mode"] : 'none';
 
 		// All users that are directly associated with this client
 		$user_ids           = $client["contacts"]["direct"];
@@ -86,6 +88,8 @@ if ($clientID > 0) {
 else {
 	// Generate a new hash link
 	$hash  = generateHashLink();
+	// Defaults für neue Kunden
+	$avoid_double_bookings_mode = 'none';
 }
 
 
