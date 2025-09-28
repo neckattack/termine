@@ -80,13 +80,15 @@ if (isset($_REQUEST["action"])) {
 					$name = trim((isset($row['first_name'])?$row['first_name']:'') . ' ' . (isset($row['last_name'])?$row['last_name']:''));
 					if ($name === '') { $name = isset($row['client_name']) ? $row['client_name'] : 'Ansprechpartner'; }
 					$from = 'neckAttack Ltd. <termine@neckattack.net>';
-					// HTML-Body mit Signatur und optionalem Bild
-					$signatureImgUrl = ABSURL.'web/images/email-signature.png'; // Falls nicht vorhanden, wird Bild ggf. nicht geladen
+					// HTML-Body mit Signatur und optionalem Bild (nur wenn Datei existiert)
+					$signatureImgUrl = null;
+					$signaturePath = ROOT.'/web/images/email-signature.png';
+					if (file_exists($signaturePath)) {
+						$signatureImgUrl = ABSURL.'web/images/email-signature.png';
+					}
 					$userMsgHtml = nl2br(htmlspecialchars($message, ENT_QUOTES, 'UTF-8'));
 					$signatureHtml = '<div style="margin-top:16px;font:14px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#222;">'
-						.'<div style="margin-bottom:12px;">'
-							.'<img src="'.$signatureImgUrl.'" alt="neckattack" style="max-width:520px;width:100%;height:auto;border:0;display:block;"/>'
-						.'</div>'
+						.($signatureImgUrl ? '<div style="margin-bottom:12px;"><img src="'.$signatureImgUrl.'" alt="neckattack" style="max-width:520px;width:100%;height:auto;border:0;display:block;"/></div>' : '')
 						.'<div style="font-size:12px;color:#444;white-space:pre-line;">'
 						.'neckattack ltd.\n'
 						.'landhausstrasse 90 | d-70190 stuttgart | germany | tel.: +49.711.3 58 36-09 | fax: +49.711.3 58 36-11 | e-mail: hallo@neckattack.net\n'

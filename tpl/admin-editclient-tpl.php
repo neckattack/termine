@@ -131,6 +131,16 @@ $(function(){
 </script>
 				</div>
 
+				<!-- Tag: doppelbuchung_ui – Doppelbuchungen vermeiden (nur UI, Speicherung folgt) -->
+				<div class="row">
+					<label for="avoid_double_bookings">Doppelbuchungen vermeiden</label>
+					<select id="avoid_double_bookings" name="avoid_double_bookings">
+						<option value="none" selected="selected">Nie</option>
+						<option value="per_date">pro Datum</option>
+						<option value="per_client">pro Kunde</option>
+					</select>
+				</div>
+
 				<div class="row">
 					<label for="emailText"><a href="#tooltip-email" class="tooltip">Text der E-Mail</a></label>
 					<textarea id="emailText" name="emailText" rows="7" cols="70"><?=$emailText?></textarea>
