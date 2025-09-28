@@ -64,6 +64,12 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 				<a href="edituser.php?id=<?=$_SESSION["userid"]?>">Profil</a>
 				<a href="index.php?do=logout">Logout</a>
 			</div>
+
+			<!-- Admin-Suche nach Bucher-E-Mail -->
+			<form method="get" action="<?=ABSURL?>web/admin/search_reservations.php" style="position:absolute; right:180px; top:14px; display:flex; gap:6px; align-items:center;">
+				<input type="text" name="email" placeholder="E-Mail suchen" value="<?= isset($_GET['email'])?htmlspecialchars($_GET['email']):'' ?>" style="padding:4px 8px; border:1px solid #aaa; border-radius:4px; width:200px;" />
+				<button type="submit" title="Suchen" style="padding:4px 10px; border:1px solid #888; border-radius:4px; background:#eee; cursor:pointer;">🔍</button>
+			</form>
 			<?php }?>
 
 			<?php if (isset($title[0])) {?><h1><?=$title?></h1><?php }?>
