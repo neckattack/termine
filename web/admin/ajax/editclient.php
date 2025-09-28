@@ -80,7 +80,28 @@ if (isset($_REQUEST["action"])) {
 					$name = trim((isset($row['first_name'])?$row['first_name']:'') . ' ' . (isset($row['last_name'])?$row['last_name']:''));
 					if ($name === '') { $name = isset($row['client_name']) ? $row['client_name'] : 'Ansprechpartner'; }
 					$from = 'neckAttack Ltd. <termine@neckattack.net>';
-					$ok = sendMail($to, $name, $from, $subject, $message, null, false);
+					// HTML-Body mit Signatur und optionalem Bild
+					$signatureImgUrl = ABSURL.'web/images/email-signature.png'; // Falls nicht vorhanden, wird Bild ggf. nicht geladen
+					$userMsgHtml = nl2br(htmlspecialchars($message, ENT_QUOTES, 'UTF-8'));
+					$signatureHtml = '<div style="margin-top:16px;font:14px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#222;">'
+						.'<div style="margin-bottom:12px;">'
+							.'<img src="'.$signatureImgUrl.'" alt="neckattack" style="max-width:520px;width:100%;height:auto;border:0;display:block;"/>'
+						.'</div>'
+						.'<div style="font-size:12px;color:#444;white-space:pre-line;">'
+						.'neckattack ltd.\n'
+						.'landhausstrasse 90 | d-70190 stuttgart | germany | tel.: +49.711.3 58 36-09 | fax: +49.711.3 58 36-11 | e-mail: hallo@neckattack.net\n'
+						.'sitz der gesellschaft: stuttgart | amtsgericht stuttgart | hrb 25076\n'
+						.'ust-idnr. DE 239 255 541\n'
+						.'geschäftsführer: dipl.-kfm. chris walther'
+						.'</div>'
+					.'</div>';
+					$htmlBody = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="ie=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'.htmlspecialchars($subject, ENT_QUOTES, 'UTF-8').'</title></head><body style="margin:0;padding:0;background:#ffffff;">'
+					.'<div style="max-width:680px;margin:0 auto;padding:16px 14px;font:16px/1.55 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#222;">'
+					.$userMsgHtml
+					.$signatureHtml
+					.'</div>'
+					.'</body></html>';
+					$ok = sendMail($to, $name, $from, $subject, $htmlBody, null, true);
 					if ($ok) { $sent++; } else { $skipped[] = (int)$row['client_id']; }
 				}
 			}
