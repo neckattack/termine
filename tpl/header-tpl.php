@@ -33,15 +33,14 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<div id="header">
   		<?php /* The logo */ ?>
 		<a href="<?=ABSURL?>" class="logo"><img src="<?=WEBDIR?>images/logo.png" alt="Logo" /></a>
-  <?
-  if(intval($client['id'])>0 &strlen($client['image'])>100)
-  {
-
-    ?>
-
-<img  src="../get_group_logo.php?id=<?=$client['id']?>&type=client " style="width: 160px; padding-left:414px"/>
-    <?
-
+  <?php
+  // Sicher prüfen, ob $client vorhanden ist
+  if (isset($client) && is_array($client)) {
+      $cid = isset($client['id']) ? (int)$client['id'] : 0;
+      $cimg = isset($client['image']) ? (string)$client['image'] : '';
+      if ($cid > 0 && strlen($cimg) > 100) {
+          echo '<img src="../get_group_logo.php?id='.htmlspecialchars($cid, ENT_QUOTES, 'UTF-8').'&type=client" style="width: 160px; padding-left:414px"/>';
+      }
   }
   ?>
 
