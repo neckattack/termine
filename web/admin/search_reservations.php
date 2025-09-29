@@ -5,7 +5,7 @@
  * Admin-Suche nach Reservierungen über E-Mail
  */
 error_reporting(-1);
-$PAGE = basename(__FILE__);
+$PAGE = 'search_reservations';
 require "_root_.php";
 require ROOT."/inc/_include.php";
 require ROOT."/inc/admincheck.php";
