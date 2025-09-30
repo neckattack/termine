@@ -20,7 +20,7 @@ $rows = [];
 if ($email !== '') {
     try {
         $rows = searchReservationsByEmail($email);
-    } catch (Throwable $e) {
+    } catch (Exception $e) {
         if (isset($ADMIN) && $ADMIN === true) {
             header('Content-Type: text/html; charset=utf-8');
             echo '<pre style="white-space:pre-wrap;">Suche-Fehler: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "\n";
