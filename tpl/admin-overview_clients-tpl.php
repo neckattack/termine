@@ -55,9 +55,12 @@ if($sortBy != 'alphabetical') {
 					<div>
 						<label for="mailMessage" style="display:block;margin-bottom:4px;">Nachricht</label>
 						<textarea id="mailMessage" placeholder="">Liebes Team!
+
 Das ist eine kurze Erinnerung an Ihren nächsten Massagetag.
 Bis jetzt gibt es noch zu wenig Anmeldungen, um den Massagetag stattfinden zu lassen.
+
 Bitte machen Sie intern noch mal Werbung, wenn die Mindestbuchungszeit von 2,5h nicht erreicht wird, werde ich den Termin leider absagen müssen.
+
 Vielen Dank,
 Ihr neckattack-Team</textarea>
 					</div>
