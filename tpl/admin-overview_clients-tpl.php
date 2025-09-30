@@ -168,7 +168,8 @@ if($sortBy != 'alphabetical') {
 		<?php }?>
 
         <!-- Tag: stornovorlauf_admin_preview – Pagination-UI -->
-        <div id="admin-card-pager" style="display:flex;align-items:center;gap:8px;margin:6px 0 16px 0;">
+        <!-- Pagination-UI vorübergehend deaktiviert: Anzeige aller Kacheln ohne Paging -->
+        <div id="admin-card-pager" style="display:none;align-items:center;gap:8px;margin:6px 0 16px 0;">
             <strong style="margin-right:6px;">Pagination</strong>
             <button type="button" id="pager-prev" style="padding:4px 8px;">«</button>
             <span id="pager-info" style="min-width:120px;display:inline-block;">–</span>
@@ -179,7 +180,8 @@ if($sortBy != 'alphabetical') {
         <script>
         (function(){
             try {
-                var state = { page: 1, pageSize: 30 };
+                // Pagination deaktiviert: pageSize sehr groß setzen
+                var state = { page: 1, pageSize: 1000000 };
                 function q(id){ return document.getElementById(id); }
                 function getFilters(){
                     var sel = q('showDisabled');
