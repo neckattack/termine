@@ -252,7 +252,7 @@ Ihr neckattack-Team</textarea>
                 var btnSend = q('mailSend');
                 if (btnSend) btnSend.addEventListener('click', function(){
                     try {
-                        var subject = (q('mailSubject') && q('mailSubject').value) || 'Kommender Termin bitte bewerben';
+                        var subject = (q('mailSubject') && q('mailSubject').value) || 'Kommenden Massagetermin bitte bewerben';
                         var message = (q('mailMessage') && q('mailMessage').value) || '';
                         var ids = getSelectedClientIds();
                         if (ids.length === 0) { alert('Bitte mindestens einen Eintrag markieren.'); return; }
