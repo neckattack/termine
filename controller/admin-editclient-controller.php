@@ -184,6 +184,11 @@ function editClient($data) {
 		} else {
 			$booking_deadline_hours = (int)$data["booking_deadline_hours"];
 		}
+
+	// Default auf 24h, falls leer/0
+	if ($booking_deadline_hours <= 0) {
+		$booking_deadline_hours = 24;
+	}
 	}
 
 	$params             = array(
