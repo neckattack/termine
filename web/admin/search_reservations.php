@@ -24,7 +24,6 @@ if (isset($_GET['dbg']) && $_GET['dbg'] == '1') {
 }
 require ROOT."/inc/_include.php";
 require ROOT."/inc/admincheck.php";
-require ROOT."/controller/admin-search_reservations-controller.php";
 // kein require von index-controller.php nötig
 
 $ADMIN = true; // für header-tpl Anzeige
