@@ -50,11 +50,16 @@ if($sortBy != 'alphabetical') {
 				<div class="body">
 					<div style="margin-bottom:8px;">
 						<label for="mailSubject" style="display:block;margin-bottom:4px;">Betreff</label>
-						<input type="text" id="mailSubject" value="Kommender Termin bitte bewerben">
+						<input type="text" id="mailSubject" value="Kommenden Massagetermin bitte bewerben">
 					</div>
 					<div>
 						<label for="mailMessage" style="display:block;margin-bottom:4px;">Nachricht</label>
-						<textarea id="mailMessage" placeholder=""></textarea>
+						<textarea id="mailMessage" placeholder="">Liebes Team!
+Das ist eine kurze Erinnerung an Ihren nächsten Massagetag.
+Bis jetzt gibt es noch zu wenig Anmeldungen, um den Massagetag stattfinden zu lassen.
+Bitte machen Sie intern noch mal Werbung, wenn die Mindestbuchungszeit von 2,5h nicht erreicht wird, werde ich den Termin leider absagen müssen.
+Vielen Dank,
+Ihr neckattack-Team</textarea>
 					</div>
 				</div>
 				<div class="footer">
