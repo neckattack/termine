@@ -22,13 +22,19 @@ if($sortBy != 'alphabetical') {
 ?>
 
 	<div id="content">
-		<ul class="menu">
+		<ul class="menu" style="position:relative;">
 			<li><a href="overview_clients.php">&raquo; Kundenverwaltung</a></li>
 			<?php if ($SUPERADMIN === true) {?>
 			<li><a href="overview_groups.php">&raquo; Gruppenverwaltung</a></li>
 			<li><a href="overview_users.php">&raquo; Benutzerverwaltung</a></li>
 			<?php }?>
 			<li><a href="<?php echo $url; ?>"><?php echo $label; ?></a></li>
+			<!-- Neuer schneller Plus-Button zum Anlegen eines Kunden -->
+			<li style="position:absolute; right:0; top:0; list-style:none;">
+				<a href="editclient.php" title="Kunde hinzufügen" aria-label="Kunde hinzufügen" 
+					style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#28a745; color:#fff; font-weight:700; text-decoration:none; box-shadow:0 1px 3px rgba(0,0,0,.2);">+
+				</a>
+			</li>
 		</ul>
 
 		<!-- Tag: stornovorlauf_admin_preview – Mehrfachaktion-Leiste (unter Menü) -->
