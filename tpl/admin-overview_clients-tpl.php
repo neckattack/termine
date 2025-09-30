@@ -22,7 +22,7 @@ if($sortBy != 'alphabetical') {
 ?>
 
 	<div id="content">
-		<ul class="menu" style="position:relative;">
+		<ul class="menu" style="position:relative; overflow:visible;">
 			<li><a href="overview_clients.php">&raquo; Kundenverwaltung</a></li>
 			<?php if ($SUPERADMIN === true) {?>
 			<li><a href="overview_groups.php">&raquo; Gruppenverwaltung</a></li>
@@ -30,9 +30,9 @@ if($sortBy != 'alphabetical') {
 			<?php }?>
 			<li><a href="<?php echo $url; ?>"><?php echo $label; ?></a></li>
 			<!-- Neuer schneller Plus-Button zum Anlegen eines Kunden -->
-			<li style="position:absolute; right:0; top:0; list-style:none;">
+			<li style="position:absolute; right:0; top:50%; transform:translateY(-50%); list-style:none;">
 				<a href="editclient.php" title="Kunde hinzufügen" aria-label="Kunde hinzufügen" 
-					style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#28a745; color:#fff; font-weight:700; text-decoration:none; box-shadow:0 1px 3px rgba(0,0,0,.2);">+
+					style="display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#ffcc00; color:#fff; font-weight:700; text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.25); border:2px solid #fff; line-height:1;">+
 				</a>
 			</li>
 		</ul>
