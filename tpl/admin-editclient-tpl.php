@@ -105,15 +105,21 @@ require ROOT."/tpl/header-tpl.php";
 
 <div class="row">
     <label for="booking_deadline_hours">Buchungs-/Stornofrist</label>
+    <?php
+        // Bei neuem Kunden (clientID==0) auf 24h voreinstellen, falls leer/0
+        $bdh_raw = isset($booking_deadline_hours) ? (int)$booking_deadline_hours : 0;
+        $isNewClient = isset($clientID) ? ((int)$clientID === 0) : (isset($R['cid']) ? ((int)$R['cid']===0) : true);
+        $__bdh = ($isNewClient && ($bdh_raw === 0)) ? 24 : $bdh_raw;
+    ?>
     <!-- Tag: stornovorlauf – Dropdown erweitert um 7 Tage (168h) -->
     <select id="booking_deadline_hours" name="booking_deadline_hours">
-        <option value="0" <?=($booking_deadline_hours==0||$booking_deadline_hours==null)?'selected="selected"':''?>>Immer möglich</option>
-        <option value="24" <?=($booking_deadline_hours==24)?'selected="selected"':''?>>Bis 24h vorher</option>
-        <option value="48" <?=($booking_deadline_hours==48)?'selected="selected"':''?>>Bis 48h vorher</option>
-        <option value="168" <?=($booking_deadline_hours==168)?'selected="selected"':''?>>Bis 7 Tage vorher</option>
+        <option value="0" <?=($__bdh==0)?'selected="selected"':''?>>Immer möglich</option>
+        <option value="24" <?=($__bdh==24)?'selected="selected"':''?>>Bis 24h vorher</option>
+        <option value="48" <?=($__bdh==48)?'selected="selected"':''?>>Bis 48h vorher</option>
+        <option value="168" <?=($__bdh==168)?'selected="selected"':''?>>Bis 7 Tage vorher</option>
         <option value="custom">Benutzerdefiniert</option>
     </select>
-    <input type="number" min="1" step="1" id="booking_deadline_hours_custom" name="booking_deadline_hours_custom" style="display:none;width:80px;" placeholder="Stunden" value="<?=($booking_deadline_hours!=0&&$booking_deadline_hours!=24&&$booking_deadline_hours!=48&&$booking_deadline_hours!=168)?$booking_deadline_hours:''?>" />
+    <input type="number" min="1" step="1" id="booking_deadline_hours_custom" name="booking_deadline_hours_custom" style="display:none;width:80px;" placeholder="Stunden" value="<?=($__bdh!=0&&$__bdh!=24&&$__bdh!=48&&$__bdh!=168)?$__bdh:''?>" />
 </div>
 <script>
 $(function(){
