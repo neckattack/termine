@@ -7,6 +7,21 @@
 error_reporting(-1);
 $PAGE = 'search_reservations';
 require "_root_.php";
+// Debugmodus: ?dbg=1 zeigt auch fatale Fehler schon vor dem Template
+if (isset($_GET['dbg']) && $_GET['dbg'] == '1') {
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
+    register_shutdown_function(function(){
+        $e = error_get_last();
+        if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "Fatal error before render:\n";
+            echo $e['message']."\n";
+            echo $e['file'].':'.$e['line']."\n";
+        }
+    });
+}
 require ROOT."/inc/_include.php";
 require ROOT."/inc/admincheck.php";
 require ROOT."/controller/admin-search_reservations-controller.php";
