@@ -78,7 +78,7 @@ Ihr neckattack-Team</textarea>
 			</div>
 		</div>
 
-		<div id="display-options" style="display:flex;align-items:center;gap:12px;margin:0;">
+		<div id="display-options">
 			<label for="showGroup">Gruppe Anzeigen:</label>
 			<select id="showGroup" name="showGroup">
 				<option value="">Alle</option>
@@ -86,12 +86,13 @@ Ihr neckattack-Team</textarea>
 				<option value="<?=$group["group_id"]?>" <?=((int)$group["group_id"] === $group_id) ? 'selected="selected"': ''?>><?=$group["group_name"]?></option>
 				<?php }?>
 			</select>
+			<br />
+
 			<label for="showDisabled">Deaktivierte Anzeigen:</label>
 			<select id="showDisabled" name="showDisabled">
 				<option value="0">Nein</option>
 				<option value="1">Ja</option>
 			</select>
-		</div>
 		</div>
 
 		<!-- Tag: stornovorlauf_admin_preview – Layout-Fix: Kachel unter die Filter setzen -->
