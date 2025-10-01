@@ -187,8 +187,10 @@ function editClient($data) {
 
 	// Default auf 24h, falls leer/0
 	if ($booking_deadline_hours <= 0) {
+	if ($id === 0 && (!isset($data["booking_deadline_hours"]) || $data["booking_deadline_hours"] === "custom")) {
 		$booking_deadline_hours = 24;
 	}
+}
 	}
 
 	$params             = array(
