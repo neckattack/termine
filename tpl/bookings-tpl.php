@@ -158,7 +158,11 @@ include_once __DIR__ . '/../inc/language-switcher.php';
                                 $deadline = isset($client['booking_deadline_hours']) ? (int)$client['booking_deadline_hours'] : 0;
                                 $slotTs   = strtotime($reservation['date'].' '.$reservation['time_start']);
                                 $nowTs    = time();
-                                $allowActions = ($deadline === 0 || ($slotTs - $nowTs) > $deadline * 3600);
+                                // Bei "Immer möglich" (0): gleiche-Tages-Termine erlauben, aber nicht vergangene Zeiten
+                                // Sonst: Frist in Stunden beachten
+                                $allowActions = ($deadline === 0)
+                                    ? ($slotTs >= $nowTs)
+                                    : (($slotTs - $nowTs) > $deadline * 3600);
                                 if (isset($_GET['dbg']) && $_GET['dbg'] == '1') {
                                     echo "<!-- booking_row time_id={$reservation['time_id']} date={$reservation['date']} start={$reservation['time_start']} deadline={$deadline} slotTs={$slotTs} nowTs={$nowTs} allow=".($allowActions?'1':'0')." -->";
                                 }

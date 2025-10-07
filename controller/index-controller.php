@@ -297,7 +297,7 @@ function getReservationsForEmailHash($emailHash, $timesIds) {
 	$sql .= " JOIN `times` AS `t` ON (`r`.`time_id` = `t`.`id`) ";
 	$sql .= " JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
 	$sql .= " WHERE `r`.`time_id` IN ('".$idStr."')";
-	$sql .= " AND `d`.`date` > CURDATE() "; // if need to check reservation date less than today
+	$sql .= " AND `d`.`date` >= CURDATE() "; // include today
 	$sql .= " AND md5(`r`.`email`) = '".$emailHash."' ";
 
 	$reservations  = $DB->PreparedSelect($sql, array(), false, false);
@@ -313,7 +313,7 @@ function getAllReservationsForEmailHash($emailHash) {
 	$sql .= " FROM `reservations` AS `r`";
 	$sql .= " JOIN `times` AS `t` ON (`r`.`time_id` = `t`.`id`) ";
 	$sql .= " JOIN `dates` AS `d` ON (`t`.`date_id` = `d`.`id`) ";
-	$sql .= " AND `d`.`date` > CURDATE() "; // if need to check reservation date less than today
+	$sql .= " AND `d`.`date` >= CURDATE() "; // include today
 	$sql .= " AND md5(`r`.`email`) = '".$emailHash."' ";
 
 	$reservations  = $DB->PreparedSelect($sql, array(), false, false);
