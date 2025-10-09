@@ -114,12 +114,13 @@ require ROOT."/tpl/header-tpl.php";
     <!-- Tag: stornovorlauf – Dropdown erweitert um 7 Tage (168h) -->
     <select id="booking_deadline_hours" name="booking_deadline_hours">
         <option value="0" <?=($__bdh==0)?'selected="selected"':''?>>Immer möglich</option>
+        <option value="12" <?=($__bdh==12)?'selected="selected"':''?>>Bis 12h vorher</option>
         <option value="24" <?=($__bdh==24)?'selected="selected"':''?>>Bis 24h vorher</option>
         <option value="48" <?=($__bdh==48)?'selected="selected"':''?>>Bis 48h vorher</option>
         <option value="168" <?=($__bdh==168)?'selected="selected"':''?>>Bis 7 Tage vorher</option>
         <option value="custom">Benutzerdefiniert</option>
     </select>
-    <input type="number" min="1" step="1" id="booking_deadline_hours_custom" name="booking_deadline_hours_custom" style="display:none;width:80px;" placeholder="Stunden" value="<?=($__bdh!=0&&$__bdh!=24&&$__bdh!=48&&$__bdh!=168)?$__bdh:''?>" />
+    <input type="number" min="1" step="1" id="booking_deadline_hours_custom" name="booking_deadline_hours_custom" style="display:none;width:80px;" placeholder="Stunden" value="<?=($__bdh!=0&&$__bdh!=12&&$__bdh!=24&&$__bdh!=48&&$__bdh!=168)?$__bdh:''?>" />
 </div>
 <script>
 $(function(){
