@@ -86,9 +86,8 @@ require ROOT."/tpl/header-tpl.php";
 							<option value="">- Bitte wählen -</option>
 							<option value="§19 UStG" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='§19 UStG')?'selected="selected"':'' ?>>§19 UStG</option>
 							<option value="§4 Nr.14 UStG" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='§4 Nr.14 UStG')?'selected="selected"':'' ?>>§4 Nr.14 UStG</option>
-							<option value="sonstiges" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='sonstiges')?'selected="selected"':'' ?>>sonstiges</option>
+							<option value="none" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='none')?'selected="selected"':'' ?>>Nicht umsatzsteuerbefreit</option>
 						</select>
-						<input type="text" id="user_vat_exempt_text" name="user_vat_exempt_text" value="<?= isset($user_vat_exempt_text)?$user_vat_exempt_text:'' ?>" placeholder="z.B. Paragraph/Begründung" />
 					</div>
 
 					<div class="row">
@@ -98,7 +97,7 @@ require ROOT."/tpl/header-tpl.php";
 
 					<div class="row">
 						<label for="user_diagnosis">Diagnose</label>
-						<input type="text" id="user_diagnosis" name="user_diagnosis" value="<?= isset($user_diagnosis)?$user_diagnosis:'' ?>" />
+						<textarea id="user_diagnosis" name="user_diagnosis" rows="5" cols="70"><?= isset($user_diagnosis)?$user_diagnosis:'' ?></textarea>
 					</div>
 				</div>
 
