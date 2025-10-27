@@ -21,6 +21,7 @@ require ROOT."/tpl/header-tpl.php";
 			<p id="deleted">Die Gruppe und alle ihre Mitglieder wurden erfolgreich gelöscht.</p>
 			
 			<div>
+				<div style="float:left;width:48%;">
 				<div class="row">
 					<label for="user_username">Benutzername</label>
 					<input type="text" id="user_username" name="user_username" value="<?=$username?>" />
@@ -66,6 +67,42 @@ require ROOT."/tpl/header-tpl.php";
 					<input type="text" id="user_phone" name="user_phone" value="<?=$phone?>" />
 				</div>
 				<br />
+				</div>
+
+				<div style="float:right;width:48%;">
+					<div class="row">
+						<label for="user_address">Adresse</label>
+						<input type="text" id="user_address" name="user_address" value="<?= isset($user_address)?$user_address:'' ?>" />
+					</div>
+
+					<div class="row">
+						<label for="user_tax_number">Steuernummer</label>
+						<input type="text" id="user_tax_number" name="user_tax_number" value="<?= isset($user_tax_number)?$user_tax_number:'' ?>" />
+					</div>
+
+					<div class="row">
+						<label for="user_vat_exempt_reason">Umsatzsteuerfreiheit nach</label>
+						<select id="user_vat_exempt_reason" name="user_vat_exempt_reason">
+							<option value="">- Bitte wählen -</option>
+							<option value="§19 UStG" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='§19 UStG')?'selected="selected"':'' ?>>§19 UStG</option>
+							<option value="§4 Nr.14 UStG" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='§4 Nr.14 UStG')?'selected="selected"':'' ?>>§4 Nr.14 UStG</option>
+							<option value="sonstiges" <?= (isset($user_vat_exempt_reason)&&$user_vat_exempt_reason==='sonstiges')?'selected="selected"':'' ?>>sonstiges</option>
+						</select>
+						<input type="text" id="user_vat_exempt_text" name="user_vat_exempt_text" value="<?= isset($user_vat_exempt_text)?$user_vat_exempt_text:'' ?>" placeholder="z.B. Paragraph/Begründung" />
+					</div>
+
+					<div class="row">
+						<label for="user_profession">Berufsbezeichnung</label>
+						<input type="text" id="user_profession" name="user_profession" value="<?= isset($user_profession)?$user_profession:'' ?>" />
+					</div>
+
+					<div class="row">
+						<label for="user_diagnosis">Diagnose</label>
+						<input type="text" id="user_diagnosis" name="user_diagnosis" value="<?= isset($user_diagnosis)?$user_diagnosis:'' ?>" />
+					</div>
+				</div>
+
+				<div style="clear:both;"></div>
 				
 				<div class="row">
 					<label>Mitgliedschaften:</label>
