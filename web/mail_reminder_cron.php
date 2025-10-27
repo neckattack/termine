@@ -163,15 +163,8 @@ if ( $reservations && count($reservations) ) {
   $res_groups = [];
   $massuers = [];
   foreach ($reservations as $value) {
-    // Minimalinvasiv: Liste an Hauptmasseur (clients.contact_masseur_id) und ggf. Ersatzmasseur (dates.masseur_id)
-    $primary_id     = (int)$value['contact_masseur_id'];
-    $replacement_id = (int)$value['date_massuer_id'];
-
-    $targets = [];
-    if ($primary_id > 0)     { $targets[$primary_id] = true; }
-    if ($replacement_id > 0) { $targets[$replacement_id] = true; }
-
-    foreach (array_keys($targets) as $massuer_id) {
+    $massuer_id = ($value['date_massuer_id'] != 0) ? $value['date_massuer_id'] : $value['contact_masseur_id'];
+    if ( $massuer_id != 0 ) {
       $value['result_massuer_id'] = $massuer_id;
       $res_groups[$massuer_id."-".$value['client_id']][] = $value;
       $massuers[$massuer_id] = null;
