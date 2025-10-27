@@ -97,7 +97,8 @@ require ROOT."/tpl/header-tpl.php";
 
 					<div class="row">
 						<label for="user_diagnosis">Diagnose</label>
-						<textarea id="user_diagnosis" name="user_diagnosis" rows="5" cols="70"><?= isset($user_diagnosis)?$user_diagnosis:'' ?></textarea>
+						<textarea id="user_diagnosis" name="user_diagnosis" rows="5" cols="60" style="width:95%;max-width:95%;box-sizing:border-box;">
+<?= isset($user_diagnosis)?$user_diagnosis:'' ?></textarea>
 					</div>
 				</div>
 
