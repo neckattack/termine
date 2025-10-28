@@ -64,7 +64,7 @@ if (isset($P["username"]) && isset($P["password"])) {
 
 	while ($error == 0) {
 		// Check for saltDB
-		$username = $P["username"];
+		$username = trim($P["username"]);
 		$password = $P["password"];
 
 		// Request the encrypted password from the database
@@ -74,6 +74,7 @@ if (isset($P["username"]) && isset($P["password"])) {
 
 		// No result
 		if (!isset($rows[0]["password"])) {
+			error_log("[admin-login] user not found: ".$username);
 			$error++;
 			break;
 		}
@@ -83,6 +84,7 @@ if (isset($P["username"]) && isset($P["password"])) {
 		$saltDB = substrSalt($pwdDB);
 
 		if (strlen($saltDB) < 10) {
+			error_log("[admin-login] invalid salt length for user id ".(int)$rows[0]['id']);
 			$error++;
 			break;
 		}
@@ -93,6 +95,7 @@ if (isset($P["username"]) && isset($P["password"])) {
 		$match = ($pwdDB === $hash);
 
 		if ($match !== true) {
+			error_log("[admin-login] password mismatch for user: ".$username);
 			$error++;
 			break;
 		}
@@ -107,6 +110,7 @@ if (isset($P["username"]) && isset($P["password"])) {
 		$user   = $DB->PreparedSelect($sql, $params, false, false);
 
 		if (!isset($user[0]["id"]) || $user[0]["id"] < 1) {
+			error_log("[admin-login] second-stage lookup failed for user: ".$username);
 			$error++;
 			break;
 		}
