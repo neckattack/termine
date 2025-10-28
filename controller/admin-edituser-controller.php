@@ -13,7 +13,7 @@ function getUserInfos($id) {
 	$id     = (int) $id;
 	$params = array("id" => $id);
 
-	$sql  = "SELECT `a`.`id`, `a`.`username`, `a`.`email`, `a`.`gender`, `a`.`first_name`, `a`.`last_name`, `a`.`phone` \n";
+	$sql  = "SELECT `a`.`id`, `a`.`username`, `a`.`email`, `a`.`gender`, `a`.`first_name`, `a`.`last_name`, `a`.`phone`, `a`.`address`, `a`.`tax_number`, `a`.`vat_exempt_reason`, `a`.`profession`, `a`.`diagnosis` \n";
 	$sql .= "FROM `admin` AS `a` \n";
 	$sql .= "WHERE `a`.`id` = :id";
 	
@@ -102,6 +102,14 @@ function editUser($data) {
 	$gender     = (int) $data["user_gender"];
 	$first_name = $data["user_first_name"];
 	$last_name  = $data["user_last_name"];
+	// Neue optionale Felder der rechten Spalte
+	$address    = isset($data['user_address']) ? $data['user_address'] : null;
+	$tax_number = isset($data['user_tax_number']) ? $data['user_tax_number'] : null;
+	$vat_exempt_reason = isset($data['user_vat_exempt_reason']) ? $data['user_vat_exempt_reason'] : 'none';
+	$allowed_vat = array('§19 UStG','§4 Nr.14 UStG','none');
+	if (!in_array($vat_exempt_reason, $allowed_vat, true)) { $vat_exempt_reason = 'none'; }
+	$profession = isset($data['user_profession']) ? $data['user_profession'] : null;
+	$diagnosis  = isset($data['user_diagnosis']) ? $data['user_diagnosis'] : null;
 	$pwd1       = (isset($data["user_password1"])) ? $data["user_password1"] : null;
 	$pwd2       = (isset($data["user_password2"])) ? $data["user_password2"] : null;
 	$hash       = null;
@@ -117,6 +125,11 @@ function editUser($data) {
 		"last_name"  => $last_name,
 		"gender"     => $gender,
 		"phone"      => $phone,
+		"address"    => $address,
+		"tax_number" => $tax_number,
+		"vat_exempt_reason" => $vat_exempt_reason,
+		"profession" => $profession,
+		"diagnosis"  => $diagnosis,
 	);
 	
 
@@ -124,15 +137,15 @@ function editUser($data) {
 	switch ($id) {
 		// Add
 		case 0:
-			$sql  = "INSERT INTO `admin` (`username`, `email`, `first_name`, `last_name`, `gender`, `phone`, `created_by`, `created_at`) \n";
-			$sql .= "VALUES (:name, :email, :first_name, :last_name, :gender, :phone, :userid, NOW())";
+			$sql  = "INSERT INTO `admin` (`username`, `email`, `first_name`, `last_name`, `gender`, `phone`, `address`, `tax_number`, `vat_exempt_reason`, `profession`, `diagnosis`, `created_by`, `created_at`) \n";
+			$sql .= "VALUES (:name, :email, :first_name, :last_name, :gender, :phone, :address, :tax_number, :vat_exempt_reason, :profession, :diagnosis, :userid, NOW())";
 			$params["userid"] = $_SESSION["userid"];
 		break;
 		
 		// Edit
 		default:
 			$sql  = "UPDATE `admin` \n";
-			$sql .= "SET `username` = :name, `email` = :email, `first_name` = :first_name, `last_name` = :last_name, `gender` = :gender, `phone` = :phone \n";
+			$sql .= "SET `username` = :name, `email` = :email, `first_name` = :first_name, `last_name` = :last_name, `gender` = :gender, `phone` = :phone, `address` = :address, `tax_number` = :tax_number, `vat_exempt_reason` = :vat_exempt_reason, `profession` = :profession, `diagnosis` = :diagnosis \n";
 			$sql .= "WHERE `id` = :id";
 			$params["id"] = $id;
 		break;

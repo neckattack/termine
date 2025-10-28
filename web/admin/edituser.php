@@ -21,6 +21,12 @@ $phone       = (isset($R["user_phone"]))      ? $R["user_phone"]        : "";
 $gender      = (isset($R["user_gender"]))     ? (int) $R["user_gender"] : 0;
 $first_name  = (isset($R["user_first_name"])) ? $R["user_first_name"]   : "";
 $last_name   = (isset($R["user_last_name"]))  ? $R["user_last_name"]    : "";
+// Neue Felder rechte Spalte: Defaults aus Request, sonst leer
+$user_address            = isset($R['user_address']) ? $R['user_address'] : '';
+$user_tax_number         = isset($R['user_tax_number']) ? $R['user_tax_number'] : '';
+$user_vat_exempt_reason  = isset($R['user_vat_exempt_reason']) ? $R['user_vat_exempt_reason'] : '';
+$user_profession         = isset($R['user_profession']) ? $R['user_profession'] : '';
+$user_diagnosis          = isset($R['user_diagnosis']) ? $R['user_diagnosis'] : '';
 $memberships = array(
 	"clients" => array(),
 	"groups"  => array(),
@@ -61,6 +67,12 @@ if ($id > 0) {
 		$gender      = (int) $entry["gender"];
 		$first_name  = $entry["first_name"];
 		$last_name   = $entry["last_name"];
+		// Neue Felder aus DB in Template-Variablen übernehmen
+		$user_address           = isset($entry['address']) ? $entry['address'] : '';
+		$user_tax_number        = isset($entry['tax_number']) ? $entry['tax_number'] : '';
+		$user_vat_exempt_reason = isset($entry['vat_exempt_reason']) ? $entry['vat_exempt_reason'] : '';
+		$user_profession        = isset($entry['profession']) ? $entry['profession'] : '';
+		$user_diagnosis         = isset($entry['diagnosis']) ? $entry['diagnosis'] : '';
 		$memberships = $entry["memberships"];
 		
 		#pre($memberships);
