@@ -18,6 +18,7 @@ require ROOT."/tpl/header-tpl.php";
 			<?php if ($SUPERADMIN === true) {?>
 			<li><a href="overview_groups.php">&raquo; Gruppenverwaltung</a></li>
 			<li><a href="overview_users.php">&raquo; Benutzerverwaltung</a></li>
+			<li><a href="overview_services.php">&raquo; Serviceverwaltung</a></li>
 			<?php }?>
 		</ul>
 		
