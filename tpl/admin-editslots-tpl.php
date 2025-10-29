@@ -39,17 +39,17 @@ require ROOT."/tpl/header-tpl.php";
 		<div class="slots">
 			<h3><?=$slots[0]["date"]?></h3>
 			<ul id="slots">
-				<?php if (isset($slots[0]["time_start"][0]))                ?>
-				<?php 
-                require_once ROOT.'/controller/admin-overview_services-controller.php';
-                $services = getAllGebuehServices();
-                $defaultDiagnosis = isset($slots[0]['default_diagnosis']) ? (string)$slots[0]['default_diagnosis'] : '';
-                $defaultServiceIds = array();
-                if (isset($slots[0]['default_service_ids']) && trim($slots[0]['default_service_ids'])!=='') {
-                    $defaultServiceIds = array_values(array_filter(array_map('intval', explode(',', $slots[0]['default_service_ids'])), function($v){ return $v>0; }));
-                }
-                foreach ($slots AS $slot) {?>
-				<?php if (isset($slot["time_start"][0])) {?>
+				<?php if (isset($slots[0]["time_start"][0])) { 
+					require_once ROOT.'/controller/admin-overview_services-controller.php';
+					$services = getAllGebuehServices();
+					$defaultDiagnosis = isset($slots[0]['default_diagnosis']) ? (string)$slots[0]['default_diagnosis'] : '';
+					$defaultServiceIds = array();
+					if (isset($slots[0]['default_service_ids']) && trim($slots[0]['default_service_ids'])!=='') {
+						$defaultServiceIds = array_values(array_filter(array_map('intval', explode(',', $slots[0]['default_service_ids'])), function($v){ return $v>0; }));
+					}
+					foreach ($slots AS $slot) {
+						if (!isset($slot["time_start"])) { continue; }
+					?>
 				<li<?=(isset($slot["res_id"][0])) ? " id=\"res_".$slot["res_id"]."\"" : ""?>>
 					<span class="time"><?=$slot["time_start"]?> - <?=$slot["time_end"]?></span>
 					                    <span class="name"><?php if (isset($slot["res_name"][1])) {?><a href="mailto:<?=$slot["email"]?>"><?=$slot["res_name"]?></a><?php } else {?>- frei -<?php }?></span>
@@ -69,8 +69,7 @@ require ROOT."/tpl/header-tpl.php";
 						<a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
 					<?php } ?>
 				</li>
-				<?php }?>
-				<?php }?>
+				<?php } // endforeach slots ?>
 				<?php } else {?>
 				<li>Noch kein Eintrag vorhanden</li>
 				<?php }?>
