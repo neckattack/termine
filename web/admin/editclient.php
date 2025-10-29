@@ -27,6 +27,8 @@ $contact_masseur_id = (isset($R["contact_masseur_id"])) ? (int) $R["contact_mass
 $cDays              = (isset($R["cDays[]"]))            ? $R["cDays[]"]                       : array(array("date" => "", "id" => ""));
 $group_id           = (isset($R["group_id"]))           ? (int) $R["group_id"]                : 0;
 $price							= (isset($R["price"]))              ? trim($R["price"])     : "";
+$default_diagnosis  = isset($R['default_diagnosis']) ? trim($R['default_diagnosis']) : '';
+$default_service_ids_req = isset($R['default_service_ids']) && is_array($R['default_service_ids']) ? array_map('intval', $R['default_service_ids']) : array();
 $hasImage           = false;
 
 
@@ -40,6 +42,9 @@ if ($SUPERADMIN === true) {
 // Get the user list
 require ROOT."/controller/admin-overview_users-controller.php";
 $userList = getAllUsers();
+// Services-Liste für Mehrfachauswahl
+require ROOT."/controller/admin-overview_services-controller.php";
+$services = getAllGebuehServices();
 
 
 // Edit a client
@@ -61,6 +66,15 @@ if ($clientID > 0) {
 		$hash               = generateHashLink($client["hashlink"]);	// Use existing hash link
 		$hasImage           = ( isset($client["image"][10]) );
 		$associated_users   = $client["contacts"]["mixed"];
+        // Defaults laden
+        $default_diagnosis = isset($client['default_diagnosis']) ? (string)$client['default_diagnosis'] : '';
+        $default_service_ids_loaded = isset($client['default_service_ids']) ? trim((string)$client['default_service_ids']) : '';
+        $default_service_ids = array();
+        if ($default_service_ids_req && count($default_service_ids_req)>0) {
+            $default_service_ids = $default_service_ids_req;
+        } elseif ($default_service_ids_loaded !== '') {
+            $default_service_ids = array_values(array_filter(array_map('intval', explode(',', $default_service_ids_loaded)), function($v){ return $v>0; }));
+        }
 
 		// Buchungs-/Stornofrist korrekt setzen
 		$booking_deadline_hours = isset($client["booking_deadline_hours"]) ? $client["booking_deadline_hours"] : 0;
@@ -90,6 +104,8 @@ else {
 	$hash  = generateHashLink();
 	// Defaults für neue Kunden
 	$avoid_double_bookings_mode = 'none';
+    // Default-Felder initialisieren
+    $default_service_ids = $default_service_ids_req;
 }
 
 

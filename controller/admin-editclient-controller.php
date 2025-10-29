@@ -12,7 +12,7 @@ function getClientInfos($id) {
 	$id = (int)$id;
 
 	$sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, \n";
-	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours`, `c`.`avoid_double_bookings_mode` ";
+	$sql .= "`c`.`contact_masseur_id`, `c`.`contact_client_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours`, `c`.`avoid_double_bookings_mode`, `c`.`default_diagnosis`, `c`.`default_service_ids` ";
 	$sql .= "FROM `clients` AS `c` ";
 	$sql .= "WHERE `c`.`id` = :id ";
 
@@ -174,6 +174,12 @@ function editClient($data) {
     if ($avoid_double_bookings_mode !== 'per_date' && $avoid_double_bookings_mode !== 'per_client') {
         $avoid_double_bookings_mode = 'none';
     }
+    $default_diagnosis = isset($data['default_diagnosis']) ? trim($data['default_diagnosis']) : null;
+    $default_service_ids = array();
+    if (isset($data['default_service_ids']) && is_array($data['default_service_ids'])) {
+        $default_service_ids = array_values(array_filter(array_map('intval', $data['default_service_ids']), function($v){ return $v > 0; }));
+    }
+    $default_service_ids_csv = (count($default_service_ids)>0) ? implode(',', $default_service_ids) : null;
 	$user_ids           = (isset($data["user_ids"])) ? $data["user_ids"] : array();
 	$existing_contacts  = false;
 	// Buchungsfrist ermitteln (Dropdown oder custom)
@@ -202,8 +208,10 @@ function editClient($data) {
 		"group_id"           => $group_id,
 		"price"			 => $price,
 		"booking_deadline_hours" => $booking_deadline_hours,
-        "avoid_double_bookings_mode" => $avoid_double_bookings_mode
-	);
+        "avoid_double_bookings_mode" => $avoid_double_bookings_mode,
+        "default_diagnosis" => $default_diagnosis,
+        "default_service_ids" => $default_service_ids_csv,
+    );
 
 
 
@@ -212,8 +220,8 @@ function editClient($data) {
 	switch ($id) {
 		// Add
 		case 0:
-			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`, `booking_deadline_hours`, `avoid_double_bookings_mode`) \n";
-			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price, :booking_deadline_hours, :avoid_double_bookings_mode)";
+			$sql  = "INSERT INTO `clients` (`name`, `hashlink`, `greeting_text`, `email_text`, `contact_masseur_id`, `contact_client_id`, `enabled`, `created_by`, `created_at`, `group_id`, `price`, `booking_deadline_hours`, `avoid_double_bookings_mode`, `default_diagnosis`, `default_service_ids`) \n";
+			$sql .= "VALUES (:name, :hash, :text, :mailtext, :contact_masseur_id, :contact_client_id, :enabled, :user, NOW(), :group_id, :price, :booking_deadline_hours, :avoid_double_bookings_mode, :default_diagnosis, :default_service_ids)";
 
 			$params["name"] = $name;
 			$params["hash"] = $hash;
@@ -228,9 +236,9 @@ function editClient($data) {
 			$existing_contacts = $res[0];
 
 
-			$sql  = "UPDATE `clients` SET \n";
-			$sql .= "`greeting_text` = :text, `email_text` = :mailtext, `contact_masseur_id` = :contact_masseur_id, `contact_client_id` = :contact_client_id, \n";
-			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price, `booking_deadline_hours` = :booking_deadline_hours, `avoid_double_bookings_mode` = :avoid_double_bookings_mode \n";
+			$sql  = "UPDATE `clients` \n";
+			$sql .= "SET `greeting_text` = :text, `email_text` = :mailtext, `contact_masseur_id` = :contact_masseur_id, `contact_client_id` = :contact_client_id, \n";
+			$sql .= "`name` = :name, `enabled` = :enabled, `group_id` = :group_id, `price` = :price, `booking_deadline_hours` = :booking_deadline_hours, `avoid_double_bookings_mode` = :avoid_double_bookings_mode, `default_diagnosis` = :default_diagnosis, `default_service_ids` = :default_service_ids \n";
 			$sql .= "WHERE `id` = :id";
 
 			$params["id"] = $id;

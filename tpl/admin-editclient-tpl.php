@@ -48,6 +48,25 @@ require ROOT."/tpl/header-tpl.php";
 					</select>
 				</div>
 
+				<!-- Neue Default-Felder: oberhalb von 'Tage' -->
+				<div class="row">
+					<label for="default_diagnosis">Default Diagnose</label>
+					<textarea id="default_diagnosis" name="default_diagnosis" rows="4" cols="60"><?=(isset($default_diagnosis)?htmlspecialchars($default_diagnosis):'')?></textarea>
+				</div>
+
+				<div class="row">
+					<label for="default_service_ids">Default Services</label>
+					<select id="default_service_ids" name="default_service_ids[]" multiple="multiple" class="multiselect">
+						<?php if (isset($services) && is_array($services)) {?>
+						<?php foreach ($services as $s) { 
+							$sel = (isset($default_service_ids) && in_array((int)$s['id'], (array)$default_service_ids, true)) ? 'selected="selected"' : '';
+						?>
+						<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
+						<?php }?>
+						<?php }?>
+					</select>
+				</div>
+
 				<div class="row">
 					<?php $disabled = ((int) $_SESSION["userid"] === $contact_client_id) ? 'disabled="disabled"' : ''; ?>
 					<label for="contact_client_id">Ansprechpartner (Kunde)</label>
