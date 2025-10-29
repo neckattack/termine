@@ -31,13 +31,13 @@ require ROOT."/tpl/header-tpl.php";
 			<div>
 				<input type="submit" id="generateSlotsSubmit" value="Erstellen" />
 				<input type="hidden" name="id" id="id" value="<?=$R["id"]?>" />
-				<input type="hidden" name="date_id" id="date_id" value="<?=$slots[0]["date_id"]?>" />
+				<input type="hidden" name="date_id" id="date_id" value="<?= isset($slots[0]["date_id"]) ? (int)$slots[0]["date_id"] : 0 ?>" />
 				<input type="hidden" name="generate" id="generate" value="true" />
 			</div>
 		</form>
 
 		<div class="slots">
-			<h3><?=$slots[0]["date"]?></h3>
+			<h3><?= isset($slots[0]["date"]) ? $slots[0]["date"] : "" ?></h3>
 			<ul id="slots">
 				<?php if (isset($slots[0]["time_start"][0])) { 
 					require_once ROOT.'/controller/admin-overview_services-controller.php';
@@ -49,30 +49,29 @@ require ROOT."/tpl/header-tpl.php";
 					}
 					foreach ($slots AS $slot) {
 						if (!isset($slot["time_start"])) { continue; }
-					?>
-				<li<?=(isset($slot["res_id"][0])) ? " id=\"res_".$slot["res_id"]."\"" : ""?>>
-					<span class="time"><?=$slot["time_start"]?> - <?=$slot["time_end"]?></span>
-					                    <span class="name"><?php if (isset($slot["res_name"][1])) {?><a href="mailto:<?=$slot["email"]?>"><?=$slot["res_name"]?></a><?php } else {?>- frei -<?php }?></span>
+				?>
+				<li style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+					<span class="time" style="min-width:120px; color:#333; white-space:nowrap;">
+						<?=$slot["time_start"]?> - <?=$slot["time_end"]?>
+					</span>
+					<span class="name" style="min-width:180px; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+						<?php if (isset($slot["res_name"][1])) {?><a href="mailto:<?=$slot["email"]?>"><?=$slot["res_name"]?></a><?php } else {?>- frei -<?php }?>
+					</span>
                     <?php if (isset($slot['res_id']) && $slot['res_id']>0) { ?>
-                    <div class="inline-form" style="display:inline-block; margin-left:10px;">
-                        <input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px;" />
-                        <select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="min-width:260px;">
+                    <div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
+                        <input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
+                        <select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="flex:1 1 280px; min-width:280px; max-width:100%;">
                             <?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
                                 <option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
                             <?php } } ?>
                         </select>
                     </div>
                     <?php } ?>
-					<?php if (isset($slot["res_id"])) {?><a href="editslots.php?action=deletereservation&amp;id=<?=$slot["res_id"]?>" class="delete orange">Reservierung löschen</a><?php }?>
-					<a href="editslots.php?action=deletetimeentry&amp;id=<?=$slot["time_id"]?>" class="delete">Termin entfernen</a>
-					<?php if(isset($slot["res_id"])) { ?>
-						<a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
-					<?php } ?>
-				</li>
-				<?php } // endforeach slots ?>
-				<?php } else {?>
-				<li>Noch kein Eintrag vorhanden</li>
-				<?php }?>
+                </li>
+                <?php } // endforeach slots ?>
+                <?php } else {?>
+                <li>Noch kein Eintrag vorhanden</li>
+                <?php }?>
 			</ul>
 		</div>
 

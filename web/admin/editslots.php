@@ -42,10 +42,16 @@ if (isset($P["generate"])) {
 
 $infos = getDayInfos($date_id);
 $slots = array();
-$slots = $infos;
+if (is_array($infos)) {
+    $slots = $infos;
+}
 
 
 // Include the template
-$infoText = "Reservierungen am ".$infos[0]["date"]." (".$infos[0]["client_name"].")";
+if (is_array($infos) && isset($infos[0]["date"]) && isset($infos[0]["client_name"])) {
+    $infoText = "Reservierungen am ".$infos[0]["date"]." (".$infos[0]["client_name"].")";
+} else {
+    $infoText = "Reservierungen";
+}
 require ROOT."/tpl/_include.php";
 ?> 
