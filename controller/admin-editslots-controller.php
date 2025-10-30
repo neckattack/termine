@@ -182,11 +182,12 @@ function getDayInfos($id) {
 	$id = (int) $id;
 
 	$dateStr = getMySQLDateString($config["dateFormat"]);
-	$sql  = "SELECT `c`.`id` AS `client_id`, `c`.`name` AS `client_name`, `c`.`default_diagnosis`, `c`.`default_service_ids`, `d`.`id` AS `date_id`, DATE_FORMAT(`d`.`date`, '".$dateStr."') AS `date`, `t`.`id` AS `time_id`, TIME_FORMAT(`t`.`time_start`, '%H:%i') AS `time_start`, TIME_FORMAT(`t`.`time_end`, '%H:%i') AS `time_end`, `r`.`id` AS `res_id`, `r`.`name` AS `res_name`, `r`.`email` ";
+	$sql  = "SELECT `c`.`id` AS `client_id`, `c`.`name` AS `client_name`, `c`.`default_diagnosis`, `c`.`default_service_ids`, `d`.`masseur_id` AS `masseur_id`, `a`.`first_name` AS `masseur_first_name`, `a`.`last_name` AS `masseur_last_name`, `d`.`id` AS `date_id`, DATE_FORMAT(`d`.`date`, '".$dateStr."') AS `date`, `t`.`id` AS `time_id`, TIME_FORMAT(`t`.`time_start`, '%H:%i') AS `time_start`, TIME_FORMAT(`t`.`time_end`, '%H:%i') AS `time_end`, `r`.`id` AS `res_id`, `r`.`name` AS `res_name`, `r`.`email` ";
 	$sql .= "FROM `dates` AS `d` ";
 	$sql .= "LEFT JOIN `times` AS `t` ON (`d`.`id` = `t`.`date_id`) ";
 	$sql .= "LEFT JOIN `reservations` AS `r` ON (`t`.`id` = `r`.`time_id`) ";
 	$sql .= "LEFT JOIN `clients` AS `c` ON (`d`.`client_id` = `c`.`id`) ";
+	$sql .= "LEFT JOIN `admin` AS `a` ON (`a`.`id` = `d`.`masseur_id`) ";
 	$sql .= "WHERE `d`.`id` = :id ";
 	$sql .= "ORDER BY `t`.`time_start` ";
 	

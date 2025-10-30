@@ -1,0 +1,13 @@
+{
+  "name": "neckattack/termine",
+  "description": "Termine Verwaltung",
+  "type": "project",
+  "require": {
+    "mpdf/mpdf": "^8.2"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.0"
+    }
+  }
+}

@@ -23,7 +23,7 @@ if ($resId <= 0) {
 // Masseur-Name über: reservations -> times -> dates -> clients.contact_masseur_id -> admin
 try {
     $sql = [];
-    $sql[] = "SELECT a.first_name, a.last_name, c.name AS client_name";
+    $sql[] = "SELECT a.first_name, a.last_name, c.name AS client_name, c.default_diagnosis, c.default_service_ids, r.name AS res_name, r.email AS res_email, d.date AS date_ymd";
     $sql[] = "FROM `reservations` r";
     $sql[] = "JOIN `times` t ON t.id = r.time_id";
     $sql[] = "JOIN `dates` d ON d.id = t.date_id";
@@ -31,7 +31,7 @@ try {
     $sql[] = "LEFT JOIN `admin` a ON a.id = c.contact_masseur_id";
     $sql[] = "WHERE r.id = :res_id";
     $q = implode("\n", $sql);
-    $row = $DB->PreparedSelect($q, [ 'res_id' => $resId ], true, false);
+    $row = $DB->PreparedSelect($q, [ 'res_id' => $resId ], false, false);
 } catch (Exception $e) {
     $row = false;
 }
@@ -49,7 +49,128 @@ if (is_array($row)) {
     }
 }
 
-// Einfaches PDF ohne externe Abhängigkeiten erzeugen
+// Wenn mPDF vorhanden ist, nutze es für ein HTML-PDF
+$mpdfAvailable = false;
+if (file_exists(ROOT.'/vendor/autoload.php')) {
+    require_once ROOT.'/vendor/autoload.php';
+    if (class_exists('Mpdf\\Mpdf')) {
+        $mpdfAvailable = true;
+    }
+}
+
+if ($mpdfAvailable) {
+    $clientName   = isset($row['client_name']) ? (string)$row['client_name'] : '';
+    $patientName  = isset($row['res_name']) ? (string)$row['res_name'] : '';
+    $patientEmail = isset($row['res_email']) ? (string)$row['res_email'] : '';
+    $dateYmd      = isset($row['date_ymd']) ? (string)$row['date_ymd'] : '';
+    $dateStr      = $dateYmd ? date('d.m.Y', strtotime($dateYmd)) : '';
+    $diagnosis    = isset($row['default_diagnosis']) ? (string)$row['default_diagnosis'] : '';
+    $serviceIdsCsv= isset($row['default_service_ids']) ? trim((string)$row['default_service_ids']) : '';
+
+    // Services-Liste laden und IDs -> (Code, Titel) mappen
+    require_once ROOT.'/controller/admin-overview_services-controller.php';
+    $svcList = getAllGebuehServices();
+    $svcById = [];
+    if (is_array($svcList)) {
+        foreach ($svcList as $svc) {
+            $svcById[(int)$svc['id']] = $svc;
+        }
+    }
+    $svcRows = [];
+    if ($serviceIdsCsv !== '') {
+        foreach (array_values(array_filter(array_map('intval', explode(',', $serviceIdsCsv)))) as $sid) {
+            if (isset($svcById[$sid])) {
+                $svc = $svcById[$sid];
+                $svcRows[] = [
+                    'code'  => (string)$svc['code'],
+                    'title' => (string)$svc['title'],
+                ];
+            }
+        }
+    }
+
+    // Schöneres Layout, noch ohne Betragslogik
+    $html = '<html><head><meta charset="utf-8"><style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color:#111; }
+        h1 { text-align:center; font-size: 22px; margin: 0 0 14px; }
+        .header { margin-bottom: 12px; }
+        .block { margin: 6px 0; }
+        .muted { color:#444; }
+        .small { font-size: 11px; }
+        .grid { display: table; width:100%; table-layout: fixed; }
+        .col { display: table-cell; vertical-align: top; }
+        .right { text-align:right; }
+        table { width:100%; border-collapse: collapse; margin-top:10px; }
+        th, td { border:1px solid #bbb; padding:6px 8px; }
+        th { background:#f2f2f2; }
+        .sum { font-weight:bold; }
+    </style></head><body>';
+
+    $html .= '<h1>Rechnung</h1>';
+
+    // Kopf links: Absender/Client, rechts: Datum/Nummer (Dummy-Nummer)
+    $html .= '<div class="grid header">'
+          . '<div class="col">'
+          . '<div class="block"><strong>'.htmlspecialchars($clientName).'</strong></div>'
+          . '<div class="block">Masseur: '.htmlspecialchars($masseurName).'</div>'
+          . '</div>'
+          . '<div class="col right">'
+          . '<div class="block">Rechnungsdatum: '.htmlspecialchars(date('d.m.Y')).'</div>'
+          . '<div class="block">Rechnungs-Nr.: RES-'.(int)$resId.'-'.date('Ymd').'</div>'
+          . '</div>'
+          . '</div>';
+
+    // Patient
+    $html .= '<div class="block"><strong>Patient:</strong> '
+          . htmlspecialchars($patientName)
+          . ($patientEmail ? ' &lt;'.htmlspecialchars($patientEmail).'&gt;' : '')
+          . '</div>';
+
+    // Termin
+    if ($dateStr) {
+        $html .= '<div class="block"><strong>Behandlungstermin:</strong> '.htmlspecialchars($dateStr).'</div>';
+    }
+
+    // Diagnose
+    if ($diagnosis !== '') {
+        $html .= '<div class="block"><strong>Diagnose:</strong><br/>'.nl2br(htmlspecialchars($diagnosis)).'</div>';
+    }
+
+    // Tabelle: Datum | GebüH-Nr. | Leistung | Betrag (€)
+    $html .= '<table><thead><tr>'
+          . '<th style="width:18%">Datum</th>'
+          . '<th style="width:14%">GebüH-Nr.</th>'
+          . '<th>Leistung</th>'
+          . '<th style="width:16%" class="right">Betrag (€)</th>'
+          . '</tr></thead><tbody>';
+
+    if (count($svcRows) > 0) {
+        foreach ($svcRows as $svc) {
+            $html .= '<tr>'
+                  . '<td>'.htmlspecialchars($dateStr).'</td>'
+                  . '<td>'.htmlspecialchars($svc['code']).'</td>'
+                  . '<td>'.htmlspecialchars($svc['title']).'</td>'
+                  . '<td class="right">&nbsp;</td>'
+                  . '</tr>';
+        }
+        $html .= '<tr class="sum"><td colspan="3" class="right">Gesamtbetrag</td><td class="right">&nbsp;</td></tr>';
+    } else {
+        $html .= '<tr><td colspan="4" class="small muted">Keine Default-Services hinterlegt.</td></tr>';
+    }
+    $html .= '</tbody></table>';
+
+    // Zahlungs-Hinweis
+    $html .= '<div class="block" style="margin-top:10px;"><em>Der Betrag wurde bereits entrichtet.</em></div>';
+
+    $html .= '</body></html>';
+
+    $mpdf = new \Mpdf\Mpdf();
+    $mpdf->WriteHTML($html);
+    $mpdf->Output('Rechnung_'.$resId.'.pdf', 'I');
+    exit;
+}
+
+// Einfaches PDF ohne externe Abhängigkeiten erzeugen (Fallback)
 // Eine Seite, Helvetica, zwei Zeilen Text
 function buildSimplePdf($line1, $line2) {
     $pdf = "%PDF-1.4\n";

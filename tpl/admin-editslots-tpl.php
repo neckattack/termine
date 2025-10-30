@@ -57,29 +57,41 @@ require ROOT."/tpl/header-tpl.php";
 					<span class="name" style="min-width:180px; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
 						<?php if (isset($slot["res_name"][1])) {?><a href="mailto:<?=$slot["email"]?>"><?=$slot["res_name"]?></a><?php } else {?>- frei -<?php }?>
 					</span>
-                    <?php if (isset($slot['res_id']) && $slot['res_id']>0) { ?>
-                    <div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
-                        <input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
-                        <select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="flex:1 1 280px; min-width:280px; max-width:100%;">
-                            <?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
-                                <option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
-                            <?php } } ?>
-                        </select>
-                    </div>
-                    <?php } ?>
-                    <div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex:0 0 auto;">
-                        <?php if (isset($slot["res_id"])) {?><a href="invoice.php?res_id=<?=$slot["res_id"]?>" class="pdf" target="_blank">PDF</a><?php }?>
-                        <?php if (isset($slot["res_id"])) {?><a href="editslots.php?action=deletereservation&amp;id=<?=$slot["res_id"]?>" class="delete orange">Reservierung löschen</a><?php }?>
-                        <a href="editslots.php?action=deletetimeentry&amp;id=<?=$slot["time_id"]?>" class="delete">Termin entfernen</a>
-                        <?php if(isset($slot["res_id"])) { ?>
-                            <a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
-                        <?php } ?>
-                    </div>
-                </li>
-                <?php } // endforeach slots ?>
-                <?php } else {?>
-                <li>Noch kein Eintrag vorhanden</li>
-                <?php }?>
+					<?php 
+					$masseurLabel = '';
+					if (isset($slot['masseur_id']) && (int)$slot['masseur_id'] > 0) {
+						$mName = trim((isset($slot['masseur_first_name']) ? $slot['masseur_first_name'] : '').' '.(isset($slot['masseur_last_name']) ? $slot['masseur_last_name'] : ''));
+						if ($mName !== '') {
+							$masseurLabel = '<a href="edituser.php?id='.(int)$slot['masseur_id'].'" target="_blank">'.htmlspecialchars($mName).'</a>';
+						}
+					}
+					if ($masseurLabel !== '') {
+					?>
+					<span class="masseur" style="min-width:160px; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Masseur: <?=$masseurLabel?></span>
+					<?php } ?>
+					<?php if (isset($slot['res_id']) && $slot['res_id']>0) { ?>
+					<div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
+						<input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
+						<select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="flex:1 1 280px; min-width:280px; max-width:100%;">
+							<?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
+								<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
+							<?php } } ?>
+						</select>
+					</div>
+					<?php } ?>
+					<div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex:0 0 auto;">
+						<?php if (isset($slot["res_id"])) {?><a href="invoice.php?res_id=<?=$slot["res_id"]?>" class="pdf" target="_blank">PDF</a><?php }?>
+						<?php if (isset($slot["res_id"])) {?><a href="editslots.php?action=deletereservation&amp;id=<?=$slot["res_id"]?>" class="delete orange">Reservierung löschen</a><?php }?>
+						<a href="editslots.php?action=deletetimeentry&amp;id=<?=$slot["time_id"]?>" class="delete">Termin entfernen</a>
+						<?php if(isset($slot["res_id"])) { ?>
+							<a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
+						<?php } ?>
+					</div>
+				</li>
+				<?php } // endforeach slots ?>
+				<?php } else {?>
+				<li>Noch kein Eintrag vorhanden</li>
+				<?php }?>
 			</ul>
 		</div>
 
