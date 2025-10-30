@@ -50,7 +50,7 @@ require ROOT."/tpl/header-tpl.php";
 					foreach ($slots AS $slot) {
 						if (!isset($slot["time_start"])) { continue; }
 				?>
-				<li style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+				<li style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:8px 0;">
 					<span class="time" style="min-width:120px; color:#333; white-space:nowrap;">
 						<?=$slot["time_start"]?> - <?=$slot["time_end"]?>
 					</span>
@@ -67,6 +67,14 @@ require ROOT."/tpl/header-tpl.php";
                         </select>
                     </div>
                     <?php } ?>
+                    <div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex:0 0 auto;">
+                        <?php if (isset($slot["res_id"])) {?><a href="invoice.php?res_id=<?=$slot["res_id"]?>" class="pdf" target="_blank">PDF</a><?php }?>
+                        <?php if (isset($slot["res_id"])) {?><a href="editslots.php?action=deletereservation&amp;id=<?=$slot["res_id"]?>" class="delete orange">Reservierung löschen</a><?php }?>
+                        <a href="editslots.php?action=deletetimeentry&amp;id=<?=$slot["time_id"]?>" class="delete">Termin entfernen</a>
+                        <?php if(isset($slot["res_id"])) { ?>
+                            <a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
+                        <?php } ?>
+                    </div>
                 </li>
                 <?php } // endforeach slots ?>
                 <?php } else {?>
