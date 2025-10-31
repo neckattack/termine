@@ -46,13 +46,15 @@ require ROOT."/tpl/header-tpl.php";
 					require_once ROOT.'/controller/admin-overview_services-controller.php';
 					$services = getAllGebuehServices();
 					$defaultDiagnosis = isset($slots[0]['default_diagnosis']) ? (string)$slots[0]['default_diagnosis'] : '';
-					$defaultServiceIds = array();
-					if (isset($slots[0]['default_service_ids']) && trim($slots[0]['default_service_ids'])!=='') {
-						$defaultServiceIds = array_values(array_filter(array_map('intval', explode(',', $slots[0]['default_service_ids'])), function($v){ return $v>0; }));
-					}
-					foreach ($slots AS $slot) {
-						if (!isset($slot["time_start"])) { continue; }
-				?>
+                    $defaultServiceIds = array();
+                    if (isset($slots[0]['default_service_ids']) && trim($slots[0]['default_service_ids'])!=='') {
+                        $defaultServiceIds = array_values(array_filter(array_map('intval', explode(',', $slots[0]['default_service_ids'])), function($v){ return $v>0; }));
+                    }
+                    foreach ($slots AS $slot) {
+                        if (!isset($slot["time_start"])) { continue; }
+                        // ausgewählte Services pro Reservierung: reservation_service_prices > fallback defaultServiceIds
+                        $selectedIds = isset($reservation_service_prices[$slot['res_id']]) ? array_keys($reservation_service_prices[$slot['res_id']]) : $defaultServiceIds;
+                    ?>
 				<li style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:8px 0;">
 					<span class="time" style="min-width:120px; color:#333; white-space:nowrap;">
 						<?=$slot["time_start"]?> - <?=$slot["time_end"]?>
@@ -64,7 +66,7 @@ require ROOT."/tpl/header-tpl.php";
 					<div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
 						<input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
 						<select name="res_services[<?=$slot['res_id']?>][]" data-resid="<?=$slot['res_id']?>" multiple="multiple" class="multiselect res-services" style="flex:1 1 280px; min-width:280px; max-width:100%;">
-							<?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
+							<?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $selectedIds, true) ? 'selected="selected"' : ''; ?>
 								<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
 							<?php } } ?>
 						</select>
@@ -75,7 +77,7 @@ require ROOT."/tpl/header-tpl.php";
 						$svcIndex = array();
 						if (is_array($services)) { foreach ($services as $s) { $svcIndex[(int)$s['id']] = $s; } }
 						$rows = array(); $sum = 0.0;
-						foreach ($defaultServiceIds as $sid) {
+						foreach ($selectedIds as $sid) {
                             $sid = (int)$sid; if (!isset($svcIndex[$sid])) continue; $s = $svcIndex[$sid];
                             // Preis-Priorität: Reservierung > Client > fee_mid
                             $cp = null;
@@ -238,9 +240,20 @@ require ROOT."/tpl/footer-tpl.php";
 
     // Autosave for services multi-select
     document.querySelectorAll('.res-services').forEach(function(sel){
+        var saveTimer=null;
         function saveServices(){
             var rid = sel.getAttribute('data-resid');
-            var sids = Array.prototype.slice.call(sel.options).filter(function(o){ return o.selected; }).map(function(o){ return o.value; });
+            var sids;
+            try {
+                if (window.jQuery && typeof jQuery.fn === 'object') {
+                    var v = jQuery(sel).val();
+                    sids = Array.isArray(v) ? v : [];
+                }
+            } catch(_) {}
+            if (!Array.isArray(sids)) {
+                sids = Array.prototype.slice.call(sel.options).filter(function(o){ return o.selected; }).map(function(o){ return o.value; });
+            }
+            try { console.debug('[services-autosave] rid', rid, 'sids', sids); } catch(_) {}
             showBanner('Speichere gewählte Services…', null);
             var params = new URLSearchParams();
             params.append('ajax_res_services','1');
@@ -248,13 +261,23 @@ require ROOT."/tpl/footer-tpl.php";
             sids.forEach(function(id){ params.append('sids[]', id); });
             fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, credentials:'same-origin', body: params.toString() })
                 .then(function(r){ if(!r.ok){ throw new Error('HTTP '+r.status); } var ct=r.headers.get('content-type')||''; if(ct.indexOf('application/json')!==-1){return r.json();} return r.text().then(function(){return {ok:false};}); })
-                .then(function(j){ showBanner((j && j.ok)?'Services gespeichert':'Fehler beim Speichern der Services', (j && j.ok)); })
-                .catch(function(){ showBanner('Fehler beim Speichern der Services', false); });
+                .then(function(j){ try{ console.debug('[services-autosave] resp', j);}catch(_){} showBanner((j && j.ok)?'Services gespeichert':'Fehler beim Speichern der Services', (j && j.ok)); })
+                .catch(function(err){ try{ console.error('[services-autosave] err', err);}catch(_){} showBanner('Fehler beim Speichern der Services', false); });
         }
-        sel.addEventListener('change', saveServices);
-        sel.addEventListener('input', saveServices);
-        sel.addEventListener('keyup', function(e){ if(e.key==='Enter' || e.key===' ') saveServices(); });
-        sel.addEventListener('blur', saveServices);
+        function schedule(){ if (saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(saveServices, 300); }
+        sel.addEventListener('change', schedule);
+        sel.addEventListener('input', schedule);
+        sel.addEventListener('keyup', function(e){ if(e.key==='Enter' || e.key===' ') schedule(); });
+        sel.addEventListener('blur', schedule);
+        // jQuery UI Multiselect plugin events, falls aktiv
+        try {
+            if (window.jQuery && typeof jQuery.fn === 'object') {
+                var $sel = jQuery(sel);
+                $sel.on('multiselectclick', schedule);
+                $sel.on('multiselectcheckall', schedule);
+                $sel.on('multiselectuncheckall', schedule);
+            }
+        } catch(_) {}
     });
     })();
 </script>

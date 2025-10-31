@@ -33,6 +33,109 @@ if ($allowed !== true) {
     header("Location: index.php");
 }
 
+// AJAX: save selected services for a reservation
+if (isset($P['ajax_res_services']) && $P['ajax_res_services'] === '1') {
+    header('Content-Type: application/json; charset=utf-8');
+    $rid = isset($P['rid']) ? (int)$P['rid'] : 0;
+    // Accept sids as array (sids[]) or comma-separated fallback
+    $sids = array();
+    if (isset($P['sids'])) {
+        if (is_array($P['sids'])) { $sids = $P['sids']; }
+        elseif (is_string($P['sids'])) { $sids = array_filter(explode(',', $P['sids'])); }
+    }
+    $sids = array_values(array_unique(array_map('intval', $sids)));
+    $ok=false; $msg='';
+    try {
+        if ($rid>0) {
+            // ensure table
+            $tbl = $DB->PreparedSelect("SHOW TABLES LIKE 'reservation_service_prices'", array(), false, false);
+            if (!(is_array($tbl) && count($tbl) > 0)) { echo json_encode(array('ok'=>false,'message'=>'table missing')); exit; }
+
+            // find client for this reservation
+            $row = $DB->PreparedSelect(
+                "SELECT c.id AS cid FROM reservations r JOIN times t ON r.time_id=t.id JOIN dates d ON t.date_id=d.id JOIN clients c ON d.client_id=c.id WHERE r.id=:rid",
+                array('rid'=>$rid), false, false
+            );
+            $cid = (is_array($row) && isset($row[0]['cid'])) ? (int)$row[0]['cid'] : 0;
+
+            // load client prices
+            $clientPrices = array();
+            if ($cid>0) {
+                $rows = $DB->PreparedSelect("SELECT service_id, price_amount FROM client_service_prices WHERE client_id=:cid", array('cid'=>$cid), false, false);
+                if (is_array($rows)) { foreach ($rows as $r) { $clientPrices[(int)$r['service_id']] = (float)$r['price_amount']; } }
+            }
+            // load fee_mid for involved services
+            $feeMid = array();
+            if (count($sids)>0) {
+                $ph = array(); $pa = array(); foreach ($sids as $i=>$sid){ $ph[]=':s'.$i; $pa['s'.$i]=$sid; }
+                $rows = $DB->PreparedSelect('SELECT id, fee_mid FROM gebueh_services WHERE id IN ('.implode(',', $ph).')', $pa, false, false);
+                if (is_array($rows)) { foreach ($rows as $r) { $feeMid[(int)$r['id']] = (float)$r['fee_mid']; } }
+            }
+
+            // fetch existing RSP rows for this reservation
+            $existing = array();
+            $rows = $DB->PreparedSelect('SELECT service_id, price_amount FROM reservation_service_prices WHERE reservation_id = :rid', array('rid'=>$rid), false, false);
+            if (is_array($rows)) { foreach ($rows as $r) { $existing[(int)$r['service_id']] = (float)$r['price_amount']; } }
+
+            // upsert selected
+            $sqlIns = "INSERT INTO reservation_service_prices (reservation_id, service_id, price_amount) VALUES (:rid, :sid, :amount) ON DUPLICATE KEY UPDATE price_amount = price_amount";
+            $stmt = $DB->PrepareStatement($sqlIns);
+            foreach ($sids as $sid) {
+                $sid = (int)$sid; if ($sid<=0) continue;
+                if (isset($existing[$sid])) {
+                    // keep existing price
+                    $DB->PreparedStatement($stmt, array('rid'=>$rid,'sid'=>$sid,'amount'=>$existing[$sid]), false, false);
+                } else {
+                    $amount = isset($clientPrices[$sid]) ? (float)$clientPrices[$sid] : (isset($feeMid[$sid]) ? (float)$feeMid[$sid] : 0.0);
+                    $DB->PreparedStatement($stmt, array('rid'=>$rid,'sid'=>$sid,'amount'=>$amount), false, false);
+                }
+            }
+
+            // delete unselected
+            if (count($sids) > 0) {
+                $ph = array(); $pa = array('rid'=>$rid); foreach ($sids as $i=>$sid){ $ph[]=':s'.$i; $pa['s'.$i]=$sid; }
+                $sqlDel = 'DELETE FROM reservation_service_prices WHERE reservation_id = :rid AND service_id NOT IN ('.implode(',', $ph).')';
+                $DB->PreparedStatement($sqlDel, $pa, false, false);
+            } else {
+                $DB->PreparedStatement('DELETE FROM reservation_service_prices WHERE reservation_id = :rid', array('rid'=>$rid), false, false);
+            }
+
+            $ok=true;
+        } else { $msg='invalid rid'; }
+    } catch (Exception $e) { $msg='error'; }
+    echo json_encode(array('ok'=>$ok,'message'=>$msg));
+    exit;
+}
+
+// AJAX: bulk save for one reservation
+if (isset($P['ajax_res_price_bulk']) && $P['ajax_res_price_bulk'] === '1') {
+    header('Content-Type: application/json; charset=utf-8');
+    $rid = isset($P['rid']) ? (int)$P['rid'] : 0;
+    $sids = isset($P['sid']) ? (array)$P['sid'] : array();
+    $vals = isset($P['amount']) ? (array)$P['amount'] : array();
+    $ok  = false; $msg='';
+    try {
+        if ($rid>0 && count($sids)===count($vals)) {
+            $tbl = $DB->PreparedSelect("SHOW TABLES LIKE 'reservation_service_prices'", array(), false, false);
+            if (is_array($tbl) && count($tbl) > 0) {
+                $sql = "INSERT INTO reservation_service_prices (reservation_id, service_id, price_amount) \n"
+                     . "VALUES (:rid, :sid, :amount) \n"
+                     . "ON DUPLICATE KEY UPDATE price_amount = VALUES(price_amount)";
+                $stmt = $DB->PrepareStatement($sql);
+                for ($i=0; $i<count($sids); $i++) {
+                    $sid = (int)$sids[$i]; if ($sid<=0) continue;
+                    $val = $vals[$i]; if (is_string($val)) { $val = str_replace(',', '.', $val); }
+                    $amount = (float)$val; if ($amount < 0) { $amount = 0.0; }
+                    $DB->PreparedStatement($stmt, array('rid'=>$rid,'sid'=>$sid,'amount'=>$amount), false, false);
+                }
+                $ok = true;
+            } else { $msg='Table missing'; }
+        } else { $msg='Invalid params'; }
+    } catch (Exception $e) { $msg='Error'; }
+    echo json_encode(array('ok'=>$ok,'message'=>$msg));
+    exit;
+}
+
 // Reservierungs-spezifische Servicepreise des Tages laden (wird nach $slots-Befüllung erneut gesetzt)
 $reservation_service_prices = array();
 
