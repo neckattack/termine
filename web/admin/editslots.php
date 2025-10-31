@@ -33,6 +33,9 @@ if ($allowed !== true) {
     header("Location: index.php");
 }
 
+// Reservierungs-spezifische Servicepreise des Tages laden (wird nach $slots-Befüllung erneut gesetzt)
+$reservation_service_prices = array();
+
 // AJAX: single price save
 if (isset($P['ajax_res_price']) && $P['ajax_res_price'] === '1') {
     header('Content-Type: application/json; charset=utf-8');
@@ -101,6 +104,26 @@ $slots = array();
 if (is_array($infos)) {
     $slots = $infos;
 }
+
+// Jetzt, da $slots befüllt ist: Reservierungs-spezifische Preise laden
+try {
+    $resIds = array();
+    foreach ($slots as $s) { if (isset($s['res_id']) && (int)$s['res_id'] > 0) { $resIds[] = (int)$s['res_id']; } }
+    $resIds = array_values(array_unique($resIds));
+    if (count($resIds) > 0) {
+        $placeholders = array(); $params = array();
+        foreach ($resIds as $i => $rid) { $placeholders[] = ':r'.$i; $params['r'.$i] = $rid; }
+        $sql = 'SELECT reservation_id, service_id, price_amount FROM reservation_service_prices WHERE reservation_id IN ('.implode(',', $placeholders).')';
+        $rows = $DB->PreparedSelect($sql, $params, false, false);
+        if (is_array($rows)) {
+            foreach ($rows as $r) {
+                $rid = (int)$r['reservation_id'];
+                $sid = (int)$r['service_id'];
+                $reservation_service_prices[$rid][$sid] = (float)$r['price_amount'];
+            }
+        }
+    }
+} catch (Exception $e) {}
 
 // Patientenrechnung-Flag und Client-Daten laden
 $patient_billing_required = 0;

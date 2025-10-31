@@ -73,8 +73,16 @@ require ROOT."/tpl/header-tpl.php";
 						if (is_array($services)) { foreach ($services as $s) { $svcIndex[(int)$s['id']] = $s; } }
 						$rows = array(); $sum = 0.0;
 						foreach ($defaultServiceIds as $sid) {
-							$sid = (int)$sid; if (!isset($svcIndex[$sid])) continue; $s = $svcIndex[$sid];
-							$cp = isset($client_service_prices[$sid]) ? (float)$client_service_prices[$sid] : (isset($s['fee_mid'])?(float)$s['fee_mid']:0.0);
+                            $sid = (int)$sid; if (!isset($svcIndex[$sid])) continue; $s = $svcIndex[$sid];
+                            // Preis-Priorität: Reservierung > Client > fee_mid
+                            $cp = null;
+                            if (isset($reservation_service_prices[$slot['res_id']]) && isset($reservation_service_prices[$slot['res_id']][$sid])) {
+                                $cp = (float)$reservation_service_prices[$slot['res_id']][$sid];
+                            } elseif (isset($client_service_prices[$sid])) {
+                                $cp = (float)$client_service_prices[$sid];
+                            } else {
+                                $cp = isset($s['fee_mid']) ? (float)$s['fee_mid'] : 0.0;
+                            }
 							$rows[] = array('id'=>$sid,'code'=>$s['code'],'title'=>$s['title'],'price'=>$cp);
 							$sum += $cp;
 						}
@@ -158,4 +166,32 @@ require ROOT."/tpl/footer-tpl.php";
             box.addEventListener('change', function(ev){ if(ev.target && ev.target.classList.contains('svc-price')) recomputeBoxSum(box); });
         });
     })();
+    function post(url, data){
+        return fetch(url, { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, credentials: 'same-origin', body: new URLSearchParams(data).toString() });
+    }
+    var url = '<?= ABSURL . 'web/admin/editslots.php?id=' . (isset($_GET['id']) ? (int)$_GET['id'] : 0) ?>';
+    document.querySelectorAll('.autosave').forEach(function(inp){
+        function save(){
+            var rid = inp.getAttribute('data-resid');
+            var sid = inp.getAttribute('data-sid');
+            var amount = inp.value;
+            var stat = inp.parentElement.querySelector('.save-status');
+            if (stat) { stat.textContent = 'Speichere…'; stat.style.color = '#666'; }
+            post(url, { ajax_res_price: '1', rid: rid, sid: sid, amount: amount })
+                .then(function(r){ return r.json(); })
+                .then(function(j){ if(stat){ stat.textContent = j.ok ? 'Gespeichert' : 'Fehler'; stat.style.color = j.ok ? '#0a0' : '#c00'; } })
+                .catch(function(){ if(stat){ stat.textContent = 'Fehler'; stat.style.color = '#c00'; } });
+        }
+        // Debounced autosave on input as well
+        var t = null;
+        function schedule(){
+            var stat = inp.parentElement.querySelector('.save-status');
+            if (stat) { stat.textContent = '…'; stat.style.color = '#666'; }
+            if (t) clearTimeout(t);
+            t = setTimeout(save, 600);
+        }
+        inp.addEventListener('input', schedule);
+        inp.addEventListener('change', save);
+        inp.addEventListener('blur', save);
+    });
 </script>
