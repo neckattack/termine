@@ -33,6 +33,35 @@ if ($allowed !== true) {
     header("Location: index.php");
 }
 
+// AJAX: single price save
+if (isset($P['ajax_res_price']) && $P['ajax_res_price'] === '1') {
+    header('Content-Type: application/json; charset=utf-8');
+    $rid = isset($P['rid']) ? (int)$P['rid'] : 0;
+    $sid = isset($P['sid']) ? (int)$P['sid'] : 0;
+    $val = isset($P['amount']) ? $P['amount'] : null;
+    $ok  = false; $msg = '';
+    try {
+        if ($rid>0 && $sid>0 && $val!==null) {
+            if (is_string($val)) { $val = str_replace(',', '.', $val); }
+            $amount = (float)$val; if ($amount < 0) { $amount = 0.0; }
+            $tbl = $DB->PreparedSelect("SHOW TABLES LIKE 'reservation_service_prices'", array(), false, false);
+            if (is_array($tbl) && count($tbl) > 0) {
+                $sql = "INSERT INTO reservation_service_prices (reservation_id, service_id, price_amount) \n"
+                     . "VALUES (:rid, :sid, :amount) \n"
+                     . "ON DUPLICATE KEY UPDATE price_amount = VALUES(price_amount)";
+                $DB->PreparedStatement($sql, array('rid'=>$rid,'sid'=>$sid,'amount'=>$amount), false, false);
+                $ok = true;
+            } else {
+                $msg = 'Table reservation_service_prices missing';
+            }
+        } else {
+            $msg = 'Invalid parameters';
+        }
+    } catch (Exception $e) { $msg = 'Error'; }
+    echo json_encode(array('ok'=>$ok, 'message'=>$msg));
+    exit;
+}
+
 // Save reservation prices (step 2)
 if (isset($P['save_res_prices']) && isset($P['res_prices']) && is_array($P['res_prices'])) {
     try {
