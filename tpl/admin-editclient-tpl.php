@@ -67,6 +67,107 @@ require ROOT."/tpl/header-tpl.php";
 					</select>
 				</div>
 
+				<!-- Anzeige: Client-spezifische Default-Berechnung (nur Anzeige) -->
+				<div class="row">
+					<label>Default Services – Berechnung</label>
+					<?php 
+						$svcIndex = array();
+						if (isset($services) && is_array($services)) {
+							foreach ($services as $s) { $svcIndex[(int)$s['id']] = $s; }
+						}
+						$calcIds = isset($default_service_ids) ? (array)$default_service_ids : array();
+						$totalClient = 0.0;
+					?>
+					<div id="svc-calc" style="max-width: 860px;">
+						<table style="width:100%; border-collapse:collapse;">
+							<thead>
+								<tr>
+									<th style="text-align:left; border-bottom:1px solid #ccc; padding:4px 6px;">Service</th>
+									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">min</th>
+									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">mittel</th>
+									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">max</th>
+									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">Client-Preis</th>
+								</tr>
+							</thead>
+							<tbody id="svc-calc-body">
+								<?php foreach ($calcIds as $sid) { $sid=(int)$sid; if (!isset($svcIndex[$sid])) continue; $s=$svcIndex[$sid]; $cp = isset($client_service_prices[$sid]) ? (float)$client_service_prices[$sid] : (isset($s['fee_mid'])?(float)$s['fee_mid']:0.0); $totalClient += $cp; ?>
+								<tr>
+									<td style="padding:4px 6px; border-bottom:1px solid #eee;"><?=$s['code']?> – <?=$s['title']?></td>
+									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_min'])?number_format((float)$s['fee_min'],2,',','.'):'-'?></td>
+									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_mid'])?number_format((float)$s['fee_mid'],2,',','.'):'-'?></td>
+									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_max'])?number_format((float)$s['fee_max'],2,',','.'):'-'?></td>
+									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><strong><?=number_format($cp,2,',','.')?></strong></td>
+								</tr>
+								<?php } ?>
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="4" style="padding:6px; text-align:right;">Summe</td>
+									<td id="svc-calc-sum" style="padding:6px; text-align:right;"><strong><?=number_format($totalClient,2,',','.')?></strong></td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+
+				<script>
+				(function(){
+					var svcMap = <?php 
+						$map = array();
+						foreach ($services as $s) {
+							$sid = (int)$s['id'];
+							$map[$sid] = array(
+								'code' => (string)$s['code'],
+								'title' => (string)$s['title'],
+								'fee_min' => isset($s['fee_min']) ? (float)$s['fee_min'] : null,
+								'fee_mid' => isset($s['fee_mid']) ? (float)$s['fee_mid'] : null,
+								'fee_max' => isset($s['fee_max']) ? (float)$s['fee_max'] : null,
+								'client_price' => isset($client_service_prices[$sid]) ? (float)$client_service_prices[$sid] : (isset($s['fee_mid']) ? (float)$s['fee_mid'] : 0)
+							);
+						}
+						echo json_encode($map);
+					?>;
+
+					function renderCalc(selectedIds){
+						var body = document.getElementById('svc-calc-body');
+						if(!body) return;
+						var sum = 0.0, rowsHtml = '';
+						(selectedIds||[]).forEach(function(id){
+							id = parseInt(id,10);
+							var s = svcMap[id];
+							if(!s) return;
+							var cp = (typeof s.client_price==='number') ? s.client_price : (s.fee_mid||0);
+							sum += cp;
+							rowsHtml += '<tr>'+
+								'<td style="padding:4px 6px; border-bottom:1px solid #eee;">'+s.code+' – '+s.title+'</td>'+
+								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+(s.fee_min!=null?cpn(s.fee_min):'-')+'</td>'+
+								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+(s.fee_mid!=null?cpn(s.fee_mid):'-')+'</td>'+
+								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+(s.fee_max!=null?cpn(s.fee_max):'-')+'</td>'+
+								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><strong>'+cpn(cp)+'</strong></td>'+
+							'</tr>';
+						});
+						body.innerHTML = rowsHtml;
+						var sumTd = document.getElementById('svc-calc-sum');
+						if(sumTd) sumTd.innerHTML = '<strong>'+cpn(sum)+'</strong>';
+					}
+
+					function cpn(n){
+						return (n||0).toFixed(2).replace('.',',');
+					}
+
+					var select = document.getElementById('default_service_ids');
+					if(select){
+						select.addEventListener('change', function(){
+							var ids = Array.prototype.slice.call(select.options).filter(function(o){return o.selected;}).map(function(o){return o.value;});
+							renderCalc(ids);
+						});
+						// Initial render
+						var ids0 = Array.prototype.slice.call(select.options).filter(function(o){return o.selected;}).map(function(o){return o.value;});
+						renderCalc(ids0);
+					}
+				})();
+				</script>
+
 				<div class="row">
 					<?php $disabled = ((int) $_SESSION["userid"] === $contact_client_id) ? 'disabled="disabled"' : ''; ?>
 					<label for="contact_client_id">Ansprechpartner (Kunde)</label>

@@ -46,6 +46,23 @@ $userList = getAllUsers();
 require ROOT."/controller/admin-overview_services-controller.php";
 $services = getAllGebuehServices();
 
+// Client-spezifische Servicepreise laden (Anzeige, kein Speichern in diesem Schritt)
+$client_service_prices = array();
+if ($clientID > 0) {
+    try {
+        $sql = "SELECT service_id, price_amount FROM client_service_prices WHERE client_id = :cid";
+        $rows = $DB->PreparedSelect($sql, array('cid' => $clientID), false, false);
+        if (is_array($rows)) {
+            foreach ($rows as $r) {
+                $sid = (int)$r['service_id'];
+                $client_service_prices[$sid] = (float)$r['price_amount'];
+            }
+        }
+    } catch (Exception $e) {
+        $client_service_prices = array();
+    }
+}
+
 
 // Edit a client
 if ($clientID > 0) {
