@@ -257,6 +257,25 @@ function editClient($data) {
 	// Set the client id if new client
 	$id = ($id > 0) ? $id : $DB->lastInsertId();
 
+    // Persist client-specific service prices (if provided)
+    if (isset($data['service_prices']) && is_array($data['service_prices'])) {
+        $prices = $data['service_prices'];
+        $sqlUp  = "INSERT INTO client_service_prices (client_id, service_id, price_amount) \n"
+                . "VALUES (:cid, :sid, :price) \n"
+                . "ON DUPLICATE KEY UPDATE price_amount = VALUES(price_amount)";
+        $stmt = $DB->PrepareStatement($sqlUp);
+        foreach ($prices as $sid => $amount) {
+            $sid = (int)$sid;
+            if ($sid <= 0) { continue; }
+            // Accept numbers with comma or dot
+            if (is_string($amount)) { $amount = str_replace(',', '.', $amount); }
+            $val = (float)$amount;
+            if ($val < 0) { $val = 0.0; }
+            $paramsUp = array('cid' => (int)$id, 'sid' => $sid, 'price' => $val);
+            $DB->PreparedStatement($stmt, $paramsUp, false, false);
+        }
+    }
+
 
 	/**
 	 * REMOVED

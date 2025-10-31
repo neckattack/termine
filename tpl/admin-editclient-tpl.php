@@ -143,12 +143,15 @@ require ROOT."/tpl/header-tpl.php";
 								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+(s.fee_min!=null?cpn(s.fee_min):'-')+'</td>'+
 								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+(s.fee_mid!=null?cpn(s.fee_mid):'-')+'</td>'+
 								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+(s.fee_max!=null?cpn(s.fee_max):'-')+'</td>'+
-								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><strong>'+cpn(cp)+'</strong></td>'+
+								'<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;">'+
+									'<input type="number" step="0.01" min="0" name="service_prices['+id+']" value="'+cp.toFixed(2)+'" class="svc-price" style="width:110px; text-align:right;" />'+
+								'</td>'+
 							'</tr>';
 						});
 						body.innerHTML = rowsHtml;
 						var sumTd = document.getElementById('svc-calc-sum');
 						if(sumTd) sumTd.innerHTML = '<strong>'+cpn(sum)+'</strong>';
+						bindPriceInputs();
 					}
 
 					function cpn(n){
@@ -164,6 +167,25 @@ require ROOT."/tpl/header-tpl.php";
 						// Initial render
 						var ids0 = Array.prototype.slice.call(select.options).filter(function(o){return o.selected;}).map(function(o){return o.value;});
 						renderCalc(ids0);
+					}
+
+					function bindPriceInputs(){
+						var inputs = document.querySelectorAll('#svc-calc-body .svc-price');
+						inputs.forEach(function(inp){
+							inp.addEventListener('input', recomputeSum);
+							inp.addEventListener('change', recomputeSum);
+						});
+					}
+
+					function recomputeSum(){
+						var inputs = document.querySelectorAll('#svc-calc-body .svc-price');
+						var sum = 0.0;
+						inputs.forEach(function(inp){
+							var v = parseFloat(inp.value.replace(',', '.'));
+							if(!isNaN(v) && v >= 0){ sum += v; }
+						});
+						var sumTd = document.getElementById('svc-calc-sum');
+						if(sumTd) sumTd.innerHTML = '<strong>'+cpn(sum)+'</strong>';
 					}
 				})();
 				</script>
