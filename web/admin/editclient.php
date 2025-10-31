@@ -48,6 +48,14 @@ $services = getAllGebuehServices();
 
 // Client-spezifische Servicepreise laden (Anzeige, kein Speichern in diesem Schritt)
 $client_service_prices = array();
+// Flag: Patientenrechnung notwendig (default: 0)
+$patient_billing_required = 0;
+// Prüfen, ob Spalte existiert
+$__hasPatientBillingCol = false;
+try {
+    $col = $DB->PreparedSelect("SHOW COLUMNS FROM `clients` LIKE 'patient_billing_required'", array(), false, false);
+    $__hasPatientBillingCol = (is_array($col) && count($col) > 0);
+} catch (Exception $e) { $__hasPatientBillingCol = false; }
 if ($clientID > 0) {
     try {
         $sql = "SELECT service_id, price_amount FROM client_service_prices WHERE client_id = :cid";
@@ -60,6 +68,15 @@ if ($clientID > 0) {
         }
     } catch (Exception $e) {
         $client_service_prices = array();
+    }
+    // Patientenrechnung-Flag laden
+    if ($__hasPatientBillingCol) {
+        try {
+            $row = $DB->PreparedSelect("SELECT patient_billing_required FROM clients WHERE id = :cid", array('cid' => $clientID), false, false);
+            if (is_array($row) && isset($row[0]['patient_billing_required'])) {
+                $patient_billing_required = (int)$row[0]['patient_billing_required'];
+            }
+        } catch (Exception $e) {}
     }
 }
 
@@ -123,6 +140,7 @@ else {
 	$avoid_double_bookings_mode = 'none';
     // Default-Felder initialisieren
     $default_service_ids = $default_service_ids_req;
+    $patient_billing_required = 0;
 }
 
 

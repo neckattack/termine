@@ -26,10 +26,16 @@ require ROOT."/tpl/header-tpl.php";
 					<label for="cName">Name</label>
 					<input type="text" id="cName" name="cName" value="<?=$cName?>" />
 				</div>
+				</div><!-- /billing-section -->
 
 				<div class="row">
 					<label for="cEnabled">Aktiviert</label>
 					<input type="checkbox" id="cEnabled" name="cEnabled" <?=($cEnabled==1)?"checked=\"checked\"":""?> value="1" />
+				</div>
+
+				<div class="row">
+					<label for="patient_billing_required">Patientenrechnung notwendig</label>
+					<input type="checkbox" id="patient_billing_required" name="patient_billing_required" value="1" <?=(isset($patient_billing_required) && (int)$patient_billing_required===1)?'checked="checked"':''?> />
 				</div>
 
 				<div class="row">
@@ -49,6 +55,7 @@ require ROOT."/tpl/header-tpl.php";
 				</div>
 
 				<!-- Neue Default-Felder: oberhalb von 'Tage' -->
+				<div id="billing-section">
 				<div class="row">
 					<label for="default_diagnosis">Default Diagnose</label>
 					<textarea id="default_diagnosis" name="default_diagnosis" rows="4" cols="60"><?=(isset($default_diagnosis)?htmlspecialchars($default_diagnosis):'')?></textarea>
@@ -112,6 +119,14 @@ require ROOT."/tpl/header-tpl.php";
 
 				<script>
 				(function(){
+                    // Toggle billing section by checkbox
+                    function toggleBilling(){
+                        var box = document.getElementById('billing-section');
+                        var cb  = document.getElementById('patient_billing_required');
+                        if (!box || !cb) return;
+                        box.style.display = cb.checked ? 'block' : 'none';
+                    }
+
 					var svcMap = <?php 
 						$map = array();
 						foreach ($services as $s) {
@@ -168,6 +183,12 @@ require ROOT."/tpl/header-tpl.php";
 						var ids0 = Array.prototype.slice.call(select.options).filter(function(o){return o.selected;}).map(function(o){return o.value;});
 						renderCalc(ids0);
 					}
+
+                    var cbBilling = document.getElementById('patient_billing_required');
+                    if (cbBilling){
+                        cbBilling.addEventListener('change', toggleBilling);
+                        toggleBilling();
+                    }
 
 					function bindPriceInputs(){
 						var inputs = document.querySelectorAll('#svc-calc-body .svc-price');

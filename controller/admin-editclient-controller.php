@@ -257,6 +257,16 @@ function editClient($data) {
 	// Set the client id if new client
 	$id = ($id > 0) ? $id : $DB->lastInsertId();
 
+    // Patientenrechnung notwendig (optional, nur falls Spalte existiert)
+    $patient_billing_required = isset($data['patient_billing_required']) ? (int)!!$data['patient_billing_required'] : 0;
+    try {
+        $cols = $DB->PreparedSelect("SHOW COLUMNS FROM `clients` LIKE 'patient_billing_required'", array(), false, false);
+        if (is_array($cols) && count($cols) > 0) {
+            $sqlP = "UPDATE `clients` SET `patient_billing_required` = :v WHERE `id` = :id";
+            $DB->PreparedStatement($sqlP, array('v' => $patient_billing_required, 'id' => (int)$id), false, false);
+        }
+    } catch (Exception $e) {}
+
     // Persist client-specific service prices (if provided)
     if (isset($data['service_prices']) && is_array($data['service_prices'])) {
         $prices = $data['service_prices'];
