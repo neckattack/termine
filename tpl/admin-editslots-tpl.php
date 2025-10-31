@@ -36,7 +36,10 @@ require ROOT."/tpl/header-tpl.php";
 			</div>
 		</form>
 
-		<div class="slots">
+		        <div class="slots">
+            <div id="save-banner" style="display:none; margin:8px 0; padding:6px 10px; background:#f7f7d7; border:1px solid #ddd; color:#333;">
+                <strong>Status:</strong> <span id="save-banner-text"></span>
+            </div>
 			<h3><?= isset($slots[0]["date"]) ? $slots[0]["date"] : "" ?></h3>
 			<ul id="slots">
 				<?php if (isset($slots[0]["time_start"][0])) { 
@@ -60,7 +63,7 @@ require ROOT."/tpl/header-tpl.php";
 					<?php if (isset($slot['res_id']) && $slot['res_id']>0 && (isset($patient_billing_required) && (int)$patient_billing_required===1)) { ?>
 					<div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
 						<input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
-						<select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="flex:1 1 280px; min-width:280px; max-width:100%;">
+						<select name="res_services[<?=$slot['res_id']?>][]" data-resid="<?=$slot['res_id']?>" multiple="multiple" class="multiselect res-services" style="flex:1 1 280px; min-width:280px; max-width:100%;">
 							<?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
 								<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
 							<?php } } ?>
@@ -87,7 +90,8 @@ require ROOT."/tpl/header-tpl.php";
 							$sum += $cp;
 						}
 					?>
-					<div class="calc-box" data-resid="<?=$slot['res_id']?>" style="flex:1 1 420px; min-width:320px;">
+					                    <a href="#" class="toggle-calc" data-target="calc-<?=$slot['res_id']?>" style="margin-left:6px; font-size:12px;">Berechnung anzeigen</a>
+                    <div id="calc-<?=$slot['res_id']?>" class="calc-box" data-resid="<?=$slot['res_id']?>" style="flex:1 1 420px; min-width:320px; display:none;">
 						<table style="width:100%; border-collapse:collapse;">
 							<thead>
 								<tr>
@@ -103,7 +107,6 @@ require ROOT."/tpl/header-tpl.php";
 									</td>
 									<td style="padding:3px 6px; text-align:right; border-bottom:1px solid #eee;">
 										<input type="number" step="0.01" min="0" name="res_prices[<?=$slot['res_id']?>][<?=$r['id']?>]" value="<?=number_format($r['price'],2,'.','')?>" class="svc-price autosave" data-resid="<?=$slot['res_id']?>" data-sid="<?=$r['id']?>" style="width:90px; text-align:right;" />
-										<span class="save-status" style="margin-left:6px; font-size:11px; color:#666;"></span>
 									</td>
 								</tr>
 								<?php } ?>
@@ -151,6 +154,16 @@ require ROOT."/tpl/footer-tpl.php";
     });
     // Live-Summe je Reservierung neu berechnen
     (function(){
+        // Global banner helpers
+        var banner = document.getElementById('save-banner');
+        var bannerText = document.getElementById('save-banner-text');
+        function showBanner(text, ok){
+            if (!banner || !bannerText) return;
+            banner.style.display = 'block';
+            bannerText.textContent = text;
+            banner.style.background = ok===true ? '#e6f7e6' : (ok===false ? '#fdeaea' : '#f7f7d7');
+            banner.style.borderColor = ok===true ? '#9ad19a' : (ok===false ? '#e3a2a2' : '#ddd');
+        }
         function fmt(n){ return (n||0).toFixed(2).replace('.',','); }
         function recomputeBoxSum(box){
             var sum = 0.0;
@@ -165,7 +178,25 @@ require ROOT."/tpl/footer-tpl.php";
             box.addEventListener('input', function(ev){ if(ev.target && ev.target.classList.contains('svc-price')) recomputeBoxSum(box); });
             box.addEventListener('change', function(ev){ if(ev.target && ev.target.classList.contains('svc-price')) recomputeBoxSum(box); });
         });
-    })();
+        // Toggle show/hide calc sections (robust)
+        document.addEventListener('click', function(e){
+            var a = e.target.closest('.toggle-calc');
+            if (!a) return;
+            e.preventDefault();
+            var id = a.getAttribute('data-target');
+            var el = document.getElementById(id);
+            if (!el) return;
+            var cs = window.getComputedStyle(el);
+            var vis = (cs.display !== 'none') && (el.offsetParent !== null);
+            try { console.debug('[toggle-calc]', id, 'visible?', vis); } catch(_) {}
+            if (vis) {
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'block';
+            }
+            a.textContent = vis ? 'Berechnung anzeigen' : 'Berechnung verbergen';
+        });
+    // IIFE remains open; helper functions below are inside
     function post(url, data){
         return fetch(url, { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, credentials: 'same-origin', body: new URLSearchParams(data).toString() });
     }
@@ -175,18 +206,28 @@ require ROOT."/tpl/footer-tpl.php";
             var rid = inp.getAttribute('data-resid');
             var sid = inp.getAttribute('data-sid');
             var amount = inp.value;
-            var stat = inp.parentElement.querySelector('.save-status');
-            if (stat) { stat.textContent = 'Speichere…'; stat.style.color = '#666'; }
+            showBanner('Speichere…', null);
+            try { console.debug('[autosave] POST', {rid:rid, sid:sid, amount:amount}); } catch(e) {}
             post(url, { ajax_res_price: '1', rid: rid, sid: sid, amount: amount })
-                .then(function(r){ return r.json(); })
-                .then(function(j){ if(stat){ stat.textContent = j.ok ? 'Gespeichert' : 'Fehler'; stat.style.color = j.ok ? '#0a0' : '#c00'; } })
-                .catch(function(){ if(stat){ stat.textContent = 'Fehler'; stat.style.color = '#c00'; } });
+                .then(function(r){
+                    if(!r.ok){ throw new Error('HTTP '+r.status); }
+                    var ct = r.headers.get('content-type') || '';
+                    if (ct.indexOf('application/json') !== -1) { return r.json(); }
+                    return r.text().then(function(){ return { ok:false }; });
+                })
+                .then(function(j){ 
+                    try { console.debug('[autosave] RESP', j); } catch(e) {}
+                    showBanner((j && j.ok) ? 'Gespeichert' : 'Fehler beim Speichern', (j && j.ok));
+                })
+                .catch(function(err){ 
+                    try { console.error('[autosave] ERR', err); } catch(e) {}
+                    showBanner('Fehler beim Speichern', false);
+                });
         }
         // Debounced autosave on input as well
         var t = null;
         function schedule(){
-            var stat = inp.parentElement.querySelector('.save-status');
-            if (stat) { stat.textContent = '…'; stat.style.color = '#666'; }
+            showBanner('…', null);
             if (t) clearTimeout(t);
             t = setTimeout(save, 600);
         }
@@ -194,4 +235,20 @@ require ROOT."/tpl/footer-tpl.php";
         inp.addEventListener('change', save);
         inp.addEventListener('blur', save);
     });
+
+    // Autosave for services multi-select
+    document.querySelectorAll('.res-services').forEach(function(sel){
+        function saveServices(){
+            var rid = sel.getAttribute('data-resid');
+            var sids = Array.prototype.slice.call(sel.options).filter(function(o){ return o.selected; }).map(function(o){ return o.value; });
+            showBanner('Speichere gewählte Services…', null);
+            post(url, { ajax_res_services: '1', rid: rid, sids: sids })
+                .then(function(r){ if(!r.ok){ throw new Error('HTTP '+r.status); } var ct=r.headers.get('content-type')||''; if(ct.indexOf('application/json')!==-1){return r.json();} return r.text().then(function(){return {ok:false};}); })
+                .then(function(j){ showBanner((j && j.ok)?'Services gespeichert':'Fehler beim Speichern der Services', (j && j.ok)); })
+                .catch(function(){ showBanner('Fehler beim Speichern der Services', false); });
+        }
+        sel.addEventListener('change', saveServices);
+        sel.addEventListener('blur', saveServices);
+    });
+    })();
 </script>
