@@ -30,15 +30,42 @@ $previous .= "?cid=".$prevId;
 $allowed = checkIfAllowed($_SESSION["userid"], $date_id);
 
 if ($allowed !== true) {
-	header("Location: index.php");
+    header("Location: index.php");
 }
 
+// Save reservation prices (step 2)
+if (isset($P['save_res_prices']) && isset($P['res_prices']) && is_array($P['res_prices'])) {
+    try {
+        // Check table exists
+        $tbl = $DB->PreparedSelect("SHOW TABLES LIKE 'reservation_service_prices'", array(), false, false);
+        $hasTable = (is_array($tbl) && count($tbl) > 0);
+        if ($hasTable) {
+            $sql = "INSERT INTO reservation_service_prices (reservation_id, service_id, price_amount) \n"
+                 . "VALUES (:rid, :sid, :amount) \n"
+                 . "ON DUPLICATE KEY UPDATE price_amount = VALUES(price_amount)";
+            $stmt = $DB->PrepareStatement($sql);
+            foreach ($P['res_prices'] as $rid => $row) {
+                $rid = (int)$rid; if ($rid <= 0 || !is_array($row)) continue;
+                foreach ($row as $sid => $val) {
+                    $sid = (int)$sid; if ($sid <= 0) continue;
+                    if (is_string($val)) { $val = str_replace(',', '.', $val); }
+                    $amount = (float)$val; if ($amount < 0) { $amount = 0.0; }
+                    $DB->PreparedStatement($stmt, array('rid'=>$rid, 'sid'=>$sid, 'amount'=>$amount), false, false);
+                }
+            }
+        }
+    } catch (Exception $e) {
+        // no-op: fail silently for now
+    }
+    // Redirect back to avoid resubmission
+    header('Location: '.ABSURL.'web/admin/editslots.php?id='.$date_id);
+    exit;
+}
 
 // Generate a new day entry
 if (isset($P["generate"])) {
-	$success = generateTimeValues($date_id, $durations, $startTimes, $endTimes);
+    $success = generateTimeValues($date_id, $durations, $startTimes, $endTimes);
 }
-
 
 $infos = getDayInfos($date_id);
 $slots = array();
