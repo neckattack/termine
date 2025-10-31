@@ -46,6 +46,40 @@ if (is_array($infos)) {
     $slots = $infos;
 }
 
+// Patientenrechnung-Flag und Client-Daten laden
+$patient_billing_required = 0;
+$client_id_for_day = 0;
+$client_service_prices = array();
+try {
+    $row = $DB->PreparedSelect(
+        "SELECT c.id AS client_id, c.patient_billing_required FROM dates d JOIN clients c ON c.id = d.client_id WHERE d.id = :did",
+        array('did' => $date_id),
+        false,
+        false
+    );
+    if (is_array($row) && isset($row[0]['patient_billing_required'])) {
+        $patient_billing_required = (int)$row[0]['patient_billing_required'];
+        $client_id_for_day = isset($row[0]['client_id']) ? (int)$row[0]['client_id'] : 0;
+    }
+} catch (Exception $e) {}
+
+// Client-spezifische Servicepreise laden (für Preis-Box UI)
+if ($client_id_for_day > 0) {
+    try {
+        $rows = $DB->PreparedSelect(
+            "SELECT service_id, price_amount FROM client_service_prices WHERE client_id = :cid",
+            array('cid' => $client_id_for_day),
+            false,
+            false
+        );
+        if (is_array($rows)) {
+            foreach ($rows as $r) {
+                $client_service_prices[(int)$r['service_id']] = (float)$r['price_amount'];
+            }
+        }
+    } catch (Exception $e) {}
+}
+
 
 // Include the template
 if (is_array($infos) && isset($infos[0]["date"]) && isset($infos[0]["client_name"])) {

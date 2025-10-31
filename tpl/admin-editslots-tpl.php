@@ -57,41 +57,70 @@ require ROOT."/tpl/header-tpl.php";
 					<span class="name" style="min-width:180px; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
 						<?php if (isset($slot["res_name"][1])) {?><a href="mailto:<?=$slot["email"]?>"><?=$slot["res_name"]?></a><?php } else {?>- frei -<?php }?>
 					</span>
-					<?php 
-					$masseurLabel = '';
-					if (isset($slot['masseur_id']) && (int)$slot['masseur_id'] > 0) {
-						$mName = trim((isset($slot['masseur_first_name']) ? $slot['masseur_first_name'] : '').' '.(isset($slot['masseur_last_name']) ? $slot['masseur_last_name'] : ''));
-						if ($mName !== '') {
-							$masseurLabel = '<a href="edituser.php?id='.(int)$slot['masseur_id'].'" target="_blank">'.htmlspecialchars($mName).'</a>';
-						}
-					}
-					if ($masseurLabel !== '') {
-					?>
-					<span class="masseur" style="min-width:160px; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Masseur: <?=$masseurLabel?></span>
-					<?php } ?>
-					<?php if (isset($slot['res_id']) && $slot['res_id']>0) { ?>
-					<div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
-						<input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
-						<select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="flex:1 1 280px; min-width:280px; max-width:100%;">
-							<?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
-								<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
-							<?php } } ?>
-						</select>
-					</div>
-					<?php } ?>
-					<div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex:0 0 auto;">
-						<?php if (isset($slot["res_id"])) {?><a href="invoice.php?res_id=<?=$slot["res_id"]?>" class="pdf" target="_blank">PDF</a><?php }?>
-						<?php if (isset($slot["res_id"])) {?><a href="editslots.php?action=deletereservation&amp;id=<?=$slot["res_id"]?>" class="delete orange">Reservierung löschen</a><?php }?>
-						<a href="editslots.php?action=deletetimeentry&amp;id=<?=$slot["time_id"]?>" class="delete">Termin entfernen</a>
-						<?php if(isset($slot["res_id"])) { ?>
-							<a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
-						<?php } ?>
-					</div>
-				</li>
-				<?php } // endforeach slots ?>
-				<?php } else {?>
-				<li>Noch kein Eintrag vorhanden</li>
-				<?php }?>
+                    <?php if (isset($slot['res_id']) && $slot['res_id']>0 && (isset($patient_billing_required) && (int)$patient_billing_required===1)) { ?>
+                    <div class="inline-form" style="display:flex; align-items:center; gap:8px; margin-left:6px; flex:1 1 420px; min-width:320px;">
+                        <input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:220px; padding:2px 6px; flex:0 0 auto;" />
+                        <select name="res_services[<?=$slot['res_id']?>][]" multiple="multiple" class="multiselect" style="flex:1 1 280px; min-width:280px; max-width:100%;">
+                            <?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $defaultServiceIds, true) ? 'selected="selected"' : ''; ?>
+                                <option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
+                            <?php } } ?>
+                        </select>
+                    </div>
+                    <!-- Preis-Box (Anzeige, noch ohne Speichern) -->
+                    <?php 
+                        // Index der Services nach ID für schnelle Zugriffe
+                        $svcIndex = array();
+                        if (is_array($services)) { foreach ($services as $s) { $svcIndex[(int)$s['id']] = $s; } }
+                        $rows = array(); $sum = 0.0;
+                        foreach ($defaultServiceIds as $sid) {
+                            $sid = (int)$sid; if (!isset($svcIndex[$sid])) continue; $s = $svcIndex[$sid];
+                            $cp = isset($client_service_prices[$sid]) ? (float)$client_service_prices[$sid] : (isset($s['fee_mid'])?(float)$s['fee_mid']:0.0);
+                            $rows[] = array('id'=>$sid,'code'=>$s['code'],'title'=>$s['title'],'price'=>$cp);
+                            $sum += $cp;
+                        }
+                    ?>
+                    <div class="calc-box" data-resid="<?=$slot['res_id']?>" style="flex:1 1 420px; min-width:320px;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; border-bottom:1px solid #ccc; padding:3px 6px;">Service</th>
+                                    <th style="text-align:right; border-bottom:1px solid #ccc; padding:3px 6px;">Betrag (€)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($rows as $r) { ?>
+                                <tr>
+                                    <td style="padding:3px 6px; border-bottom:1px solid #eee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        <?=htmlspecialchars($r['code'].' – '.$r['title'])?>
+                                    </td>
+                                    <td style="padding:3px 6px; text-align:right; border-bottom:1px solid #eee;">
+                                        <input type="number" step="0.01" min="0" value="<?=number_format($r['price'],2,'.','')?>" class="svc-price" style="width:90px; text-align:right;" />
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="padding:4px 6px; text-align:right;">Summe</td>
+                                    <td class="svc-sum" style="padding:4px 6px; text-align:right;"><strong><?=number_format($sum,2,',','.')?></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <?php } ?>
+                    <div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex:0 0 auto;">
+                        <?php if (isset($slot["res_id"])) {?><a href="invoice.php?res_id=<?=$slot["res_id"]?>" class="pdf" target="_blank">PDF</a><?php }?>
+                        <?php if (isset($slot["res_id"])) {?><a href="editslots.php?action=deletereservation&amp;id=<?=$slot["res_id"]?>" class="delete orange">Reservierung löschen</a><?php }?>
+                        <a href="editslots.php?action=deletetimeentry&amp;id=<?=$slot["time_id"]?>" class="delete">Termin entfernen</a>
+                        <?php if(isset($slot["res_id"])) { ?>
+                            <a title="Klicken Sie auf den Link, um die Buchungs-URL in die Zwischenablage zu kopieren" href="javascript:void(0);" data-content="<?= ABSURL ?>web/bookings.php?e=<?=md5(strtolower($slot["email"]))?>" class="copy-url">Buchungs-URL kopieren</a>
+                        <?php } ?>
+                    </div>
+                </li>
+                <?php } // endforeach slots ?>
+                <?php } else {?>
+                <li>Noch kein Eintrag vorhanden</li>
+                <?php }?>
 			</ul>
 		</div>
 
@@ -112,4 +141,21 @@ require ROOT."/tpl/footer-tpl.php";
         navigator.clipboard.writeText($(this).data('content'));
 		alert('Die URL wurde in die Zwischenablage kopiert');
     });
+    // Live-Summe je Reservierung neu berechnen
+    (function(){
+        function fmt(n){ return (n||0).toFixed(2).replace('.',','); }
+        function recomputeBoxSum(box){
+            var sum = 0.0;
+            box.querySelectorAll('.svc-price').forEach(function(inp){
+                var v = parseFloat((inp.value||'').toString().replace(',', '.'));
+                if(!isNaN(v) && v>=0) sum += v;
+            });
+            var td = box.querySelector('.svc-sum');
+            if(td) td.innerHTML = '<strong>'+fmt(sum)+'</strong>';
+        }
+        document.querySelectorAll('.calc-box').forEach(function(box){
+            box.addEventListener('input', function(ev){ if(ev.target && ev.target.classList.contains('svc-price')) recomputeBoxSum(box); });
+            box.addEventListener('change', function(ev){ if(ev.target && ev.target.classList.contains('svc-price')) recomputeBoxSum(box); });
+        });
+    })();
 </script>
