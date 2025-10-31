@@ -21,7 +21,10 @@ require ROOT."/tpl/header-tpl.php";
 	?>
 
 	<div id="content">
-		<form id="generateSlots" action="<?= ABSURL . 'web/admin/editslots.php?id=' . $_GET['id'] ?>" method="post">
+		<form id="generateSlots" action="<?= ABSURL . 'web/admin/editslots.php?id=' . $_GET['id'] ?>" method="post" style="position:relative;">
+            <div id="save-banner" style="display:none; position:absolute; top:0; right:0; padding:6px 10px; background:#f7f7d7; border:1px solid #ddd; color:#333; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.06);">
+                <strong>Status:</strong> <span id="save-banner-text"></span>
+            </div>
 			<div>
 				<?php foreach ($durations AS $key => $duration) {?>
 				<div class="block">Terminblock: <input type="text" name="starttimes[]" size="5" value="<?=$startTimes[$key]?>" /> bis <input type="text" name="endtimes[]" size="5" value="<?=$endTimes[$key]?>" /> Uhr. Dauer: jeweils <input type="text" name="durations[]" size="3" value="<?=$duration?>" /> Minuten.</div>
@@ -37,9 +40,6 @@ require ROOT."/tpl/header-tpl.php";
 		</form>
 
 		        <div class="slots">
-            <div id="save-banner" style="display:none; margin:8px 0; padding:6px 10px; background:#f7f7d7; border:1px solid #ddd; color:#333;">
-                <strong>Status:</strong> <span id="save-banner-text"></span>
-            </div>
 			<h3><?= isset($slots[0]["date"]) ? $slots[0]["date"] : "" ?></h3>
 			<ul id="slots">
 				<?php if (isset($slots[0]["time_start"][0])) { 
@@ -242,12 +242,18 @@ require ROOT."/tpl/footer-tpl.php";
             var rid = sel.getAttribute('data-resid');
             var sids = Array.prototype.slice.call(sel.options).filter(function(o){ return o.selected; }).map(function(o){ return o.value; });
             showBanner('Speichere gewählte Services…', null);
-            post(url, { ajax_res_services: '1', rid: rid, sids: sids })
+            var params = new URLSearchParams();
+            params.append('ajax_res_services','1');
+            params.append('rid', rid);
+            sids.forEach(function(id){ params.append('sids[]', id); });
+            fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, credentials:'same-origin', body: params.toString() })
                 .then(function(r){ if(!r.ok){ throw new Error('HTTP '+r.status); } var ct=r.headers.get('content-type')||''; if(ct.indexOf('application/json')!==-1){return r.json();} return r.text().then(function(){return {ok:false};}); })
                 .then(function(j){ showBanner((j && j.ok)?'Services gespeichert':'Fehler beim Speichern der Services', (j && j.ok)); })
                 .catch(function(){ showBanner('Fehler beim Speichern der Services', false); });
         }
         sel.addEventListener('change', saveServices);
+        sel.addEventListener('input', saveServices);
+        sel.addEventListener('keyup', function(e){ if(e.key==='Enter' || e.key===' ') saveServices(); });
         sel.addEventListener('blur', saveServices);
     });
     })();
