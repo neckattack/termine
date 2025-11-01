@@ -23,7 +23,7 @@ if ($resId <= 0) {
 // Masseur-Name über: reservations -> times -> dates -> clients.contact_masseur_id -> admin
 try {
     $sql = [];
-    $sql[] = "SELECT a.first_name, a.last_name, c.name AS client_name, c.default_diagnosis, c.default_service_ids, r.name AS res_name, r.email AS res_email, d.date AS date_ymd";
+    $sql[] = "SELECT a.first_name, a.last_name, c.id AS client_id, c.name AS client_name, c.default_diagnosis, c.default_service_ids, r.name AS res_name, r.email AS res_email, d.date AS date_ymd";
     $sql[] = "FROM `reservations` r";
     $sql[] = "JOIN `times` t ON t.id = r.time_id";
     $sql[] = "JOIN `dates` d ON d.id = t.date_id";
@@ -59,37 +59,72 @@ if (file_exists(ROOT.'/vendor/autoload.php')) {
 }
 
 if ($mpdfAvailable) {
-    $clientName   = isset($row['client_name']) ? (string)$row['client_name'] : '';
-    $patientName  = isset($row['res_name']) ? (string)$row['res_name'] : '';
-    $patientEmail = isset($row['res_email']) ? (string)$row['res_email'] : '';
-    $dateYmd      = isset($row['date_ymd']) ? (string)$row['date_ymd'] : '';
-    $dateStr      = $dateYmd ? date('d.m.Y', strtotime($dateYmd)) : '';
-    $diagnosis    = isset($row['default_diagnosis']) ? (string)$row['default_diagnosis'] : '';
-    $serviceIdsCsv= isset($row['default_service_ids']) ? trim((string)$row['default_service_ids']) : '';
+    $clientName    = isset($row['client_name']) ? (string)$row['client_name'] : '';
+    $clientId      = isset($row['client_id']) ? (int)$row['client_id'] : 0;
+    $patientName   = isset($row['res_name']) ? (string)$row['res_name'] : '';
+    $patientEmail  = isset($row['res_email']) ? (string)$row['res_email'] : '';
+    $dateYmd       = isset($row['date_ymd']) ? (string)$row['date_ymd'] : '';
+    $dateStr       = $dateYmd ? date('d.m.Y', strtotime($dateYmd)) : '';
+    $diagnosis     = isset($row['default_diagnosis']) ? (string)$row['default_diagnosis'] : '';
+    $serviceIdsCsv = isset($row['default_service_ids']) ? trim((string)$row['default_service_ids']) : '';
 
-    // Services-Liste laden und IDs -> (Code, Titel) mappen
+    // Services-Liste und Clientpreise laden
     require_once ROOT.'/controller/admin-overview_services-controller.php';
     $svcList = getAllGebuehServices();
     $svcById = [];
     if (is_array($svcList)) {
-        foreach ($svcList as $svc) {
-            $svcById[(int)$svc['id']] = $svc;
-        }
+        foreach ($svcList as $svc) { $svcById[(int)$svc['id']] = $svc; }
     }
-    $svcRows = [];
-    if ($serviceIdsCsv !== '') {
-        foreach (array_values(array_filter(array_map('intval', explode(',', $serviceIdsCsv)))) as $sid) {
-            if (isset($svcById[$sid])) {
+    $clientPrices = [];
+    if ($clientId > 0) {
+        try {
+            $rowsCP = $DB->PreparedSelect('SELECT service_id, price_amount FROM client_service_prices WHERE client_id = :cid', ['cid'=>$clientId], false, false);
+            if (is_array($rowsCP)) { foreach ($rowsCP as $cp) { $clientPrices[(int)$cp['service_id']] = (float)$cp['price_amount']; } }
+        } catch (Exception $e) {}
+    }
+
+    // Reservation-spezifische Preise (bevorzugt)
+    $items = [];
+    try {
+        $rowsR = $DB->PreparedSelect('SELECT service_id, price_amount FROM reservation_service_prices WHERE reservation_id = :rid', ['rid'=>$resId], false, false);
+        if (is_array($rowsR) && count($rowsR) > 0) {
+            foreach ($rowsR as $r) {
+                $sid = (int)$r['service_id'];
+                if (!isset($svcById[$sid])) continue;
                 $svc = $svcById[$sid];
-                $svcRows[] = [
-                    'code'  => (string)$svc['code'],
-                    'title' => (string)$svc['title'],
+                $items[] = [
+                    'date'   => $dateStr,
+                    'code'   => (string)$svc['code'],
+                    'title'  => (string)$svc['title'],
+                    'amount' => (float)$r['price_amount'],
                 ];
             }
         }
+    } catch (Exception $e) {}
+
+    // Falls keine reservation-spezifischen Preise: aus Default-Services mit Client/Fee ermitteln
+    if (count($items) === 0) {
+        $ids = [];
+        if ($serviceIdsCsv !== '') {
+            $ids = array_values(array_filter(array_map('intval', explode(',', $serviceIdsCsv))));
+        }
+        foreach ($ids as $sid) {
+            if (!isset($svcById[$sid])) continue;
+            $svc = $svcById[$sid];
+            $amount = isset($clientPrices[$sid]) ? (float)$clientPrices[$sid] : (isset($svc['fee_mid'])?(float)$svc['fee_mid']:0.0);
+            $items[] = [
+                'date'   => $dateStr,
+                'code'   => (string)$svc['code'],
+                'title'  => (string)$svc['title'],
+                'amount' => $amount,
+            ];
+        }
     }
 
-    // Schöneres Layout, noch ohne Betragslogik
+    // Summe
+    $sum = 0.0; foreach ($items as $it) { $sum += (float)$it['amount']; }
+
+    // Schöneres Layout mit Beträgen
     $html = '<html><head><meta charset="utf-8"><style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color:#111; }
         h1 { text-align:center; font-size: 22px; margin: 0 0 14px; }
@@ -144,18 +179,18 @@ if ($mpdfAvailable) {
           . '<th style="width:16%" class="right">Betrag (€)</th>'
           . '</tr></thead><tbody>';
 
-    if (count($svcRows) > 0) {
-        foreach ($svcRows as $svc) {
+    if (count($items) > 0) {
+        foreach ($items as $svc) {
             $html .= '<tr>'
-                  . '<td>'.htmlspecialchars($dateStr).'</td>'
+                  . '<td>'.htmlspecialchars($svc['date']).'</td>'
                   . '<td>'.htmlspecialchars($svc['code']).'</td>'
                   . '<td>'.htmlspecialchars($svc['title']).'</td>'
-                  . '<td class="right">&nbsp;</td>'
+                  . '<td class="right">'.number_format((float)$svc['amount'], 2, ',', '.').'</td>'
                   . '</tr>';
         }
-        $html .= '<tr class="sum"><td colspan="3" class="right">Gesamtbetrag</td><td class="right">&nbsp;</td></tr>';
+        $html .= '<tr class="sum"><td colspan="3" class="right">Gesamtbetrag</td><td class="right">'.number_format($sum, 2, ',', '.').'</td></tr>';
     } else {
-        $html .= '<tr><td colspan="4" class="small muted">Keine Default-Services hinterlegt.</td></tr>';
+        $html .= '<tr><td colspan="4" class="small muted">Keine Leistungen hinterlegt.</td></tr>';
     }
     $html .= '</tbody></table>';
 
