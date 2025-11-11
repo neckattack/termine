@@ -51,7 +51,6 @@ else {
 	$message    = $client["email_text"];
 
 
-
 	// No-JavaScript fallback
 	if (isset($_POST) && count($_POST) > 0) {
 		$P       = $_POST;
@@ -78,6 +77,23 @@ else {
 					$error++;
 				}
 
+				// Wenn Patientenrechnung erforderlich: zusätzliche Pflichtfelder prüfen
+				if (!empty($client['patient_billing_required'])) {
+					$street    = isset($P['street']) ? trim($P['street']) : '';
+					$house_no  = isset($P['house_no']) ? trim($P['house_no']) : '';
+					$zip       = isset($P['zip']) ? trim($P['zip']) : '';
+					$city      = isset($P['city']) ? trim($P['city']) : '';
+					$birthdate = isset($P['birthdate']) ? trim($P['birthdate']) : '';
+					if ($street === '' || $house_no === '' || $zip === '' || $city === '') {
+						$messages[] = "Bitte geben Sie Ihre vollständige Rechnungsadresse an (Straße, Hausnummer, PLZ, Stadt)";
+						$error++;
+					}
+					if ($birthdate === '' || !preg_match('#^\d{2}\.\d{2}\.\d{4}$#', $birthdate)) {
+						$messages[] = "Bitte geben Sie Ihr Geburtsdatum im Format TT.MM.JJJJ an";
+						$error++;
+					}
+				}
+
 				if ($error > 0) {
 					break;
 				}
@@ -87,6 +103,11 @@ else {
 				$times = $P["times"];
 				$name  = $P["name"];
 				$email = $P["email"];
+				$street    = isset($P['street']) ? trim($P['street']) : '';
+				$house_no  = isset($P['house_no']) ? trim($P['house_no']) : '';
+				$zip       = isset($P['zip']) ? trim($P['zip']) : '';
+				$city      = isset($P['city']) ? trim($P['city']) : '';
+				$birthdate = isset($P['birthdate']) ? trim($P['birthdate']) : '';
 
                 // Tag: stornovorlauf – Backend-Fristprüfung (Buchungs-/Stornofrist)
                 $deadline = isset($client["booking_deadline_hours"]) ? (int)$client["booking_deadline_hours"] : 0;
@@ -126,8 +147,47 @@ else {
 
 						// Send confirmation e-mail
 						// No HTML
-						$email = sendConfirmationMail($email, $name, $times, $contact, $message);
-					}
+						// $email = sendConfirmationMail($email, $name, $times, $contact, $message);
+
+                        // Nach erfolgreicher Reservierung: Patient per E-Mail upserten
+                        try {
+                            $eml = strtolower(trim($P['email']));
+                            if ($eml !== '') {
+                                // Patient suchen
+                                $prow = $DB->PreparedSelect('SELECT * FROM patients WHERE LOWER(email) = :em', array('em'=>$eml), false, false);
+                                $pid = (is_array($prow) && isset($prow[0]['id'])) ? (int)$prow[0]['id'] : 0;
+                                // Name splitten
+                                $first = '';$last='';
+                                $parts = preg_split('/\s+/', trim($name));
+                                if (is_array($parts) && count($parts)>0) { $first = array_shift($parts); $last = implode(' ', $parts); }
+                                // Geburtsdatum in Y-m-d transformieren, wenn gültig
+                                $bdSql = null; if (preg_match('#^(\d{2})\.(\d{2})\.(\d{4})$#', $birthdate, $m)) { $bdSql = $m[3].'-'.$m[2].'-'.$m[1]; }
+
+                                if ($pid <= 0) {
+                                    // Insert neuer Patient
+                                    $sql = 'INSERT INTO patients (first_name, last_name, email, street, house_no, zip, city, birthdate, created_at) VALUES (:fn,:ln,:em,:st,:hn,:zp,:ct,:bd,NOW())';
+                                    $DB->PreparedStatement($sql, array(
+                                        'fn'=>$first, 'ln'=>$last, 'em'=>$eml,
+                                        'st'=>$street, 'hn'=>$house_no, 'zp'=>$zip, 'ct'=>$city, 'bd'=>$bdSql
+                                    ), false, false);
+                                } else {
+                                    // Nur leere Felder befüllen
+                                    $row = $prow[0];
+                                    $set = array(); $pa = array('em'=>$eml);
+                                    if ($first !== '' && (empty($row['first_name']))) { $set[] = 'first_name = :fn'; $pa['fn'] = $first; }
+                                    if ($last !== ''  && (empty($row['last_name'])))  { $set[] = 'last_name = :ln';  $pa['ln'] = $last; }
+                                    if ($street !== '' && (empty($row['street'])))    { $set[] = 'street = :st';     $pa['st'] = $street; }
+                                    if ($house_no !== '' && (empty($row['house_no']))) { $set[] = 'house_no = :hn';   $pa['hn'] = $house_no; }
+                                    if ($zip !== '' && (empty($row['zip'])))          { $set[] = 'zip = :zp';        $pa['zp'] = $zip; }
+                                    if ($city !== '' && (empty($row['city'])))        { $set[] = 'city = :ct';       $pa['ct'] = $city; }
+                                    if ($bdSql !== null && (empty($row['birthdate']))) { $set[] = 'birthdate = :bd';  $pa['bd'] = $bdSql; }
+                                    if (count($set) > 0) {
+                                        $DB->PreparedStatement('UPDATE patients SET '.implode(', ',$set).' WHERE LOWER(email)=:em', $pa, false, false);
+                                    }
+                                }
+                            }
+                        } catch (Exception $e) { /* ignore */ }
+                    }
 				}
 
 				// Some were taken, return these

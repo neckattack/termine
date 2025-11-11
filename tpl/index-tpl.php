@@ -219,39 +219,89 @@ if ($client['one_time_booking']) {
 
 						<?php
 
-						if ($price == 0 || empty($price)) { ?>
-							<div class="cnt">
-								<input type="text" id="name" name="name" value="<?= (isset($P["name"])) ? $P["name"] : "Name" ?>" placeholder="Name" /><br />
-							</div>
-							<div class="cnt">
-								<input type="text" id="email" name="email" value="<?= (isset($P["email"])) ? $P["email"] : "E-Mail" ?>" placeholder="E-Mail" /><br />
-							</div>
+                    if ($price == 0 || empty($price)) { ?>
+                        <div class="cnt">
+                            <input type="text" id="name" name="name" value="<?= (isset($P["name"])) ? $P["name"] : "Name" ?>" placeholder="Name" /><br />
+                        </div>
+                        <div class="cnt">
+                            <input type="text" id="email" name="email" value="<?= (isset($P["email"])) ? $P["email"] : "E-Mail" ?>" placeholder="E-Mail" /><br />
+                        </div>
+                        <div id="patient-login-box" class="form-group text-left" style="display:none; margin-top:6px;">
+                            <label style="display:block; font-weight:600;">Anmeldung</label>
+                            <input type="password" id="patient-login-password" class="form-control" placeholder="Passwort" style="max-width:260px; margin-bottom:6px;" />
+                            <button type="button" id="patient-login-btn" class="btn btn-secondary" style="padding:4px 10px;">Anmelden</button>
+                            <a href="#" id="patient-reset-link" style="margin-left:10px;">Passwort vergessen?</a>
+                            <span id="patient-login-msg" style="display:inline-block; margin-left:8px; color:#a00;"></span>
+                            <div id="patient-reset-box" style="display:none; margin-top:8px;">
+                                <button type="button" id="patient-send-reset" class="btn btn-light" style="padding:4px 10px;">Reset-Code senden</button>
+                                <input type="text" id="patient-reset-code" class="form-control" placeholder="Reset-Code" style="max-width:160px; display:inline-block; margin:6px 6px 6px 0;" />
+                                <input type="password" id="patient-new-password" class="form-control" placeholder="Neues Passwort" style="max-width:220px; display:inline-block; margin:6px 6px 6px 0;" />
+                                <button type="button" id="patient-set-password" class="btn btn-secondary" style="padding:4px 10px;">Passwort setzen</button>
+                                <span id="patient-reset-msg" style="display:inline-block; margin-left:8px; color:#0a0;"></span>
+                            </div>
+                        </div>
+                        <?php if (!empty($client['patient_billing_required'])) { ?>
+                            <div id="billing-fields" class="form-group text-left" style="margin-top:6px;">
+                                <label style="display:block; font-weight:600;">Rechnungsadresse</label>
+                                <div class="cnt"><input type="text" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" /></div>
+                                <div class="cnt"><input type="text" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" /></div>
+                                <div class="cnt"><input type="text" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" /></div>
+                                <div class="cnt"><input type="text" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" /></div>
+                                <div class="cnt"><input type="text" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" /></div>
+                            </div>
+                        <?php } ?>
 
-							<div class="form-group text-left times_info_block">
-								<div class="text-warning"><?php echo __t('check_time_message'); ?></div>
-								<div class="text-info"></div>
-							</div>
+                        <div class="form-group text-left times_info_block">
+                            <div class="text-warning"><?php echo __t('check_time_message'); ?></div>
+                            <div class="text-info"></div>
+                        </div>
 
-							<div class="form-group text-left small">
-								<?= __t('privacy_policy_confirmation'); ?>
-							</div>
+                        <input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="<?= __t('sign_in_button'); ?>" />
 
-							<input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="<?= __t('sign_in_button'); ?>" />
+                    <?php } else { ?>
 
-						<?php } else { ?>
+                        <div class="form-group">
+                            <input type="text" id="name" class="form-control" value="<?= (isset($P["name"])) ? $P["name"] : "Name" ?>" placeholder="Name" />
+                        </div>
 
-							<div class="form-group">
-								<input type="text" id="name" class="form-control" value="<?= (isset($P["name"])) ? $P["name"] : "Name" ?>" placeholder="Name" />
-							</div>
+                        <div class="form-group">
+                            <input type="text" id="email" class="form-control" value="<?= (isset($P["email"])) ? $P["email"] : "E-Mail" ?>" placeholder="E-Mail" />
+                        </div>
+                        <div id="patient-login-box-paid" class="form-group text-left" style="display:none; margin-top:6px;">
+                            <label style="display:block; font-weight:600;">Anmeldung</label>
+                            <input type="password" id="patient-login-password-paid" class="form-control" placeholder="Passwort" style="max-width:260px; margin-bottom:6px;" />
+                            <button type="button" id="patient-login-btn-paid" class="btn btn-secondary" style="padding:4px 10px;">Anmelden</button>
+                            <a href="#" id="patient-reset-link-paid" style="margin-left:10px;">Passwort vergessen?</a>
+                            <span id="patient-login-msg-paid" style="display:inline-block; margin-left:8px; color:#a00;"></span>
+                            <div id="patient-reset-box-paid" style="display:none; margin-top:8px;">
+                                <button type="button" id="patient-send-reset-paid" class="btn btn-light" style="padding:4px 10px;">Reset-Code senden</button>
+                                <input type="text" id="patient-reset-code-paid" class="form-control" placeholder="Reset-Code" style="max-width:160px; display:inline-block; margin:6px 6px 6px 0;" />
+                                <input type="password" id="patient-new-password-paid" class="form-control" placeholder="Neues Passwort" style="max-width:220px; display:inline-block; margin:6px 6px 6px 0;" />
+                                <button type="button" id="patient-set-password-paid" class="btn btn-secondary" style="padding:4px 10px;">Passwort setzen</button>
+                                <span id="patient-reset-msg-paid" style="display:inline-block; margin-left:8px; color:#0a0;"></span>
+                            </div>
+                        </div>
+                        <?php if (!empty($client['patient_billing_required'])) { ?>
+                            <div id="billing-fields-paid" class="form-group text-left" style="margin-top:6px;">
+                                <label style="display:block; font-weight:600;">Rechnungsadresse</label>
+                                <div class="form-row">
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" /></div>
+                                </div>
+                            </div>
+                        <?php } ?>
 
-							<div class="form-group">
-								<input type="text" id="email" class="form-control" value="<?= (isset($P["email"])) ? $P["email"] : "E-Mail" ?>" placeholder="E-Mail" />
-							</div>
+                        <div class="form-group text-left times_info_block">
+                            <div class="text-warning"><?php echo __t('check_time_message'); ?></div>
+                            <div class="text-info"></div>
+                        </div>
 
-							<div class="form-group text-left times_info_block">
-								<div class="text-warning"><?php echo __t('check_time_message'); ?></div>
-								<div class="text-info"></div>
-							</div>
+                        <div class="form-group text-left small">
+                            <?= __t('privacy_policy_confirmation'); ?>
+                        </div>
 
 							<div class="form-group text-left small">
 								<?= __t('privacy_policy_confirmation'); ?>
@@ -500,8 +550,143 @@ if ($client['one_time_booking']) {
 			dateFormat: "dd.mm.yy"
 		};
 		var pp = <?= $price ?>;
+		var billingRequired = <?= !empty($client['patient_billing_required']) ? 'true' : 'false' ?>;
 	</script>
 	<script src="/js/page.js?ver=<?= time() ?>"></script>
+	<script>
+	(function(){
+		function showExistingHint(state){
+			var box = document.getElementById('existing-patient-hint');
+			if (!box) return;
+			box.style.display = state ? 'block' : 'none';
+		}
+		function ensureHintBox(){
+			if (document.getElementById('existing-patient-hint')) return;
+			var parent = document.querySelector('.registerMe');
+			if (!parent) return;
+			var div = document.createElement('div');
+			div.id = 'existing-patient-hint';
+			div.className = 'alert alert-info';
+			div.style.display = 'none';
+			div.style.marginTop = '6px';
+			div.innerHTML = 'Diese E-Mail gehört bereits zu einem Patienten. <a href="#" id="show-login-link">Jetzt anmelden</a>, um deine gespeicherten Daten zu verwenden.';
+			parent.insertBefore(div, parent.firstChild);
+		}
+		document.addEventListener('DOMContentLoaded', function(){
+			if (!window.billingRequired) { return; }
+			ensureHintBox();
+			var email = document.getElementById('email');
+			if (!email) return;
+			function toggleLoginBox(show){
+				var free = document.getElementById('patient-login-box');
+				var paid = document.getElementById('patient-login-box-paid');
+				if (free) free.style.display = show ? 'block' : 'none';
+				if (paid) paid.style.display = show ? 'block' : 'none';
+				var bf1 = document.getElementById('billing-fields');
+				var bf2 = document.getElementById('billing-fields-paid');
+				if (bf1) bf1.style.display = show ? 'none' : 'block';
+				if (bf2) bf2.style.display = show ? 'none' : 'block';
+				// Hide extra UI while login is active
+				var submitBtn = document.getElementById('submit');
+				if (submitBtn) submitBtn.style.display = show ? 'none' : '';
+				var tib = document.querySelectorAll('.times_info_block');
+				for (var i=0;i<tib.length;i++){ tib[i].style.display = show ? 'none' : ''; }
+				var chkWarn = document.querySelectorAll('.my_chek_chebox');
+				for (var j=0;j<chkWarn.length;j++){ chkWarn[j].style.display = show ? 'none' : 'none'; }
+			}
+			email.addEventListener('blur', function(){
+				var val = (email.value||'').trim();
+				if (val.length < 3) { showExistingHint(false); return; }
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', '/ajax/patient_exists.php?email='+encodeURIComponent(val));
+				xhr.onreadystatechange = function(){
+					if (xhr.readyState===4 && xhr.status===200) {
+						try {
+							var resp = JSON.parse(xhr.responseText||'{}');
+							showExistingHint(!!resp.exists);
+							if (resp.exists) {
+								var l = document.getElementById('show-login-link');
+								if (l) {
+									l.onclick = function(ev){ ev.preventDefault(); toggleLoginBox(true); };
+								}
+							}
+						} catch(e){ showExistingHint(false); }
+					}
+				};
+				xhr.send(null);
+			});
+
+			function doLogin(isPaid){
+				var pwd = document.getElementById(isPaid?'patient-login-password-paid':'patient-login-password');
+				var msg = document.getElementById(isPaid?'patient-login-msg-paid':'patient-login-msg');
+				var eml = (email.value||'').trim();
+				if (!pwd || !msg || !eml) return;
+				msg.textContent = '';
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST','/ajax/patient_login.php');
+				xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+				xhr.onreadystatechange = function(){
+					if (xhr.readyState===4) {
+						try {
+							var resp = JSON.parse(xhr.responseText||'{}');
+							if (resp.ok) {
+								// Prefill Felder und sperren Billing-Felder
+								var p = resp.patient||{};
+								function setVal(name, v){ var el = document.querySelector('[name="'+name+'"]'); if(el){ el.value = v||''; } }
+								setVal('street', p.street);
+								setVal('house_no', p.house_no);
+								setVal('zip', p.zip);
+								setVal('city', p.city);
+								setVal('birthdate', p.birthdate && p.birthdate.indexOf('-')>0 ? (function(d){ var a=d.split('-'); return a[2]+'.'+a[1]+'.'+a[0]; })(p.birthdate): p.birthdate);
+								toggleLoginBox(false);
+								showExistingHint(false);
+							} else {
+								msg.textContent = 'Login fehlgeschlagen';
+							}
+						} catch(e){ msg.textContent = 'Login-Fehler'; }
+					}
+				};
+				xhr.send('email='+encodeURIComponent(eml)+'&password='+encodeURIComponent(pwd.value||''));
+			}
+			var btnFree = document.getElementById('patient-login-btn');
+			if (btnFree) btnFree.addEventListener('click', function(){ if (!window.billingRequired) return; doLogin(false); });
+			var btnPaid = document.getElementById('patient-login-btn-paid');
+			if (btnPaid) btnPaid.addEventListener('click', function(){ if (!window.billingRequired) return; doLogin(true); });
+
+			// Reset password flows
+			function setupReset(isPaid){
+				var link = document.getElementById(isPaid?'patient-reset-link-paid':'patient-reset-link');
+				var box  = document.getElementById(isPaid?'patient-reset-box-paid':'patient-reset-box');
+				var send = document.getElementById(isPaid?'patient-send-reset-paid':'patient-send-reset');
+				var code = document.getElementById(isPaid?'patient-reset-code-paid':'patient-reset-code');
+				var npw  = document.getElementById(isPaid?'patient-new-password-paid':'patient-new-password');
+				var set  = document.getElementById(isPaid?'patient-set-password-paid':'patient-set-password');
+				var msg  = document.getElementById(isPaid?'patient-reset-msg-paid':'patient-reset-msg');
+				if (link) link.addEventListener('click', function(e){ e.preventDefault(); if (box) { box.style.display = box.style.display==='none'?'block':'none'; } });
+				if (send) send.addEventListener('click', function(){
+					var eml = (email.value||'').trim(); if (!eml) return;
+					var xhr = new XMLHttpRequest(); xhr.open('POST','/ajax/patient_send_reset.php');
+					xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+					xhr.onreadystatechange = function(){ if (xhr.readyState===4){ try{ var r=JSON.parse(xhr.responseText||'{}'); msg.textContent = r.ok?'Code gesendet. Bitte E-Mail prüfen.':'Senden fehlgeschlagen'; }catch(e){ msg.textContent='Fehler beim Senden'; } } };
+					xhr.send('email='+encodeURIComponent(eml));
+				});
+				if (set) set.addEventListener('click', function(){
+					var eml = (email.value||'').trim(); var c=(code&&code.value)||''; var p=(npw&&npw.value)||''; if (!eml||!c||!p) return;
+					var xhr = new XMLHttpRequest(); xhr.open('POST','/ajax/patient_set_password.php');
+					xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+					xhr.onreadystatechange = function(){ if (xhr.readyState===4){ try{ var r=JSON.parse(xhr.responseText||'{}'); if (r.ok){ msg.textContent='Passwort gesetzt'; // auto login
+						var pwdEl = document.getElementById(isPaid?'patient-login-password-paid':'patient-login-password');
+						if (pwdEl){ pwdEl.value = p; }
+						doLogin(!!isPaid);
+					}else{ msg.textContent='Setzen fehlgeschlagen'; } }catch(e){ msg.textContent='Fehler beim Setzen'; } } };
+					xhr.send('email='+encodeURIComponent(eml)+'&code='+encodeURIComponent(c)+'&password='+encodeURIComponent(p));
+				});
+			}
+			setupReset(false);
+			setupReset(true);
+		});
+	})();
+	</script>
 
 	<?php if ($price != 0 && !empty($price)) { ?>
 		<script>

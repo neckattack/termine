@@ -13,7 +13,7 @@ function getUserInfos($id) {
 	$id     = (int) $id;
 	$params = array("id" => $id);
 
-	$sql  = "SELECT `a`.`id`, `a`.`username`, `a`.`email`, `a`.`gender`, `a`.`first_name`, `a`.`last_name`, `a`.`phone`, `a`.`address`, `a`.`tax_number`, `a`.`vat_exempt_reason`, `a`.`profession`, `a`.`diagnosis` \n";
+	$sql  = "SELECT `a`.`id`, `a`.`username`, `a`.`email`, `a`.`gender`, `a`.`first_name`, `a`.`last_name`, `a`.`phone`, `a`.`address`, `a`.`street`, `a`.`house_no`, `a`.`zip`, `a`.`city`, `a`.`tax_number`, `a`.`iban`, `a`.`vat_exempt_reason`, `a`.`profession`, `a`.`diagnosis` \n";
 	$sql .= "FROM `admin` AS `a` \n";
 	$sql .= "WHERE `a`.`id` = :id";
 	
@@ -102,9 +102,14 @@ function editUser($data) {
 	$gender     = (int) $data["user_gender"];
 	$first_name = $data["user_first_name"];
 	$last_name  = $data["user_last_name"];
-	// Neue optionale Felder der rechten Spalte
-	$address    = isset($data['user_address']) ? $data['user_address'] : null;
+	    // Neue optionale Felder der rechten Spalte
+    $address    = isset($data['user_address']) ? $data['user_address'] : null;
+    $street     = isset($data['user_street']) ? $data['user_street'] : null;
+    $house_no   = isset($data['user_house_no']) ? $data['user_house_no'] : null;
+    $zip        = isset($data['user_zip']) ? $data['user_zip'] : null;
+    $city       = isset($data['user_city']) ? $data['user_city'] : null;
 	$tax_number = isset($data['user_tax_number']) ? $data['user_tax_number'] : null;
+	$iban       = isset($data['user_iban']) ? $data['user_iban'] : null;
 	$vat_exempt_reason = isset($data['user_vat_exempt_reason']) ? $data['user_vat_exempt_reason'] : 'none';
 	$allowed_vat = array('§19 UStG','§4 Nr.14 UStG','none');
 	if (!in_array($vat_exempt_reason, $allowed_vat, true)) { $vat_exempt_reason = 'none'; }
@@ -118,34 +123,49 @@ function editUser($data) {
 	$pattern = "#[^a-z0-9äÄöÖüÜßáÁàÀâÂéÉèÈêÊóÓòÒôÔúÚùÙûÛ\._\-]#i";
 	$name    = strtolower(preg_replace($pattern, "", $name));
 
-	$params = array(
-		"name"       => $name,
-		"email"      => $email,
-		"first_name" => $first_name,
-		"last_name"  => $last_name,
-		"gender"     => $gender,
-		"phone"      => $phone,
-		"address"    => $address,
-		"tax_number" => $tax_number,
-		"vat_exempt_reason" => $vat_exempt_reason,
-		"profession" => $profession,
-		"diagnosis"  => $diagnosis,
-	);
+	    // Falls keine Freitext-Adresse übergeben wurde, aus strukturierten Feldern zusammensetzen (Rückwärtskompatibilität)
+    if ((is_null($address) || $address === '') && (!is_null($street) || !is_null($house_no) || !is_null($zip) || !is_null($city))) {
+        $parts = array();
+        if (!empty($street))   { $parts[] = $street; }
+        if (!empty($house_no)) { $parts[] = $house_no; }
+        if (!empty($zip))      { $parts[] = $zip; }
+        if (!empty($city))     { $parts[] = $city; }
+        $address = trim(implode(' ', $parts));
+    }
+
+    $params = array(
+        "name"       => $name,
+        "email"      => $email,
+        "first_name" => $first_name,
+        "last_name"  => $last_name,
+        "gender"     => $gender,
+        "phone"      => $phone,
+        "address"    => $address,
+        "street"     => $street,
+        "house_no"   => $house_no,
+        "zip"        => $zip,
+        "city"       => $city,
+        "tax_number" => $tax_number,
+        "iban"       => $iban,
+        "vat_exempt_reason" => $vat_exempt_reason,
+        "profession" => $profession,
+        "diagnosis"  => $diagnosis,
+    );
 	
 
 	// Edit a user or Add a user?
 	switch ($id) {
 		// Add
 		case 0:
-			$sql  = "INSERT INTO `admin` (`username`, `email`, `first_name`, `last_name`, `gender`, `phone`, `address`, `tax_number`, `vat_exempt_reason`, `profession`, `diagnosis`, `created_by`, `created_at`) \n";
-			$sql .= "VALUES (:name, :email, :first_name, :last_name, :gender, :phone, :address, :tax_number, :vat_exempt_reason, :profession, :diagnosis, :userid, NOW())";
+			$sql  = "INSERT INTO `admin` (`username`, `email`, `first_name`, `last_name`, `gender`, `phone`, `address`, `street`, `house_no`, `zip`, `city`, `tax_number`, `iban`, `vat_exempt_reason`, `profession`, `diagnosis`, `created_by`, `created_at`) \n";
+			$sql .= "VALUES (:name, :email, :first_name, :last_name, :gender, :phone, :address, :street, :house_no, :zip, :city, :tax_number, :iban, :vat_exempt_reason, :profession, :diagnosis, :userid, NOW())";
 			$params["userid"] = $_SESSION["userid"];
 		break;
 		
 		// Edit
 		default:
 			$sql  = "UPDATE `admin` \n";
-			$sql .= "SET `username` = :name, `email` = :email, `first_name` = :first_name, `last_name` = :last_name, `gender` = :gender, `phone` = :phone, `address` = :address, `tax_number` = :tax_number, `vat_exempt_reason` = :vat_exempt_reason, `profession` = :profession, `diagnosis` = :diagnosis \n";
+			$sql .= "SET `username` = :name, `email` = :email, `first_name` = :first_name, `last_name` = :last_name, `gender` = :gender, `phone` = :phone, `address` = :address, `street` = :street, `house_no` = :house_no, `zip` = :zip, `city` = :city, `tax_number` = :tax_number, `iban` = :iban, `vat_exempt_reason` = :vat_exempt_reason, `profession` = :profession, `diagnosis` = :diagnosis \n";
 			$sql .= "WHERE `id` = :id";
 			$params["id"] = $id;
 		break;

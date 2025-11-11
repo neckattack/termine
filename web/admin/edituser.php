@@ -23,7 +23,12 @@ $first_name  = (isset($R["user_first_name"])) ? $R["user_first_name"]   : "";
 $last_name   = (isset($R["user_last_name"]))  ? $R["user_last_name"]    : "";
 // Neue Felder rechte Spalte: Defaults aus Request, sonst leer
 $user_address            = isset($R['user_address']) ? $R['user_address'] : '';
+$user_street             = isset($R['user_street']) ? $R['user_street'] : '';
+$user_house_no           = isset($R['user_house_no']) ? $R['user_house_no'] : '';
+$user_zip                = isset($R['user_zip']) ? $R['user_zip'] : '';
+$user_city               = isset($R['user_city']) ? $R['user_city'] : '';
 $user_tax_number         = isset($R['user_tax_number']) ? $R['user_tax_number'] : '';
+$iban                    = isset($R['user_iban']) ? $R['user_iban'] : '';
 $user_vat_exempt_reason  = isset($R['user_vat_exempt_reason']) ? $R['user_vat_exempt_reason'] : '';
 $user_profession         = isset($R['user_profession']) ? $R['user_profession'] : '';
 $user_diagnosis          = isset($R['user_diagnosis']) ? $R['user_diagnosis'] : '';
@@ -69,7 +74,12 @@ if ($id > 0) {
 		$last_name   = $entry["last_name"];
 		// Neue Felder aus DB in Template-Variablen übernehmen
 		$user_address           = isset($entry['address']) ? $entry['address'] : '';
+		$user_street            = isset($entry['street']) ? $entry['street'] : '';
+		$user_house_no          = isset($entry['house_no']) ? $entry['house_no'] : '';
+		$user_zip               = isset($entry['zip']) ? $entry['zip'] : '';
+		$user_city              = isset($entry['city']) ? $entry['city'] : '';
 		$user_tax_number        = isset($entry['tax_number']) ? $entry['tax_number'] : '';
+		$iban                   = isset($entry['iban']) ? $entry['iban'] : '';
 		$user_vat_exempt_reason = isset($entry['vat_exempt_reason']) ? $entry['vat_exempt_reason'] : '';
 		$user_profession        = isset($entry['profession']) ? $entry['profession'] : '';
 		$user_diagnosis         = isset($entry['diagnosis']) ? $entry['diagnosis'] : '';

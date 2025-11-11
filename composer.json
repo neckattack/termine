@@ -1,13 +1,12 @@
 {
-  "name": "neckattack/termine",
-  "description": "Termine Verwaltung",
+  "name": "neckattack/termine-app",
+  "description": "NeckAttack Termine - Booking & Invoicing",
   "type": "project",
   "require": {
     "mpdf/mpdf": "^8.2"
   },
   "config": {
-    "platform": {
-      "php": "7.4.0"
-    }
+    "optimize-autoloader": true,
+    "sort-packages": true
   }
 }

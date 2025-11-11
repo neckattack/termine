@@ -26,7 +26,6 @@ require ROOT."/tpl/header-tpl.php";
 					<label for="cName">Name</label>
 					<input type="text" id="cName" name="cName" value="<?=$cName?>" />
 				</div>
-				</div><!-- /billing-section -->
 
 				<div class="row">
 					<label for="cEnabled">Aktiviert</label>
@@ -54,66 +53,67 @@ require ROOT."/tpl/header-tpl.php";
 					</select>
 				</div>
 
-				<!-- Neue Default-Felder: oberhalb von 'Tage' -->
-				<div id="billing-section">
-				<div class="row">
-					<label for="default_diagnosis">Default Diagnose</label>
-					<textarea id="default_diagnosis" name="default_diagnosis" rows="4" cols="60"><?=(isset($default_diagnosis)?htmlspecialchars($default_diagnosis):'')?></textarea>
-				</div>
+				<div id="billing-all-section">
+					<!-- Neue Default-Felder: oberhalb von 'Tage' -->
+					<div class="row">
+						<label for="default_diagnosis">Default Diagnose</label>
+						<textarea id="default_diagnosis" name="default_diagnosis" rows="4" cols="60"><?=(isset($default_diagnosis)?htmlspecialchars($default_diagnosis):'')?></textarea>
+					</div>
 
-				<div class="row">
-					<label for="default_service_ids">Default Services</label>
-					<select id="default_service_ids" name="default_service_ids[]" multiple="multiple" class="multiselect">
-						<?php if (isset($services) && is_array($services)) {?>
-						<?php foreach ($services as $s) { 
-							$sel = (isset($default_service_ids) && in_array((int)$s['id'], (array)$default_service_ids, true)) ? 'selected="selected"' : '';
+					<div class="row">
+						<label for="default_service_ids">Default Services</label>
+						<select id="default_service_ids" name="default_service_ids[]" multiple="multiple" class="multiselect">
+							<?php if (isset($services) && is_array($services)) {?>
+							<?php foreach ($services as $s) { 
+								$sel = (isset($default_service_ids) && in_array((int)$s['id'], (array)$default_service_ids, true)) ? 'selected="selected"' : '';
+							?>
+							<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
+							<?php }?>
+							<?php }?>
+						</select>
+					</div>
+
+					<!-- Anzeige: Client-spezifische Default-Berechnung (nur Anzeige) -->
+					<div class="row" id="billing-calc-section">
+						<label>Default Services – Berechnung</label>
+						<?php 
+							$svcIndex = array();
+							if (isset($services) && is_array($services)) {
+								foreach ($services as $s) { $svcIndex[(int)$s['id']] = $s; }
+							}
+							$calcIds = isset($default_service_ids) ? (array)$default_service_ids : array();
+							$totalClient = 0.0;
 						?>
-						<option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
-						<?php }?>
-						<?php }?>
-					</select>
-				</div>
-
-				<!-- Anzeige: Client-spezifische Default-Berechnung (nur Anzeige) -->
-				<div class="row">
-					<label>Default Services – Berechnung</label>
-					<?php 
-						$svcIndex = array();
-						if (isset($services) && is_array($services)) {
-							foreach ($services as $s) { $svcIndex[(int)$s['id']] = $s; }
-						}
-						$calcIds = isset($default_service_ids) ? (array)$default_service_ids : array();
-						$totalClient = 0.0;
-					?>
-					<div id="svc-calc" style="max-width: 860px;">
-						<table style="width:100%; border-collapse:collapse;">
-							<thead>
-								<tr>
-									<th style="text-align:left; border-bottom:1px solid #ccc; padding:4px 6px;">Service</th>
-									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">min</th>
-									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">mittel</th>
-									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">max</th>
-									<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">Client-Preis</th>
-								</tr>
-							</thead>
-							<tbody id="svc-calc-body">
-								<?php foreach ($calcIds as $sid) { $sid=(int)$sid; if (!isset($svcIndex[$sid])) continue; $s=$svcIndex[$sid]; $cp = isset($client_service_prices[$sid]) ? (float)$client_service_prices[$sid] : (isset($s['fee_mid'])?(float)$s['fee_mid']:0.0); $totalClient += $cp; ?>
-								<tr>
-									<td style="padding:4px 6px; border-bottom:1px solid #eee;"><?=$s['code']?> – <?=$s['title']?></td>
-									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_min'])?number_format((float)$s['fee_min'],2,',','.'):'-'?></td>
-									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_mid'])?number_format((float)$s['fee_mid'],2,',','.'):'-'?></td>
-									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_max'])?number_format((float)$s['fee_max'],2,',','.'):'-'?></td>
-									<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><strong><?=number_format($cp,2,',','.')?></strong></td>
-								</tr>
-								<?php } ?>
-							</tbody>
-							<tfoot>
-								<tr>
-									<td colspan="4" style="padding:6px; text-align:right;">Summe</td>
-									<td id="svc-calc-sum" style="padding:6px; text-align:right;"><strong><?=number_format($totalClient,2,',','.')?></strong></td>
-								</tr>
-							</tfoot>
-						</table>
+						<div id="svc-calc" style="max-width: 860px;">
+							<table style="width:100%; border-collapse:collapse;">
+								<thead>
+									<tr>
+										<th style="text-align:left; border-bottom:1px solid #ccc; padding:4px 6px;">Service</th>
+										<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">min</th>
+										<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">mittel</th>
+										<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">max</th>
+										<th style="text-align:right; border-bottom:1px solid #ccc; padding:4px 6px;">Client-Preis</th>
+									</tr>
+								</thead>
+								<tbody id="svc-calc-body">
+									<?php foreach ($calcIds as $sid) { $sid=(int)$sid; if (!isset($svcIndex[$sid])) continue; $s=$svcIndex[$sid]; $cp = isset($client_service_prices[$sid]) ? (float)$client_service_prices[$sid] : (isset($s['fee_mid'])?(float)$s['fee_mid']:0.0); $totalClient += $cp; ?>
+									<tr>
+										<td style="padding:4px 6px; border-bottom:1px solid #eee;"><?=$s['code']?> – <?=$s['title']?></td>
+										<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_min'])?number_format((float)$s['fee_min'],2,',','.'):'-'?></td>
+										<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_mid'])?number_format((float)$s['fee_mid'],2,',','.'):'-'?></td>
+										<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><?=isset($s['fee_max'])?number_format((float)$s['fee_max'],2,',','.'):'-'?></td>
+										<td style="padding:4px 6px; text-align:right; border-bottom:1px solid #eee;"><strong><?=number_format($cp,2,',','.')?></strong></td>
+									</tr>
+									<?php } ?>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="4" style="padding:6px; text-align:right;">Summe</td>
+										<td id="svc-calc-sum" style="padding:6px; text-align:right;"><strong><?=number_format($totalClient,2,',','.')?></strong></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
 					</div>
 				</div>
 
@@ -121,10 +121,10 @@ require ROOT."/tpl/header-tpl.php";
 				(function(){
                     // Toggle billing section by checkbox
                     function toggleBilling(){
-                        var box = document.getElementById('billing-section');
+                        var boxAll = document.getElementById('billing-all-section');
                         var cb  = document.getElementById('patient_billing_required');
-                        if (!box || !cb) return;
-                        box.style.display = cb.checked ? 'block' : 'none';
+                        if (!boxAll || !cb) return;
+                        boxAll.style.display = cb.checked ? 'block' : 'none';
                     }
 
 					var svcMap = <?php 
@@ -250,7 +250,8 @@ require ROOT."/tpl/header-tpl.php";
 						<?php }?>
 						<a href="#" id="addDate">Hinzufügen</a>
 					</div>
-					<div id='copyDate' style="display:none; position: fixed; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 50%); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray;">
+					<div id='copyDateBackdrop' style="display:none; position: fixed; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.2); z-index: 9998;"></div>
+					<div id='copyDate' style="display:none; position: fixed; top: 20%; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 0); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray; z-index: 9999;">
 						<span class='close-modal' style="text-align: right; height: 25px; width: 25px; color: red; margin-bottom: 50px; cursor: pointer; position: relative; top: -20px; right: -20px; font-weight: 600;">X</span>
 						<label>Select New Date</label> <br>
 						<input type="text" class="datePicker" name="newDate[]" value="<?=isset($day["date"]) ? $day["date"] : ""?>" />
@@ -506,15 +507,27 @@ require ROOT."/tpl/footer-tpl.php";
 	})
 
 	function showModal(id) {
-		console.log(1)
-		$('#copyDate').show();
-		console.log(2)
-		$('.copy-data').attr('data-id', id);
-		console.log(3)
-	}
+    // In den Body verschieben, damit kein übergeordneter Container die Anzeige blockiert
+    var $bd = $('#copyDateBackdrop');
+    var $md = $('#copyDate');
+    if ($bd.parent()[0] !== document.body) { $bd.appendTo('body'); }
+    if ($md.parent()[0] !== document.body) { $md.appendTo('body'); }
+    $bd.show();
+    $md.show();
+    $('.copy-data').attr('data-id', id);
+}
 
 	$('.close-modal').click(function() {
 		$('#copyDate').hide();
+		$('#copyDateBackdrop').hide();
 		$('.copy-data').attr('data-id', null);
 	})
+
+	$(document).on('keydown', function(e){
+		if (e.key === 'Escape') {
+			$('#copyDate').hide();
+			$('#copyDateBackdrop').hide();
+			$('.copy-data').attr('data-id', null);
+		}
+	});
 </script>

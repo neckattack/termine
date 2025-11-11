@@ -165,13 +165,23 @@ $gText  = $client["greeting_text"];
 
 					<?php
 
-					if ($price ==0 || empty($price)) { ?>
-							<div class="cnt">
-								<input type="text" id="name" name="name" value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" /><br />
-							</div>
-							<div class="cnt">
-								<input type="text" id="email" name="email" value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" /><br />
-							</div>
+					                    if ($price ==0 || empty($price)) { ?>
+                        <div class="cnt">
+                            <input type="text" id="name" name="name" value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" /><br />
+                        </div>
+                        <div class="cnt">
+                            <input type="text" id="email" name="email" value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" /><br />
+                        </div>
+                        <?php if (!empty($client['patient_billing_required'])) { ?>
+                        <div class="form-group text-left" style="margin-top:6px;">
+                            <label style="display:block; font-weight:600;">Rechnungsadresse</label>
+                            <div class="cnt"><input type="text" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" /></div>
+                            <div class="cnt"><input type="text" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" /></div>
+                            <div class="cnt"><input type="text" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" /></div>
+                            <div class="cnt"><input type="text" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" /></div>
+                            <div class="cnt"><input type="text" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" /></div>
+                        </div>
+                        <?php } ?>
 
 							<div class="form-group text-left times_info_block">
 								<div class="text-warning">Bitte wählen Sie mindestens einen Termin aus</div>
@@ -182,22 +192,33 @@ $gText  = $client["greeting_text"];
 								Hiermit bestätige ich, die <a href="http://neckattack.net/datenschutz/" rel="nofollow" target="_blank">Datenschutzbestimmungen</a> gelesen zu haben und akzeptiere diese.
 							</div>
 
-							<input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="Anmelden" />
-					
-					<?php } else { ?>
+							<input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="Anmelden"                    <?php } else { ?>
 
-							<div class="form-group">
-								<input type="text" id="name" class="form-control"   value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" />
-							</div>
+                        <div class="form-group">
+                            <input type="text" id="name" class="form-control"   value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" />
+                        </div>
 
-							<div class="form-group">
-								<input type="text" id="email" class="form-control"  value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" />
-							</div>
+                        <div class="form-group">
+                            <input type="text" id="email" class="form-control"  value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" />
+                        </div>
+                        <?php if (!empty($client['patient_billing_required'])) { ?>
+                        <div class="form-group text-left" style="margin-top:6px;">
+                            <label style="display:block; font-weight:600;">Rechnungsadresse</label>
+                            <div class="form-row">
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" /></div>
+                            </div>
+                        </div>
+                        <?php } ?>
 
 							<div class="form-group text-left times_info_block">
 								<div class="text-warning">Bitte wählen Sie mindestens einen Termin aus</div>
 								<div class="text-info"></div>
 							</div>
+{{ ... }}
 
 							<div class="form-group text-left small">
 								Hiermit bestätige ich, die <a href="http://neckattack.net/datenschutz/" rel="nofollow" target="_blank">Datenschutzbestimmungen</a> gelesen zu haben und akzeptiere diese.

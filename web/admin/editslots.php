@@ -33,6 +33,56 @@ if ($allowed !== true) {
     header("Location: index.php");
 }
 
+// Action: upsert patient by reservation id and redirect to editpatient
+if (isset($R['action']) && $R['action']==='upsert_patient') {
+    $rid = isset($R['res_id']) ? (int)$R['res_id'] : 0;
+    if ($rid > 0) {
+        try {
+            // load reservation with client id
+            $row = $DB->PreparedSelect(
+                "SELECT r.id AS rid, r.name AS res_name, r.email AS res_email, c.id AS client_id, c.default_diagnosis AS client_default_diagnosis\n"
+                ."FROM reservations r\n"
+                ."JOIN times t ON r.time_id = t.id\n"
+                ."JOIN dates d ON t.date_id = d.id\n"
+                ."JOIN clients c ON d.client_id = c.id\n"
+                ."WHERE r.id = :rid",
+                array('rid'=>$rid), false, false
+            );
+            if (is_array($row) && isset($row[0]['rid'])) {
+                $resName = (string)$row[0]['res_name'];
+                $email   = strtolower(trim((string)$row[0]['res_email']));
+                $diagDef = isset($row[0]['client_default_diagnosis']) ? (string)$row[0]['client_default_diagnosis'] : '';
+                if ($email !== '') {
+                    // find patient by email
+                    $p = $DB->PreparedSelect('SELECT id FROM patients WHERE LOWER(email) = :em', array('em'=>$email), false, false);
+                    $pid = (is_array($p) && isset($p[0]['id'])) ? (int)$p[0]['id'] : 0;
+                    if ($pid <= 0) {
+                        // split name into first/last (simple heuristic)
+                        $first = ''; $last = '';
+                        $parts = preg_split('/\s+/', trim($resName));
+                        if (is_array($parts) && count($parts)>0) {
+                            $first = array_shift($parts);
+                            $last  = implode(' ', $parts);
+                        }
+                        $sql = 'INSERT INTO patients (first_name, last_name, email, diagnosis, created_at) VALUES (:fn, :ln, :em, :dg, NOW())';
+                        $DB->PreparedStatement($sql, array('fn'=>$first, 'ln'=>$last, 'em'=>$email, 'dg'=>$diagDef), false, false);
+                        // fetch new id
+                        $p = $DB->PreparedSelect('SELECT id FROM patients WHERE LOWER(email) = :em', array('em'=>$email), false, false);
+                        $pid = (is_array($p) && isset($p[0]['id'])) ? (int)$p[0]['id'] : 0;
+                    }
+                    if ($pid > 0) {
+                        header('Location: '.ABSURL.'web/admin/editpatient.php?pid='.$pid);
+                        exit;
+                    }
+                }
+            }
+        } catch (Exception $e) {}
+    }
+    // Fallback: zurück zur Seite
+    header('Location: '.ABSURL.'web/admin/editslots.php?id='.$date_id);
+    exit;
+}
+
 // AJAX: save selected services for a reservation
 if (isset($P['ajax_res_services']) && $P['ajax_res_services'] === '1') {
     header('Content-Type: application/json; charset=utf-8');

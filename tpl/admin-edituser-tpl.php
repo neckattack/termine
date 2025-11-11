@@ -27,16 +27,7 @@ require ROOT."/tpl/header-tpl.php";
 					<input type="text" id="user_username" name="user_username" value="<?=$username?>" />
 				</div>
 				
-				<div class="row">
-					<label for="user_password1">Passwort</label>
-					<input type="password" id="user_password1" name="user_password1" value="" />
-				</div>
 
-				<div class="row">
-					<label for="user_password2">Wiederholen</label>
-					<input type="password" id="user_password2" name="user_password2" value="" />
-				</div>
-				<br />
 
 				<div class="row">
 					<label for="user_gender">Anrede</label>
@@ -71,13 +62,30 @@ require ROOT."/tpl/header-tpl.php";
 
 				<div style="float:right;width:48%;">
 					<div class="row">
-						<label for="user_address">Adresse</label>
-						<input type="text" id="user_address" name="user_address" value="<?= isset($user_address)?$user_address:'' ?>" />
+						<label for="user_street">Straße</label>
+						<input type="text" id="user_street" name="user_street" value="<?= isset($user_street)?$user_street:'' ?>" />
+					</div>
+					<div class="row">
+						<label for="user_house_no">Hausnummer</label>
+						<input type="text" id="user_house_no" name="user_house_no" value="<?= isset($user_house_no)?$user_house_no:'' ?>" />
+					</div>
+					<div class="row">
+						<label for="user_zip">PLZ</label>
+						<input type="text" id="user_zip" name="user_zip" value="<?= isset($user_zip)?$user_zip:'' ?>" />
+					</div>
+					<div class="row">
+						<label for="user_city">Stadt</label>
+						<input type="text" id="user_city" name="user_city" value="<?= isset($user_city)?$user_city:'' ?>" />
 					</div>
 
 					<div class="row">
 						<label for="user_tax_number">Steuernummer</label>
 						<input type="text" id="user_tax_number" name="user_tax_number" value="<?= isset($user_tax_number)?$user_tax_number:'' ?>" />
+					</div>
+
+					<div class="row">
+						<label for="user_iban">IBAN</label>
+						<input type="text" id="user_iban" name="user_iban" value="<?= isset($iban)?$iban:'' ?>" />
 					</div>
 
 					<div class="row">
@@ -95,15 +103,30 @@ require ROOT."/tpl/header-tpl.php";
 						<input type="text" id="user_profession" name="user_profession" value="<?= isset($user_profession)?$user_profession:'' ?>" />
 					</div>
 
-					<div class="row">
-						<label for="user_diagnosis">Diagnose</label>
-						<textarea id="user_diagnosis" name="user_diagnosis" rows="5" cols="60" style="width:95%;max-width:95%;box-sizing:border-box;">
-<?= isset($user_diagnosis)?$user_diagnosis:'' ?></textarea>
-					</div>
 				</div>
 
 				<div style="clear:both;"></div>
-				
+
+				<div class="row" style="margin:10px 0;">
+					<input type="submit" id="submit" name="submit" value="Speichern" />
+				</div>
+
+				<hr style="margin:18px 0;" />
+				<h3>Passwort ändern</h3>
+				<div class="row">
+					<label for="user_password1">Neues Passwort</label>
+					<input type="password" id="user_password1" name="user_password1" value="" />
+				</div>
+				<div class="row">
+					<label for="user_password2">Wiederholen</label>
+					<input type="password" id="user_password2" name="user_password2" value="" />
+				</div>
+				<div class="row">
+					<input type="submit" name="save_password" value="Passwort speichern" />
+				</div>
+
+
+
 				<div class="row">
 					<label>Mitgliedschaften:</label>
 					<div class="memberships">
@@ -185,7 +208,6 @@ require ROOT."/tpl/header-tpl.php";
 
 
 				<input type="hidden" id="id" name="id" value="<?=$id?>" />
-				<input type="submit" id="submit" name="submit" value="Speichern" />
 			</div>
 		</form>
         

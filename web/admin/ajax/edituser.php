@@ -11,6 +11,7 @@ $PAGE = basename(__FILE__);
 require "_root_.php";					// Defines the ROOT constant
 require ROOT."/inc/_include.php";
 require ROOT."/inc/admincheck.php";		// Check if admin logged in
+require_once ROOT."/controller/admin-edituser-controller.php"; // ensure editUser() is available
 
 
 $R = $_REQUEST;
