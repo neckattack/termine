@@ -416,22 +416,22 @@ div.is-multiselect a:active {
 	background-image:      -o-linear-gradient(top,       #FFEEAA, #FECC00);
 	background-image:         linear-gradient(to bottom, #FFEEAA, #FECC00);
 }
-
-.sb-header-row {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	align-items: center;
-	column-gap: 24px;
-}
-
-.sb-header-title h1 {
-	margin: 0;
-}
-
-.sb-topbar {
+.sb-header-bar {
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	justify-content: space-between;
+	gap: 24px;
+}
+
+.sb-header-left {
+	display: flex !important;
+	align-items: center;
+	gap: 16px;
+}
+
+.sb-header-right {
+	display: flex;
+	align-items: center;
 	gap: 16px;
 }
 
@@ -510,6 +510,11 @@ div.is-multiselect a:active {
 #header .logout a:hover,
 #header .logout a:active {
 	background-color: #888;
+}
+
+/* Im neuen Design Profil/Logout im Header ausblenden (nur Sidebar nutzen) */
+body.sb-new-design #header .logout {
+	display: none;
 }
 
 
@@ -1383,16 +1388,17 @@ body.sb-new-design {
 
 body.sb-new-design .sb-sidebar {
 	display: block;
-	position: relative;
-	top: auto;
-	left: auto;
-	bottom: auto;
-	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	height: 100vh;
 }
 
 body.sb-new-design .sb-layout {
 	display: flex;
 	justify-content: flex-start;
+	margin-left: 210px; /* Breite der Sidebar ausgleichen */
 }
 
 body.sb-new-design .sb-main {
@@ -1416,6 +1422,21 @@ body.sb-new-design #footer {
 	margin-right: 0 !important;
 	padding-left: 0;
 	padding-right: 0;
+}
+
+/* Fixierter Header im neuen Design: bleibt oben sichtbar */
+body.sb-new-design #header {
+	position: fixed;
+	top: 0;
+	left: 210px; /* rechts neben der Sidebar */
+	right: 0;
+	z-index: 1000;
+}
+
+/* Content und Footer nach unten schieben, damit sie nicht unter dem fixen Header liegen */
+body.sb-new-design #content,
+body.sb-new-design #footer {
+	padding-top: 140px; /* ungefähre Header-Höhe, bei Bedarf anpassen */
 }
 
 body.sb-new-design .page,

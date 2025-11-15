@@ -29,5 +29,9 @@ else {
 
 $group_id   = (isset($_REQUEST["group_id"])) ? (int)$_REQUEST["group_id"] : null;
 $clientList = getAllClients($group_id);
+// Spezieller Titel, wenn die Seite als "Termine" (kommende Termine) aufgerufen wird
+if (isset($_GET['sort_by']) && $_GET['sort_by'] === 'upcoming') {
+	$title = 'Terminverwaltung';
+}
 require ROOT."/tpl/_include.php";
 ?> 

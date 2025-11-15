@@ -8,6 +8,11 @@
  */
 $title = (isset($title)) ? stripslashes($title) : "";
 $gText = (isset($gText)) ? stripslashes($gText) : "";
+// Spezieller Titel, wenn Termine-Übersicht (kommende Termine) geöffnet ist
+if (defined('PAGE') && PAGE === 'overview_clients.php'
+	&& isset($_GET['sort_by']) && $_GET['sort_by'] === 'upcoming') {
+	$title = 'Terminverwaltung';
+}
 error_reporting(E_ERROR & E_PARSE &E_WARNING);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -45,8 +50,10 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 				</a>
 			</div>
 			<ul class="sb-sidebar-nav">
-				<li><a href="#">Termine</a></li>
-				<li><a href="#">User</a></li>
+				<li><a href="overview_clients.php?sort_by=upcoming">Termine</a></li>
+				<li><a href="overview_clients.php">Kunden</a></li>
+				<li><a href="overview_users.php">User</a></li>
+				<li><a href="overview_services.php">Services</a></li>
 				<li><a href="edituser.php?id=<?=$_SESSION['userid']?>">Profil</a></li>
 				<li><a href="index.php?do=logout">Logout</a></li>
 			</ul>
@@ -81,26 +88,20 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 
 		<?php /* Greeting text */ ?>
 		<div class="greetingText">
-			<div class="sb-header-row">
-				<div class="sb-header-title">
+			<div class="sb-header-bar">
+				<div class="sb-header-left">
 					<?php if (isset($title[0])) {?><h1><?=$title?></h1><?php }?>
 				</div>
 				<?php if (isset($ADMIN) && $ADMIN === true) {?>
-				<div class="sb-topbar">
+				<!-- Admin-Bereich: Suche + Design-Switch (Profil/Logout nur in Sidebar) -->
+				<div class="sb-header-left">
 					<!-- Admin-Suche nach Bucher-E-Mail -->
 					<form method="get" action="<?=ABSURL?>web/admin/search_reservations.php" class="sb-search-form">
 						<input type="text" name="email" placeholder="E-Mail suchen" value="<?= isset($_GET['email'])?htmlspecialchars($_GET['email']):'' ?>" />
 						<button type="submit" title="Suchen">🔍</button>
 					</form>
-
-					<div class="logout">
-						<?php if (isset($previous)) {?>
-						<a href="<?=$previous?>">Zurück</a>
-						<?php }?>
-						<a href="edituser.php?id=<?=$_SESSION["userid"]?>">Profil</a>
-						<a href="index.php?do=logout">Logout</a>
-					</div>
-
+				</div>
+				<div class="sb-header-right">
 					<span class="sb-design-wrap">
 						<span class="sb-design-label">Neues Design</span>
 						<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
@@ -130,16 +131,24 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 			if(sidebar) sidebar.style.display='none';
 		}
 	}
-	var isOn=false; // Standard: neues Design AUS
+	// Zustand aus localStorage lesen ("1" = neues Design an)
+	var stored= null;
+	try { stored = window.localStorage ? localStorage.getItem('sbNewDesign') : null; } catch(e) { stored = null; }
+	var isOn = (stored === '1');
 	if(document.readyState==='loading'){
 		document.addEventListener('DOMContentLoaded',function(){ applyState(isOn); });
-	}else{ applyState(isOn); }
+	}else{
+		applyState(isOn);
+	}
 	var sw=document.getElementById('sb-design-switch');
 	if(sw){
 		sw.addEventListener('click',function(){
 			var currentlyOn=document.body.classList.contains('sb-new-design');
 			var on=!currentlyOn;
 			applyState(on);
+			try {
+				if(window.localStorage){ localStorage.setItem('sbNewDesign', on ? '1' : '0'); }
+			} catch(e){}
 		});
 	}
 })();
