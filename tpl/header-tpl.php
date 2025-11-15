@@ -36,31 +36,36 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 <body>
 <?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
 <?php if (isset($ADMIN) && $ADMIN === true) { ?>
-<div class="sb-sidebar">
-	<div class="sb-sidebar-inner">
-		<div class="sb-sidebar-logo">
-			<a href="<?=ABSURL?>" style="border:0; padding:0;">
-				<img src="<?=WEBDIR?>images/logo-sidebar.png" alt="neckAttack" />
-			</a>
+<div class="sb-layout">
+	<div class="sb-sidebar" style="display:none;">
+		<div class="sb-sidebar-inner">
+			<div class="sb-sidebar-logo">
+				<a href="<?=ABSURL?>" style="border:0; padding:0;">
+					<img src="<?=WEBDIR?>images/logo-sidebar.png" alt="neckAttack" />
+				</a>
+			</div>
+			<ul class="sb-sidebar-nav">
+				<li><a href="#">Termine</a></li>
+				<li><a href="#">User</a></li>
+				<li><a href="edituser.php?id=<?=$_SESSION['userid']?>">Profil</a></li>
+				<li><a href="index.php?do=logout">Logout</a></li>
+			</ul>
+			<div class="sb-sidebar-footer">Admin-Ansicht</div>
 		</div>
-		<ul class="sb-sidebar-nav">
-			<li><a href="#">Termine</a></li>
-			<li><a href="#">User</a></li>
-			<li><a href="edituser.php?id=<?=$_SESSION['userid']?>">Profil</a></li>
-			<li><a href="index.php?do=logout">Logout</a></li>
-		</ul>
-		<div class="sb-sidebar-footer">Admin-Ansicht</div>
 	</div>
-</div>
+	<div class="sb-main">
 <?php } ?>
 <div class="page <?=PAGE?>">
 <div id="header">
   		<?php /* The logo */ ?>
 		<a href="<?=ABSURL?>" class="logo"><img src="<?=WEBDIR?>images/logo.png" alt="Logo" /></a>
 		<?php if (isset($ADMIN) && $ADMIN === true) {?>
-		<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
-			<div class="design-switch-knob"></div>
-		</div>
+		<span class="sb-design-wrap">
+			<span class="sb-design-label">Neues Design</span>
+			<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
+				<div class="design-switch-knob"></div>
+			</div>
+		</span>
 		<?php }?>
   <?php
   // Sicher prüfen, ob $client vorhanden ist

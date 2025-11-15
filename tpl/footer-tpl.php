@@ -10,6 +10,10 @@
 		<p>© NeckAttack® Mobile Massage | <a rel="external" href="https://www.neckattack.net/kontakt/impressum/">Impressum</a></p>
 	</div>
 </div>
+<?php if (isset($ADMIN) && $ADMIN === true) { ?>
+	</div><!-- .sb-main -->
+	</div><!-- .sb-layout -->
+<?php } ?>
 
 <!-- Include Scripts -->
 <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>-->

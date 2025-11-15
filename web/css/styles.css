@@ -1246,12 +1246,20 @@ ul.pagination li.forward { margin-right: 0; }
     margin-left: 37px;
     font-size: 20px;
     padding: 2px;
-    color: #e02525;
+    	color: #e02525;
 }
 
 /**
  * Neues Admin-Design: linke Sidebar
  */
+
+.sb-layout {
+	display: block;
+}
+
+.sb-main {
+	display: block;
+}
 
 .sb-sidebar {
 	display: none; /* nur im neuen Design sichtbar */
@@ -1325,14 +1333,23 @@ body.sb-new-design .sb-sidebar {
 	display: block;
 }
 
-body.sb-new-design .page {
-	width: auto;
-	margin: 20px 20px 20px 230px;
-	max-width: none;
+body.sb-new-design .sb-layout {
+	display: flex;
+	justify-content: center;
 }
-body.sb-new-design #header,
-body.sb-new-design #content,
-body.sb-new-design #footer {
-	margin-left: 0;
-	margin-right: 0;
+
+body.sb-new-design .sb-main {
+	flex: 1 1 auto;
+}
+
+.sb-design-wrap {
+	display: inline-flex;
+	align-items: center;
+	margin-left: 10px;
+}
+
+.sb-design-label {
+	font-size: 13px;
+	color: #555;
+	margin-right: 6px;
 }
