@@ -7,11 +7,16 @@
  * @param  $gText  string  (optional) Greeting text to be displayed
  */
 
-// Header
-$title = "Kundenverwaltung";
-require ROOT."/tpl/header-tpl.php";
 //farooq - 23/05/2024
 $sortBy = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'alphabetical';
+
+// Header-Titel dynamisch: "Terminverwaltung" bei sort_by=upcoming, sonst "Kundenverwaltung"
+if ($sortBy === 'upcoming') {
+	$title = "Terminverwaltung";
+} else {
+	$title = "Kundenverwaltung";
+}
+require ROOT."/tpl/header-tpl.php";
 if($sortBy != 'alphabetical') {
 	$url = ABSURL . '/web/admin/overview_clients.php?sort_by=alphabetical';
 	$label = 'Sortieren Sie nach alphabetischer Reihenfolge';
