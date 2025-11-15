@@ -53,6 +53,8 @@ $lang = [
     // Doppelbuchung
     'duplicate_booking_per_date'   => 'Dies ist eine zweite Buchung an diesem Termin. Leider ist dies nicht erlaubt.',
     'duplicate_booking_per_client' => 'Dies ist eine zweite Buchung in dieser Massagereihe. Leider ist dies nicht erlaubt.',
+    'duplicate_booking_in_request_per_client' => 'Sie haben mehrere Termine ausgewählt. Pro Person ist in dieser Massagereihe nur eine Buchung erlaubt.',
+    'duplicate_booking_in_request_per_date'   => 'Sie haben mehrere Zeiten am selben Tag ausgewählt. Pro Person ist pro Tag nur eine Buchung erlaubt.',
 ];
 
 ?>

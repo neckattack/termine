@@ -19,6 +19,12 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/ui.checkboxes.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/jquery.multiselect.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css" />
+	<style type="text/css">
+		.design-switch{position:absolute;right:20px;top:32px;width:44px;height:22px;border-radius:11px;background:#ddd;cursor:pointer;box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
+		.design-switch-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:left .2s ease-in-out;}
+		.design-switch.on{background:#4caf50;}
+		.design-switch.on .design-switch-knob{left:24px;}
+	</style>
 
 	<script type="text/javascript" src="https://use.typekit.com/pee6aqm.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
@@ -26,11 +32,29 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<?php if (isset($REDIRECT) && $REDIRECT === true) {?>
 	<meta http-equiv="refresh" content="3;url=overview_clients.php" />
 	<?php }?>
-	</head>
+</head>
 <body>
-<div class="page <?=PAGE?>">
 <?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
-	<div id="header">
+<?php if (isset($ADMIN) && $ADMIN === true) { ?>
+<div class="sb-sidebar">
+	<div class="sb-sidebar-inner">
+		<div class="sb-sidebar-logo">
+			<a href="<?=ABSURL?>" style="border:0; padding:0;">
+				<img src="<?=WEBDIR?>images/logo-sidebar.png" alt="neckAttack" />
+			</a>
+		</div>
+		<ul class="sb-sidebar-nav">
+			<li><a href="#">Termine</a></li>
+			<li><a href="#">User</a></li>
+			<li><a href="edituser.php?id=<?=$_SESSION['userid']?>">Profil</a></li>
+			<li><a href="index.php?do=logout">Logout</a></li>
+		</ul>
+		<div class="sb-sidebar-footer">Admin-Ansicht</div>
+	</div>
+</div>
+<?php } ?>
+<div class="page <?=PAGE?>">
+<div id="header">
   		<?php /* The logo */ ?>
 		<a href="<?=ABSURL?>" class="logo"><img src="<?=WEBDIR?>images/logo.png" alt="Logo" /></a>
   <?php
@@ -65,13 +89,41 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 			</div>
 
 			<!-- Admin-Suche nach Bucher-E-Mail -->
-			<form method="get" action="<?=ABSURL?>web/admin/search_reservations.php" style="position:absolute; right:180px; top:14px; display:flex; gap:6px; align-items:center;">
+			<form method="get" action="<?=ABSURL?>web/admin/search_reservations.php" style="position:absolute; right:260px; top:14px; display:flex; gap:6px; align-items:center;">
 				<input type="text" name="email" placeholder="E-Mail suchen" value="<?= isset($_GET['email'])?htmlspecialchars($_GET['email']):'' ?>" style="padding:4px 8px; border:1px solid #aaa; border-radius:4px; width:200px;" />
 				<button type="submit" title="Suchen" style="padding:4px 10px; border:1px solid #888; border-radius:4px; background:#eee; cursor:pointer;">🔍</button>
 			</form>
+			<!-- Toggle für neues Design -->
+			<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
+				<div class="design-switch-knob"></div>
+			</div>
 			<?php }?>
 
 			<?php if (isset($title[0])) {?><h1><?=$title?></h1><?php }?>
 			<?php if (isset($gText[0])) {?><p><?=nl2br($gText)?></p><?php }?>
 		</div>
 	</div>
+
+<script type="text/javascript">
+(function(){
+	function applyState(on){
+		var body=document.body; if(!body) return;
+		var sw=document.getElementById('sb-design-switch');
+		if(on){ body.classList.add('sb-new-design'); if(sw) sw.classList.add('on'); }
+		else { body.classList.remove('sb-new-design'); if(sw) sw.classList.remove('on'); }
+	}
+	var stored=(typeof window!=='undefined' && window.localStorage)?localStorage.getItem('sb_new_design'):null;
+	var isOn=(stored==='1');
+	if(document.readyState==='loading'){
+		document.addEventListener('DOMContentLoaded',function(){ applyState(isOn); });
+	}else{ applyState(isOn); }
+	var sw=document.getElementById('sb-design-switch');
+	if(sw){
+		sw.addEventListener('click',function(){
+			var on=document.body.classList.toggle('sb-new-design');
+			if(on) sw.classList.add('on'); else sw.classList.remove('on');
+			try{ if(window.localStorage){ localStorage.setItem('sb_new_design', on?'1':'0'); } }catch(e){}
+		});
+	}
+})();
+</script>

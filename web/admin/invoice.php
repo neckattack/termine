@@ -10,10 +10,39 @@ error_reporting(-1);
 $PAGE = basename(__FILE__);
 require "_root_.php";            // Defines the ROOT constant
 require ROOT."/inc/_include.php";
-require ROOT."/inc/admincheck.php"; // Check if admin logged in
 
+// Magic-Link: optionaler Token ?t, der den Zugriff ohne Login erlaubt
+$bypassAuth = false;
 $R = $_REQUEST;
+$tok = isset($_GET['t']) ? trim((string)$_GET['t']) : '';
 $resId = isset($R['res_id']) ? (int)$R['res_id'] : 0;
+if ($tok !== '') {
+    try {
+        $qr = $DB->PreparedSelect(
+            'SELECT reservation_id FROM invoice_tokens WHERE token = :t AND (expires_at IS NULL OR expires_at >= NOW()) LIMIT 1',
+            ['t'=>$tok],
+            false,
+            false
+        );
+        if (is_array($qr) && isset($qr[0]['reservation_id'])) {
+            $resId = (int)$qr[0]['reservation_id'];
+            $bypassAuth = true;
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            echo 'Token ungültig oder abgelaufen';
+            exit;
+        }
+    } catch (Exception $e) {
+        header('HTTP/1.1 403 Forbidden');
+        echo 'Token-Validierung fehlgeschlagen';
+        exit;
+    }
+}
+
+// Nur wenn kein gültiger Token vorliegt, muss ein Admin eingeloggt sein
+if ($bypassAuth === false) {
+    require ROOT."/inc/admincheck.php"; // Check if admin logged in
+}
 if ($resId <= 0) {
     header('HTTP/1.1 400 Bad Request');
     echo 'res_id fehlt';
@@ -162,6 +191,8 @@ $patientEmail  = isset($row['res_email']) ? (string)$row['res_email'] : '';
 $dateYmd       = isset($row['date_ymd']) ? (string)$row['date_ymd'] : '';
 $dateStr       = $dateYmd ? date('d.m.Y', strtotime($dateYmd)) : '';
 $diagnosis     = isset($row['default_diagnosis']) ? (string)$row['default_diagnosis'] : '';
+// Client-Defaultleistungen: CSV der Service-IDs
+$serviceIdsCsv = isset($row['default_service_ids']) ? trim((string)$row['default_service_ids']) : '';
 // Patient aus patients-Tabelle (structured fields + birthdate)
 $patient = [ 'name' => $patientName, 'email' => $patientEmail, 'phone' => '', 'address' => '', 'street'=>'', 'house_no'=>'', 'zip'=>'', 'city'=>'', 'birthdate'=>'' ];
 if ($patientEmail !== '') {
@@ -187,6 +218,14 @@ if ($patientEmail !== '') {
 try {
     if (is_array($prow) && isset($prow['diagnosis']) && trim((string)$prow['diagnosis']) !== '') {
         $diagnosis = (string)$prow['diagnosis'];
+    }
+} catch (Exception $e) {}
+
+// Reservierungs-spezifische Diagnose hat höchste Priorität
+try {
+    $rd = $DB->PreparedSelect('SELECT diagnosis FROM reservation_diagnoses WHERE reservation_id = :rid LIMIT 1', ['rid'=>$resId], false, false);
+    if (is_array($rd) && isset($rd[0]['diagnosis']) && trim((string)$rd[0]['diagnosis']) !== '') {
+        $diagnosis = (string)$rd[0]['diagnosis'];
     }
 } catch (Exception $e) {}
 
@@ -408,11 +447,20 @@ if ($mpdfAvailable) {
 
     $mpdf = new \Mpdf\Mpdf();
     $mpdf->WriteHTML($html);
+    if (defined('INVOICE_EMBED') && INVOICE_EMBED === true) {
+        // Eingebettete Verwendung (z.B. Mailanhang): PDF-Bytes zurückgeben
+        return $mpdf->Output('', 'S');
+    }
     $mpdf->Output('Rechnung_'.$resId.'.pdf', 'I');
     exit;
 }
 
 // HTML-Fallback (kein mPDF installiert)
+if (defined('INVOICE_EMBED') && INVOICE_EMBED === true) {
+    // Eingebetteter Aufruf erwartet PDF-Bytes; ohne mPDF liefern wir nichts zurück,
+    // damit der Aufrufer sauber auf Link/HTTP zurückfallen kann.
+    return '';
+}
 header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>Rechnung '.$resId.'</title><style>
 body{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:13px;margin:20px}

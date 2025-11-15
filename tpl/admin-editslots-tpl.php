@@ -39,8 +39,17 @@ require ROOT."/tpl/header-tpl.php";
 			</div>
 		</form>
 
-		        <div class="slots">
-			<h3><?= isset($slots[0]["date"]) ? $slots[0]["date"] : "" ?></h3>
+		        <div style="display:flex; align-items:center; gap:10px; margin:6px 0;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none;">
+                    <input type="checkbox" id="select-all-slots" />
+                    <span>Alle belegten Slots auswählen</span>
+                </label>
+            </div>
+            <div class="slots">
+            <div style="position:relative;">
+                <button type="button" id="btn-send-invoices" style="position:absolute; right:0; top:-34px; background:#2b7; color:#fff; border:0; padding:6px 10px; border-radius:4px; cursor:pointer;">Rechnungen E‑Mailen</button>
+            </div>
+            <h3><?= isset($slots[0]["date"]) ? $slots[0]["date"] : "" ?></h3>
 			<ul id="slots">
 				<?php if (isset($slots[0]["time_start"][0])) { 
 					require_once ROOT.'/controller/admin-overview_services-controller.php';
@@ -56,6 +65,13 @@ require ROOT."/tpl/header-tpl.php";
                         $selectedIds = isset($reservation_service_prices[$slot['res_id']]) ? array_keys($reservation_service_prices[$slot['res_id']]) : $defaultServiceIds;
                     ?>
 				<li style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:8px 0; width:100%;">
+                    <span class="sel" style="flex:0 0 auto; min-width:18px; text-align:center;">
+                        <?php if (isset($slot['res_id']) && (int)$slot['res_id']>0) { ?>
+                            <input type="checkbox" class="slot-select" data-resid="<?=$slot['res_id']?>" aria-label="Slot auswählen" />
+                        <?php } else { ?>
+                            &nbsp;
+                        <?php } ?>
+                    </span>
 					<span class="time" style="min-width:100px; color:#333; white-space:nowrap;">
 						<?=$slot["time_start"]?> - <?=$slot["time_end"]?>
 					</span>
@@ -99,7 +115,9 @@ require ROOT."/tpl/header-tpl.php";
                     <?php if (isset($slot['res_id']) && $slot['res_id']>0 && (isset($patient_billing_required) && (int)$patient_billing_required===1)) { ?>
                     <div id="calc-<?=$slot['res_id']?>" class="calc-box inline-form" style="display:none; align-items:flex-start; gap:10px; margin:8px 0 4px 0; flex-basis:100%; width:100%; min-width:0;">
                         <div style="flex:0 0 260px;">
-                            <input type="text" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($defaultDiagnosis)?>" placeholder="Diagnose" style="width:100%; padding:2px 6px;" />
+                            <div style="font-weight:bold; margin:2px 0 4px;">Diagnose (individuell)</div>
+                            <?php $diagVal = isset($reservation_diagnoses[$slot['res_id']]) ? (string)$reservation_diagnoses[$slot['res_id']] : $defaultDiagnosis; ?>
+                            <input type="text" class="autosave-diagnosis" data-resid="<?=$slot['res_id']?>" name="res_diagnosis[<?=$slot['res_id']?>]" value="<?=htmlspecialchars($diagVal)?>" placeholder="Diagnose" style="width:100%; padding:2px 6px;" />
                             <select name="res_services[<?=$slot['res_id']?>][]" data-resid="<?=$slot['res_id']?>" multiple="multiple" class="multiselect res-services" style="margin-top:6px; width:100%; min-width:260px;">
                                 <?php if (is_array($services)) { foreach ($services as $s) { $sel = in_array((int)$s['id'], $selectedIds, true) ? 'selected="selected"' : ''; ?>
                                     <option value="<?=$s['id']?>" <?=$sel?>><?=$s['code']?> – <?=$s['title']?></option>
@@ -192,6 +210,8 @@ require ROOT."/tpl/footer-tpl.php";
             banner.style.background = ok===true ? '#e6f7e6' : (ok===false ? '#fdeaea' : '#f7f7d7');
             banner.style.borderColor = ok===true ? '#9ad19a' : (ok===false ? '#e3a2a2' : '#ddd');
         }
+        // make banner helper available globally for other modules on the page
+        try { window.__sbShowBanner = showBanner; } catch(_) {}
         function fmt(n){ return (n||0).toFixed(2).replace('.',','); }
         function recomputeBoxSum(box){
             var sum = 0.0;
@@ -326,5 +346,85 @@ require ROOT."/tpl/footer-tpl.php";
             }
         });
         document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.querySelectorAll('.slot-menu').forEach(function(m){ m.style.display='none'; }); }});
+    })();
+    // Autosave diagnosis
+    (function(){
+        var url = '<?= ABSURL . 'web/admin/editslots.php?id=' . (isset($_GET['id']) ? (int)$_GET['id'] : 0) ?>';
+        function post(url, data){
+            return fetch(url, { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, credentials: 'same-origin', body: new URLSearchParams(data).toString() });
+        }
+        document.querySelectorAll('.autosave-diagnosis').forEach(function(inp){
+            var t=null;
+            function save(){
+                var rid = inp.getAttribute('data-resid');
+                var val = inp.value || '';
+                try { if (window.console) console.debug('[diagnosis-autosave]', rid, val); } catch(_){ }
+                if (typeof window.__sbShowBanner === 'function') { window.__sbShowBanner('Speichere Diagnose…', null); }
+                post(url, { ajax_res_diagnosis:'1', rid: rid, diagnosis: val })
+                    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+                    .then(function(j){ try{ console.debug('[diagnosis-autosave] resp', j);}catch(_){} if (typeof window.__sbShowBanner === 'function') { window.__sbShowBanner((j && j.ok)?'Gespeichert':'Fehler beim Speichern', (j && j.ok)); } })
+                    .catch(function(e){ try{ console.error('[diagnosis-autosave] err', e);}catch(_){} if (typeof window.__sbShowBanner === 'function') { window.__sbShowBanner('Fehler beim Speichern', false); } });
+            }
+            function schedule(){ if(t) clearTimeout(t); t=setTimeout(save, 400); }
+            inp.addEventListener('change', save);
+            inp.addEventListener('blur', save);
+            inp.addEventListener('input', schedule);
+        });
+    })();
+    // Master-Checkbox: alle belegten Slots auswählen/abwählen
+    (function(){
+        var master = document.getElementById('select-all-slots');
+        function getChecks(){ return Array.prototype.slice.call(document.querySelectorAll('.slot-select')); }
+        function refreshMaster(){
+            if (!master) return;
+            var checks = getChecks().filter(function(c){ return !c.disabled; });
+            var total = checks.length;
+            var checked = checks.filter(function(c){ return c.checked; }).length;
+            master.indeterminate = (checked>0 && checked<total);
+            master.checked = (total>0 && checked===total);
+        }
+        if (master){
+            master.addEventListener('change', function(){
+                var on = !!master.checked;
+                getChecks().forEach(function(c){ if(!c.disabled){ c.checked = on; }});
+                refreshMaster();
+            });
+        }
+        document.addEventListener('change', function(e){
+            var cb = e.target && e.target.classList && e.target.classList.contains('slot-select');
+            if (cb) refreshMaster();
+        });
+        // initial state
+        refreshMaster();
+    })();
+
+    // Rechnungen E‑Mailen Button
+    (function(){
+        var btn = document.getElementById('btn-send-invoices');
+        if (!btn) return;
+        function getSelectedResIds(){
+            var ids=[]; document.querySelectorAll('.slot-select:checked').forEach(function(cb){ var id=cb.getAttribute('data-resid'); if(id) ids.push(id); });
+            return ids;
+        }
+        btn.addEventListener('click', function(){
+            var ids = getSelectedResIds();
+            if (ids.length===0){ if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Keine Slots ausgewählt', false); } return; }
+            if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Sende Rechnungen…', null); }
+            var params = new URLSearchParams();
+            ids.forEach(function(id){ params.append('reservation_ids[]', id); });
+            fetch('<?= ABSURL ?>web/admin/ajax/send_invoices.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, credentials:'same-origin', body: params.toString() })
+                .then(function(r){ if(!r.ok){ return r.text().then(function(t){ throw new Error('HTTP '+r.status+' '+(t||'')); }); } return r.json(); })
+                .then(function(j){
+                    var ok = j && j.ok===true;
+                    var details = '';
+                    if (j && j.results && j.results.length){
+                        var fails = j.results.filter(function(r){ return r && r.ok===false; });
+                        if (fails.length){ details = ' | 1. Fehler: '+(fails[0].reason||'unbekannt'); }
+                    }
+                    var msg = ok ? ('Rechnungen gesendet: '+(j.sent||0)+(j.failed&&j.failed.length?(', Fehler: '+j.failed.length):''))+details : 'Fehler beim Senden';
+                    if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner(msg, ok); }
+                })
+                .catch(function(e){ if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Fehler beim Senden: '+(e&&e.message?e.message:''), false); } });
+        });
     })();
     </script>

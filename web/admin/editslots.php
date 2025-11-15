@@ -33,6 +33,32 @@ if ($allowed !== true) {
     header("Location: index.php");
 }
 
+// AJAX: save diagnosis text for a reservation (override default)
+if (isset($P['ajax_res_diagnosis']) && $P['ajax_res_diagnosis'] === '1') {
+    header('Content-Type: application/json; charset=utf-8');
+    $rid = isset($P['rid']) ? (int)$P['rid'] : 0;
+    $diag = isset($P['diagnosis']) ? (string)$P['diagnosis'] : '';
+    $ok=false; $msg='';
+    try {
+        if ($rid>0) {
+            // ensure table exists
+            $DB->PreparedStatement(
+                "CREATE TABLE IF NOT EXISTS `reservation_diagnoses` (
+                    `reservation_id` INT NOT NULL PRIMARY KEY,
+                    `diagnosis` TEXT NOT NULL,
+                    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+                array(), false, false
+            );
+            $sql = "INSERT INTO reservation_diagnoses (reservation_id, diagnosis) VALUES (:rid, :dg) ON DUPLICATE KEY UPDATE diagnosis = VALUES(diagnosis)";
+            $DB->PreparedStatement($sql, array('rid'=>$rid,'dg'=>$diag), false, false);
+            $ok=true;
+        } else { $msg='invalid rid'; }
+    } catch (Exception $e) { $msg='error'; }
+    echo json_encode(array('ok'=>$ok,'message'=>$msg));
+    exit;
+}
+
 // Action: upsert patient by reservation id and redirect to editpatient
 if (isset($R['action']) && $R['action']==='upsert_patient') {
     $rid = isset($R['res_id']) ? (int)$R['res_id'] : 0;
@@ -188,6 +214,7 @@ if (isset($P['ajax_res_price_bulk']) && $P['ajax_res_price_bulk'] === '1') {
 
 // Reservierungs-spezifische Servicepreise des Tages laden (wird nach $slots-Befüllung erneut gesetzt)
 $reservation_service_prices = array();
+$reservation_diagnoses = array();
 
 // AJAX: single price save
 if (isset($P['ajax_res_price']) && $P['ajax_res_price'] === '1') {
@@ -258,7 +285,7 @@ if (is_array($infos)) {
     $slots = $infos;
 }
 
-// Jetzt, da $slots befüllt ist: Reservierungs-spezifische Preise laden
+// Jetzt, da $slots befüllt ist: Reservierungs-spezifische Preise/Diagnosen laden
 try {
     $resIds = array();
     foreach ($slots as $s) { if (isset($s['res_id']) && (int)$s['res_id'] > 0) { $resIds[] = (int)$s['res_id']; } }
@@ -274,6 +301,21 @@ try {
                 $sid = (int)$r['service_id'];
                 $reservation_service_prices[$rid][$sid] = (float)$r['price_amount'];
             }
+        }
+        // Ensure table for reservation-specific diagnoses exists, then load
+        $DB->PreparedStatement(
+            "CREATE TABLE IF NOT EXISTS `reservation_diagnoses` (
+                `reservation_id` INT NOT NULL PRIMARY KEY,
+                `diagnosis` TEXT NOT NULL,
+                `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+            array(), false, false
+        );
+        // Load reservation-specific diagnoses
+        $sql = 'SELECT reservation_id, diagnosis FROM reservation_diagnoses WHERE reservation_id IN ('.implode(',', $placeholders).')';
+        $rows = $DB->PreparedSelect($sql, $params, false, false);
+        if (is_array($rows)) {
+            foreach ($rows as $r) { $reservation_diagnoses[(int)$r['reservation_id']] = (string)$r['diagnosis']; }
         }
     }
 } catch (Exception $e) {}

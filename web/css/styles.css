@@ -1248,3 +1248,91 @@ ul.pagination li.forward { margin-right: 0; }
     padding: 2px;
     color: #e02525;
 }
+
+/**
+ * Neues Admin-Design: linke Sidebar
+ */
+
+.sb-sidebar {
+	display: none; /* nur im neuen Design sichtbar */
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 210px;
+	background: #000000;
+	color: #fff;
+	z-index: 2000;
+	box-shadow: 2px 0 6px rgba(0,0,0,0.3);
+}
+
+.sb-sidebar-inner {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 16px 12px;
+}
+
+.sb-sidebar-logo {
+	margin-bottom: 24px;
+	text-align: center;
+}
+
+.sb-sidebar-logo img {
+	max-width: 160px;
+	height: auto;
+}
+
+.sb-sidebar-nav {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sb-sidebar-nav li {
+	margin-bottom: 8px;
+}
+
+.sb-sidebar-nav a {
+	display: block;
+	padding: 8px 10px;
+	border-radius: 4px;
+	color: #e5e7eb;
+	text-decoration: none;
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.sb-sidebar-nav a:hover,
+.sb-sidebar-nav a:focus {
+	background: #374151;
+	color: #ffffff;
+}
+
+.sb-sidebar-footer {
+	margin-top: auto;
+	font-size: 11px;
+	color: #9ca3af;
+	padding-top: 8px;
+	border-top: 1px solid rgba(156,163,175,0.3);
+}
+
+body.sb-new-design {
+	background-color: #f3f4f6;
+}
+
+body.sb-new-design .sb-sidebar {
+	display: block;
+}
+
+body.sb-new-design .page {
+	width: auto;
+	margin: 20px 20px 20px 230px;
+	max-width: none;
+}
+body.sb-new-design #header,
+body.sb-new-design #content,
+body.sb-new-design #footer {
+	margin-left: 0;
+	margin-right: 0;
+}
