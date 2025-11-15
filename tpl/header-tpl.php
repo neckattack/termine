@@ -1,4 +1,4 @@
-nd? <?php
+<?php
 /* —— UTF-8: charset=utf-8 —— encoding="utf-8" —— */
 /**
  * header.tpl.php
@@ -18,7 +18,7 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/uithemes/ui-lightness/jquery-ui-1.9.2.custom.min.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/ui.checkboxes.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/jquery.multiselect.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css?v=3" />
 	<style type="text/css">
 		.design-switch{display:inline-block;vertical-align:middle;margin-left:8px;margin-top:0;width:44px;height:22px;border-radius:11px;background:#ddd;cursor:pointer;box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
 		.design-switch-knob{position:relative;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:left .2s ease-in-out;display:block;}
@@ -59,14 +59,6 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 <div id="header">
   		<?php /* The logo */ ?>
 		<a href="<?=ABSURL?>" class="logo"><img src="<?=WEBDIR?>images/logo.png" alt="Logo" /></a>
-		<?php if (isset($ADMIN) && $ADMIN === true) {?>
-		<span class="sb-design-wrap">
-			<span class="sb-design-label">Neues Design</span>
-			<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
-				<div class="design-switch-knob"></div>
-			</div>
-		</span>
-		<?php }?>
   <?php
   // Sicher prüfen, ob $client vorhanden ist
   if (isset($client) && is_array($client)) {
@@ -89,23 +81,35 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 
 		<?php /* Greeting text */ ?>
 		<div class="greetingText">
-			<?php if (isset($ADMIN) && $ADMIN === true) {?>
-			<div class="logout">
-				<?php if (isset($previous)) {?>
-				<a href="<?=$previous?>">Zurück</a>
+			<div class="sb-header-row">
+				<div class="sb-header-title">
+					<?php if (isset($title[0])) {?><h1><?=$title?></h1><?php }?>
+				</div>
+				<?php if (isset($ADMIN) && $ADMIN === true) {?>
+				<div class="sb-topbar">
+					<!-- Admin-Suche nach Bucher-E-Mail -->
+					<form method="get" action="<?=ABSURL?>web/admin/search_reservations.php" class="sb-search-form">
+						<input type="text" name="email" placeholder="E-Mail suchen" value="<?= isset($_GET['email'])?htmlspecialchars($_GET['email']):'' ?>" />
+						<button type="submit" title="Suchen">🔍</button>
+					</form>
+
+					<div class="logout">
+						<?php if (isset($previous)) {?>
+						<a href="<?=$previous?>">Zurück</a>
+						<?php }?>
+						<a href="edituser.php?id=<?=$_SESSION["userid"]?>">Profil</a>
+						<a href="index.php?do=logout">Logout</a>
+					</div>
+
+					<span class="sb-design-wrap">
+						<span class="sb-design-label">Neues Design</span>
+						<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
+							<div class="design-switch-knob"></div>
+						</div>
+					</span>
+				</div>
 				<?php }?>
-				<a href="edituser.php?id=<?=$_SESSION["userid"]?>">Profil</a>
-				<a href="index.php?do=logout">Logout</a>
 			</div>
-
-			<!-- Admin-Suche nach Bucher-E-Mail -->
-			<form method="get" action="<?=ABSURL?>web/admin/search_reservations.php" style="position:absolute; right:260px; top:14px; display:flex; gap:6px; align-items:center;">
-				<input type="text" name="email" placeholder="E-Mail suchen" value="<?= isset($_GET['email'])?htmlspecialchars($_GET['email']):'' ?>" style="padding:4px 8px; border:1px solid #aaa; border-radius:4px; width:200px;" />
-				<button type="submit" title="Suchen" style="padding:4px 10px; border:1px solid #888; border-radius:4px; background:#eee; cursor:pointer;">🔍</button>
-			</form>
-			<?php }?>
-
-			<?php if (isset($title[0])) {?><h1><?=$title?></h1><?php }?>
 			<?php if (isset($gText[0])) {?><p><?=nl2br($gText)?></p><?php }?>
 		</div>
 	</div>

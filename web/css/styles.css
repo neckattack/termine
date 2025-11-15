@@ -404,7 +404,7 @@ div.is-multiselect a:active {
 #header .greetingText {
 	position: relative;
 	clear: both;
-	padding: 25px 0 10px 10px;
+	padding: 10px 10px 10px 10px;
 	background-color: #FECC00;
 
 	background-repeat: repeat-x;
@@ -417,10 +417,46 @@ div.is-multiselect a:active {
 	background-image:         linear-gradient(to bottom, #FFEEAA, #FECC00);
 }
 
+.sb-header-row {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	column-gap: 24px;
+}
+
+.sb-header-title h1 {
+	margin: 0;
+}
+
+.sb-topbar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 16px;
+}
+
+.sb-search-form {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.sb-search-form input[type="text"] {
+	padding: 4px 8px;
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	width: 220px;
+}
+
+.sb-search-form button {
+	padding: 4px 10px;
+	border: 1px solid #888;
+	border-radius: 4px;
+	background: #eee;
+	cursor: pointer;
+}
+
 .sb-design-wrap {
-	position: absolute;
-	right: 10px;
-	top: 18px;
 	display: inline-flex;
 	align-items: center;
 }
@@ -438,6 +474,14 @@ div.is-multiselect a:active {
 #header .greetingText h1 {
 	font-size: 26px;
 	font-size: 2.6rem;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 16px;
+}
+#header .greetingText form {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0;
 }
 #header .greetingText p {
 	font-size: 16px;
@@ -445,12 +489,10 @@ div.is-multiselect a:active {
 }
 
 #header .logout {
-	position: absolute;
-	top: 0;
-	right: 0;
+	position: static;
 	overflow: hidden;
 	text-align: right;
-	padding: 5px 5px 0 0;
+	padding: 0;
 }
 #header .logout a {
 	color: #FFF;
@@ -1350,11 +1392,45 @@ body.sb-new-design .sb-sidebar {
 
 body.sb-new-design .sb-layout {
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 }
 
 body.sb-new-design .sb-main {
 	flex: 1 1 auto;
+	margin: 0;
+	padding: 0;
+}
+
+body.sb-new-design .page {
+	width: auto;
+	margin: 0 !important;
+	border: none !important;
+	box-shadow: none !important;
+	background-color: transparent;
+}
+
+body.sb-new-design #header,
+body.sb-new-design #content,
+body.sb-new-design #footer {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+body.sb-new-design .page,
+body.sb-new-design #header,
+body.sb-new-design #content,
+body.sb-new-design #footer {
+	border: none !important;
+}
+
+body.sb-new-design #header .logo {
+	display: none !important;
+}
+
+body.sb-new-design #header .logo img {
+	display: none !important;
 }
 
 .sb-design-wrap {
