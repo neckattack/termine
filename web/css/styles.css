@@ -417,6 +417,20 @@ div.is-multiselect a:active {
 	background-image:         linear-gradient(to bottom, #FFEEAA, #FECC00);
 }
 
+.sb-design-wrap {
+	position: absolute;
+	right: 10px;
+	top: 18px;
+	display: inline-flex;
+	align-items: center;
+}
+
+.sb-design-label {
+	font-size: 13px;
+	color: #555;
+	margin-right: 6px;
+}
+
 #header .greetingText h1,
 #header .greetingText p {
 	margin: 0;
