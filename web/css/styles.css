@@ -1277,10 +1277,6 @@ ul.pagination li.forward { margin-right: 0; }
 
 .sb-sidebar {
 	display: none; /* nur im neuen Design sichtbar */
-	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
 	width: 210px;
 	background: #000000;
 	color: #fff;
@@ -1345,6 +1341,11 @@ body.sb-new-design {
 
 body.sb-new-design .sb-sidebar {
 	display: block;
+	position: relative;
+	top: auto;
+	left: auto;
+	bottom: auto;
+	height: auto;
 }
 
 body.sb-new-design .sb-layout {
