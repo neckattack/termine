@@ -20,8 +20,8 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/jquery.multiselect.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css" />
 	<style type="text/css">
-		.design-switch{position:absolute;right:20px;top:32px;width:44px;height:22px;border-radius:11px;background:#ddd;cursor:pointer;box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
-		.design-switch-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:left .2s ease-in-out;}
+		.design-switch{display:inline-block;vertical-align:middle;margin-left:15px;margin-top:40px;width:44px;height:22px;border-radius:11px;background:#ddd;cursor:pointer;box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
+		.design-switch-knob{position:relative;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:left .2s ease-in-out;display:block;}
 		.design-switch.on{background:#4caf50;}
 		.design-switch.on .design-switch-knob{left:24px;}
 	</style>
@@ -57,6 +57,11 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 <div id="header">
   		<?php /* The logo */ ?>
 		<a href="<?=ABSURL?>" class="logo"><img src="<?=WEBDIR?>images/logo.png" alt="Logo" /></a>
+		<?php if (isset($ADMIN) && $ADMIN === true) {?>
+		<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
+			<div class="design-switch-knob"></div>
+		</div>
+		<?php }?>
   <?php
   // Sicher prüfen, ob $client vorhanden ist
   if (isset($client) && is_array($client)) {
@@ -93,10 +98,6 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 				<input type="text" name="email" placeholder="E-Mail suchen" value="<?= isset($_GET['email'])?htmlspecialchars($_GET['email']):'' ?>" style="padding:4px 8px; border:1px solid #aaa; border-radius:4px; width:200px;" />
 				<button type="submit" title="Suchen" style="padding:4px 10px; border:1px solid #888; border-radius:4px; background:#eee; cursor:pointer;">🔍</button>
 			</form>
-			<!-- Toggle für neues Design -->
-			<div id="sb-design-switch" class="design-switch" title="Neues Design umschalten">
-				<div class="design-switch-knob"></div>
-			</div>
 			<?php }?>
 
 			<?php if (isset($title[0])) {?><h1><?=$title?></h1><?php }?>
@@ -109,20 +110,27 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	function applyState(on){
 		var body=document.body; if(!body) return;
 		var sw=document.getElementById('sb-design-switch');
-		if(on){ body.classList.add('sb-new-design'); if(sw) sw.classList.add('on'); }
-		else { body.classList.remove('sb-new-design'); if(sw) sw.classList.remove('on'); }
+		var sidebar=document.querySelector('.sb-sidebar');
+		if(on){
+			body.classList.add('sb-new-design');
+			if(sw) sw.classList.add('on');
+			if(sidebar) sidebar.style.display='block';
+		} else {
+			body.classList.remove('sb-new-design');
+			if(sw) sw.classList.remove('on');
+			if(sidebar) sidebar.style.display='none';
+		}
 	}
-	var stored=(typeof window!=='undefined' && window.localStorage)?localStorage.getItem('sb_new_design'):null;
-	var isOn=(stored==='1');
+	var isOn=false; // Standard: neues Design AUS
 	if(document.readyState==='loading'){
 		document.addEventListener('DOMContentLoaded',function(){ applyState(isOn); });
 	}else{ applyState(isOn); }
 	var sw=document.getElementById('sb-design-switch');
 	if(sw){
 		sw.addEventListener('click',function(){
-			var on=document.body.classList.toggle('sb-new-design');
-			if(on) sw.classList.add('on'); else sw.classList.remove('on');
-			try{ if(window.localStorage){ localStorage.setItem('sb_new_design', on?'1':'0'); } }catch(e){}
+			var currentlyOn=document.body.classList.contains('sb-new-design');
+			var on=!currentlyOn;
+			applyState(on);
 		});
 	}
 })();
