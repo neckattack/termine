@@ -1384,6 +1384,9 @@ ul.pagination li.forward { margin-right: 0; }
 
 body.sb-new-design {
 	background-color: #f3f4f6;
+	/* Platz für fixe Sidebar und Header schaffen */
+	padding-left: 210px;  /* Breite der Sidebar */
+	padding-top: 140px;   /* ungefähre Höhe des Headers */
 }
 
 body.sb-new-design .sb-sidebar {
@@ -1396,9 +1399,7 @@ body.sb-new-design .sb-sidebar {
 }
 
 body.sb-new-design .sb-layout {
-	display: flex;
-	justify-content: flex-start;
-	margin-left: 210px; /* Breite der Sidebar ausgleichen */
+	display: block; /* Inhalt läuft unterhalb des fixen Headers, links durch body-Padding versetzt */
 }
 
 body.sb-new-design .sb-main {
@@ -1433,11 +1434,7 @@ body.sb-new-design #header {
 	z-index: 1000;
 }
 
-/* Content und Footer nach unten schieben, damit sie nicht unter dem fixen Header liegen */
-body.sb-new-design #content,
-body.sb-new-design #footer {
-	padding-top: 140px; /* ungefähre Header-Höhe, bei Bedarf anpassen */
-}
+/* Content/Footer brauchen keinen eigenen Offset mehr, das erledigt das body-Padding */
 
 body.sb-new-design .page,
 body.sb-new-design #header,
