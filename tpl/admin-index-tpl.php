@@ -27,7 +27,7 @@ require ROOT."/tpl/header-tpl.php";
 				<div class="admin-login-visual-inner" style="position:absolute;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;background-repeat:no-repeat;background-image:url('../images/login-massage.png');"></div>
 			</div>
 			<div class="admin-login-panel" style="flex:1 1 50%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 20px;background:#ffffff;">
-				<h1 class="admin-login-title">Admin Login</h1>
+				<h1 class="admin-login-title">Login</h1>
 				<form id="login" method="post" action="<?=$_SERVER["PHP_SELF"]?>">
 					<div class="admin-login-fields" style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:12px;">
 						<input type="text" name="username" value="" placeholder="Benutzername" />
@@ -35,6 +35,10 @@ require ROOT."/tpl/header-tpl.php";
 						<input type="submit" name="submit" value="Login" />
 					</div>
 				</form>
+				<div class="admin-login-imprint" style="margin-top:40px;font-size:11px;color:#555;align-self:flex-start;">
+					&copy; NeckAttack&reg; Mobile Massage |
+					<a rel="external" href="https://www.neckattack.net/kontakt/impressum/" style="font-size:11px;color:#000;text-decoration:underline;">Impressum</a>
+				</div>
 			</div>
 		</div>
 		<?php } else {?>

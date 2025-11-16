@@ -1012,8 +1012,7 @@ a.change:active {
 
 /* Footer direkt unten, ohne zusätzlichen Rahmen auf der Login-Seite */
 .page.admin-index #footer {
-	margin: 0 !important;
-	background: transparent;
+	display: none;
 }
 
 
