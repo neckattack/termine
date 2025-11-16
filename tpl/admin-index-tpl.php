@@ -21,13 +21,22 @@ require ROOT."/tpl/header-tpl.php";
 		<?php if ($error > 0) {?>
 		<p class="error">Login fehlgeschlagen</p>
 		<?php }?>
-		<form id="login" method="post" action="<?=$_SERVER["PHP_SELF"]?>">
-			<div>
-				<input type="text" name="username" value="" />
-				<input type="password" name="password" value="" />
-				<input type="submit" name="submit" value="Login" />
+		<div class="admin-login-layout">
+			<div class="admin-login-visual">
+				<!-- Linke Bildhälfte: Massage-Foto (Bilddatei bei Bedarf anpassen) -->
+				<div class="admin-login-visual-inner"></div>
 			</div>
-		</form>
+			<div class="admin-login-panel">
+				<h1 class="admin-login-title">Admin Login</h1>
+				<form id="login" method="post" action="<?=$_SERVER["PHP_SELF"]?>">
+					<div class="admin-login-fields">
+						<input type="text" name="username" value="" placeholder="Benutzername" />
+						<input type="password" name="password" value="" placeholder="Passwort" />
+						<input type="submit" name="submit" value="Login" />
+					</div>
+				</form>
+			</div>
+		</div>
 		<?php } else {?>
 		<ul class="menu">
 			<li><a href="overview_clients.php">&raquo; Kundenverwaltung</a></li>

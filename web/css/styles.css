@@ -901,6 +901,92 @@ a.change:active {
 	margin-top: 15px;
 }
 
+/* Neues Admin-Login-Layout ------------------------------------------------ */
+.admin-login-layout {
+	display: flex;
+	min-height: 60vh;
+	background: #f5f5f5;
+}
+
+.admin-login-visual {
+	flex: 1 1 50%;
+	position: relative;
+	overflow: hidden;
+}
+
+.admin-login-visual-inner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	/* Platzhalterbild – Pfad bei Bedarf anpassen */
+	background-image: url('../images/login-massage.jpg');
+}
+
+.admin-login-panel {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 40px 20px;
+	background: #ffffff;
+}
+
+.admin-login-title {
+	margin: 0 0 24px 0;
+	font-size: 26px;
+	font-weight: 700;
+}
+
+.admin-login-fields {
+	width: 100%;
+	max-width: 360px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.admin-login-fields input[type="text"],
+.admin-login-fields input[type="password"] {
+	padding: 8px 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.admin-login-fields input[type="submit"] {
+	margin-top: 8px;
+	padding: 8px 10px;
+	border-radius: 4px;
+	border: 1px solid #666;
+	background: #FECC00;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.admin-login-fields input[type="submit"]:hover {
+	background: #ffdd33;
+}
+
+/* Mobile: Bild ausblenden, Login zentriert und vollbreit */
+@media (max-width: 768px) {
+	.admin-login-layout {
+		flex-direction: column;
+		min-height: auto;
+	}
+	.admin-login-visual {
+		display: none;
+	}
+	.admin-login-panel {
+		padding: 40px 16px;
+	}
+}
+
 
 
 /**
