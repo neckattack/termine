@@ -39,6 +39,22 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<?php }?>
 </head>
 <body>
+<script type="text/javascript">
+// Neues Admin-Design sofort beim Laden setzen (ohne 2s altes Layout), außer auf der Login-Seite
+(function(){
+	try {
+		var path = window.location ? window.location.pathname : "";
+		var isAdminLogin = /\/admin\/index\.php$/.test(path);
+		if(isAdminLogin) { return; }
+		if(window.localStorage && localStorage.getItem('sbNewDesign') === '1'){
+			var b = document.body;
+			if(!b) return;
+			if(b.classList){ b.classList.add('sb-new-design'); }
+			else if(b.className.indexOf('sb-new-design') === -1){ b.className += ' sb-new-design'; }
+		}
+	} catch(e){}
+})();
+</script>
 <?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
 <?php if (isset($ADMIN) && $ADMIN === true) { ?>
 <div class="sb-layout">
@@ -52,6 +68,9 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 			<ul class="sb-sidebar-nav">
 				<li><a href="overview_clients.php?sort_by=upcoming">Termine</a></li>
 				<li><a href="overview_clients.php">Kunden</a></li>
+				<?php if (isset($SUPERADMIN) && $SUPERADMIN === true) {?>
+				<li class="sb-sidebar-subitem"><a href="overview_groups.php">Gruppenverwaltung</a></li>
+				<?php }?>
 				<li><a href="overview_users.php">User</a></li>
 				<li><a href="overview_services.php">Services</a></li>
 				<li><a href="edituser.php?id=<?=$_SESSION['userid']?>">Profil</a></li>

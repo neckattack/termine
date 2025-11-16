@@ -978,13 +978,26 @@ a.change:active {
 @media (max-width: 768px) {
 	.admin-login-layout {
 		flex-direction: column;
-		min-height: auto;
+		min-height: 100vh;
 	}
 	.admin-login-visual {
 		display: none;
 	}
 	.admin-login-panel {
+		flex: 1 1 auto;
+		width: 100%;
+		max-width: 100%;
 		padding: 40px 16px;
+		justify-content: center;
+		align-items: center;
+	}
+	.admin-login-fields {
+		max-width: 320px;
+	}
+	.admin-login-fields input[type="text"],
+	.admin-login-fields input[type="password"],
+	.admin-login-fields input[type="submit"] {
+		font-size: 16px;
 	}
 }
 
@@ -1489,6 +1502,16 @@ ul.pagination li.forward { margin-right: 0; }
 	text-decoration: none;
 	font-size: 14px;
 	line-height: 1.4;
+}
+
+/* Unterpunkt (z.B. Gruppenverwaltung) optisch als Sub-Menü unter Kunden */
+.sb-sidebar-subitem {
+	margin-left: 10px;
+}
+
+.sb-sidebar-subitem a {
+	font-size: 13px;
+	opacity: 0.9;
 }
 
 .sb-sidebar-nav a:hover,
