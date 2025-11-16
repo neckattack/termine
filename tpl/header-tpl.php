@@ -119,8 +119,16 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 (function(){
 	function applyState(on){
 		var body=document.body; if(!body) return;
+		// Login-Seite (admin-index) soll nie das neue Design mit Sidebar/Body-Padding nutzen
+		var isLoginPage = !!document.querySelector('.page.admin-index');
 		var sw=document.getElementById('sb-design-switch');
 		var sidebar=document.querySelector('.sb-sidebar');
+		if(isLoginPage){
+			body.classList.remove('sb-new-design');
+			if(sw) sw.classList.remove('on');
+			if(sidebar) sidebar.style.display='none';
+			return;
+		}
 		if(on){
 			body.classList.add('sb-new-design');
 			if(sw) sw.classList.add('on');
