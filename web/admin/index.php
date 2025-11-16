@@ -169,9 +169,10 @@ if (isset($P["username"]) && isset($P["password"])) {
 		break;
 	}
 
-	// Set the flag to redirect if successfully logged in (and only then)
+	// Bei erfolgreichem Login sofort auf Terminübersicht weiterleiten
 	if (isset($LOGGED_IN) && $LOGGED_IN === true) {
-		$REDIRECT = true;
+		header('Location: overview_clients.php?sort_by=upcoming');
+		exit;
 	}
 }
 
