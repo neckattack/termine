@@ -507,9 +507,15 @@ div.is-multiselect a:active {
 	text-decoration: none;
 	font-weight: bold;
 }
-#header .logout a:hover,
-#header .logout a:active {
-	background-color: #888;
+#content .menu li a:hover,
+#content .menu li a:active {
+	background-color: #FFEEAA;
+}
+
+/* Neues Admin-Design: klassische Breadcrumb-Menüzeile im Content ausblenden,
+   Mehrfachaktionen darunter bleiben sichtbar */
+body.sb-new-design #content > ul.menu {
+	display: none !important;
 }
 
 /* Im neuen Design Profil/Logout im Header ausblenden (nur Sidebar nutzen) */
