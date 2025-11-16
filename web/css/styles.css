@@ -1010,9 +1010,18 @@ a.change:active {
 	flex: 1 0 auto;
 }
 
-/* Footer direkt unten, ohne zusätzlichen Rahmen auf der Login-Seite */
+/* Login-Seite: zentriertes Impressum am Seitenende ohne zusätzlichen Rahmen */
 .page.admin-index #footer {
-	display: none;
+	margin: 0 !important;
+	padding: 8px 0 10px 0;
+	background: transparent;
+	border: none;
+	font-size: 11px;
+	text-align: center;
+}
+
+.page.admin-index #footer p {
+	margin: 0;
 }
 
 

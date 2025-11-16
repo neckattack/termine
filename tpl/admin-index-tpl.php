@@ -35,10 +35,6 @@ require ROOT."/tpl/header-tpl.php";
 						<input type="submit" name="submit" value="Login" />
 					</div>
 				</form>
-				<div class="admin-login-imprint" style="margin-top:40px;font-size:11px;color:#555;align-self:flex-start;">
-					&copy; NeckAttack&reg; Mobile Massage |
-					<a rel="external" href="https://www.neckattack.net/kontakt/impressum/" style="font-size:11px;color:#000;text-decoration:underline;">Impressum</a>
-				</div>
 			</div>
 		</div>
 		<?php } else {?>
