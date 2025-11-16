@@ -23,7 +23,7 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/uithemes/ui-lightness/jquery-ui-1.9.2.custom.min.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/ui.checkboxes.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/jquery.multiselect.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css?v=3" />
+	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css?v=4" />
 	<style type="text/css">
 		.design-switch{display:inline-block;vertical-align:middle;margin-left:8px;margin-top:0;width:44px;height:22px;border-radius:11px;background:#ddd;cursor:pointer;box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
 		.design-switch-knob{position:relative;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:left .2s ease-in-out;display:block;}

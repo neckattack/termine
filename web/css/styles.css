@@ -993,11 +993,27 @@ a.change:active {
 	width: 100% !important;
 	margin: 0 !important;
 	border: none !important;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
 }
 
+/* Login-Seite: alten gelben Header ausblenden */
+.page.admin-index #header {
+	display: none;
+}
+
+/* Login-Bereich ohne Innenabstand, füllt den verbleibenden Platz über dem Footer */
 .page.admin-index #content {
 	margin: 0 !important;
 	padding: 0 !important;
+	flex: 1 0 auto;
+}
+
+/* Footer direkt unten, ohne zusätzlichen Rahmen auf der Login-Seite */
+.page.admin-index #footer {
+	margin: 0 !important;
+	background: transparent;
 }
 
 
