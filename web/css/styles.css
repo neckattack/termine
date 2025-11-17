@@ -1547,10 +1547,9 @@ ul.pagination li.forward { margin-right: 0; }
 }
 
 body.sb-new-design {
-	background-color: #f3f4f6;
-	/* Platz für fixe Sidebar und Header schaffen */
+	background-color: #ffffff; /* kein grauer Hintergrund im neuen Design */
+	/* Platz für fixe Sidebar schaffen (vertikaler Offset kommt über #content) */
 	padding-left: 210px;  /* Breite der Sidebar */
-	padding-top: 140px;   /* ungefähre Höhe des Headers */
 }
 
 body.sb-new-design .sb-sidebar {
@@ -1605,7 +1604,13 @@ body.sb-new-design #header,
 body.sb-new-design #content,
 body.sb-new-design #footer {
 	border: none !important;
-	margin: 0 !important; /* keinen grauen Abstand oberhalb/unterhalb von Header/Content/Footer */
+	margin: 0 !important;
+}
+
+/* Im neuen Design den Content unterhalb des fixen Headers starten lassen,
+   ohne dass der Body-Hintergrund als grauer Balken sichtbar wird */
+body.sb-new-design #content {
+	margin-top: 140px !important; /* Höhe des Headers ausgleichen */
 }
 
 body.sb-new-design #header .logo {
