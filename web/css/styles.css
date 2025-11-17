@@ -551,7 +551,7 @@ body.sb-new-design #header .logout {
 /* Neues Admin-Design: mehr Innenabstand im Content-Bereich auf allen Admin-Seiten
    (z.B. editclient, editslots), damit Inhalte nicht am Rand kleben */
 body.sb-new-design .page #content {
-	padding: 20px 40px 30px 40px;
+	padding: 20px 60px 30px 60px;
 }
 
 /* Auf der Terminübersicht (admin-overview_clients) den oberen Abstand etwas
