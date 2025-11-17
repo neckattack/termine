@@ -1605,6 +1605,7 @@ body.sb-new-design #header,
 body.sb-new-design #content,
 body.sb-new-design #footer {
 	border: none !important;
+	margin: 0 !important; /* keinen grauen Abstand oberhalb/unterhalb von Header/Content/Footer */
 }
 
 body.sb-new-design #header .logo {
