@@ -161,7 +161,8 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	// Zustand aus localStorage lesen ("1" = neues Design an)
 	var stored= null;
 	try { stored = window.localStorage ? localStorage.getItem('sbNewDesign') : null; } catch(e) { stored = null; }
-	var isOn = (stored === '1');
+	// Default: Wenn noch nichts gesetzt ist, neues Design als Standard aktivieren
+	var isOn = (stored === '1' || stored === null);
 	if(document.readyState==='loading'){
 		document.addEventListener('DOMContentLoaded',function(){ applyState(isOn); });
 	}else{
