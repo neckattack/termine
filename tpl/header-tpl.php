@@ -23,7 +23,7 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/uithemes/ui-lightness/jquery-ui-1.9.2.custom.min.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/ui.checkboxes.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/jquery.multiselect.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css?v=4" />
+	<link rel="stylesheet" type="text/css" media="screen" href="<?=WEBDIR?>css/styles.css?v=5" />
 	<style type="text/css">
 		.design-switch{display:inline-block;vertical-align:middle;margin-left:8px;margin-top:0;width:44px;height:22px;border-radius:11px;background:#ddd;cursor:pointer;box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
 		.design-switch-knob{position:relative;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:left .2s ease-in-out;display:block;}
@@ -46,7 +46,11 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 		var path = window.location ? window.location.pathname : "";
 		var isAdminLogin = /\/admin\/index\.php$/.test(path);
 		if(isAdminLogin) { return; }
-		if(window.localStorage && localStorage.getItem('sbNewDesign') === '1'){
+		var stored = null;
+		if (window.localStorage) { stored = localStorage.getItem('sbNewDesign'); }
+		// Default: wenn nichts gesetzt ist, neues Design aktiv
+		var isOn = (stored === null || stored === '1');
+		if(isOn){
 			var b = document.body;
 			if(!b) return;
 			if(b.classList){ b.classList.add('sb-new-design'); }
@@ -72,7 +76,8 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 				// Gruppenverwaltung nur anzeigen, wenn SUPERADMIN und wir NICHT auf der Termin-Ansicht sind
 				$showGroupsSidebar = false;
 				if (isset($SUPERADMIN) && $SUPERADMIN === true) {
-					$isTermineView = (defined('PAGE') && PAGE === 'overview_clients.php'
+					$script = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+					$isTermineView = (strpos($script, 'overview_clients.php') !== false
 						&& isset($_GET['sort_by']) && $_GET['sort_by'] === 'upcoming');
 					$showGroupsSidebar = !$isTermineView;
 				}

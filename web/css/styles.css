@@ -557,7 +557,7 @@ body.sb-new-design .page #content {
 /* Auf der Terminübersicht (admin-overview_clients) den oberen Abstand etwas
    reduzieren, damit kein großer grauer Balken zwischen Titel und Inhalt entsteht */
 body.sb-new-design .page.admin-overview_clients #content {
-	padding-top: 10px;
+	padding-top: 0;
 }
 
 /**
