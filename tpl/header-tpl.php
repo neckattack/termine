@@ -68,7 +68,15 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 			<ul class="sb-sidebar-nav">
 				<li><a href="overview_clients.php?sort_by=upcoming">Termine</a></li>
 				<li><a href="overview_clients.php">Kunden</a></li>
-				<?php if (isset($SUPERADMIN) && $SUPERADMIN === true) {?>
+				<?php
+				// Gruppenverwaltung nur anzeigen, wenn SUPERADMIN und wir NICHT auf der Termin-Ansicht sind
+				$showGroupsSidebar = false;
+				if (isset($SUPERADMIN) && $SUPERADMIN === true) {
+					$isTermineView = (defined('PAGE') && PAGE === 'overview_clients.php'
+						&& isset($_GET['sort_by']) && $_GET['sort_by'] === 'upcoming');
+					$showGroupsSidebar = !$isTermineView;
+				}
+				if ($showGroupsSidebar) {?>
 				<li class="sb-sidebar-subitem"><a href="overview_groups.php">Gruppenverwaltung</a></li>
 				<?php }?>
 				<li><a href="overview_users.php">User</a></li>
