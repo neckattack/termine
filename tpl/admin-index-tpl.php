@@ -37,14 +37,6 @@ require ROOT."/tpl/header-tpl.php";
 				</form>
 			</div>
 		</div>
-		<?php } else {?>
-		<ul class="menu">
-			<li><a href="overview_clients.php">&raquo; Kundenverwaltung</a></li>
-			<?php if ($SUPERADMIN === true) {?>
-			<li><a href="overview_groups.php">&raquo; Gruppenverwaltung</a></li>
-			<li><a href="overview_users.php">&raquo; Benutzerverwaltung</a></li>
-			<?php }?>
-		</ul>
 		<?php }?>
 	</div>
 
