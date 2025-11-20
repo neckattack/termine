@@ -242,13 +242,13 @@ if ($client['one_time_booking']) {
                         </div>
                         <?php if (!empty($client['patient_billing_required'])) { ?>
                             <div id="billing-fields" class="form-group text-left" style="margin-top:6px;">
-                                <label style="display:block; font-weight:600;">Ihre Daten</label>
+                                <label style="display:block; font-weight:600;">Ihre Daten <span style="color:#d00;">*</span></label>
                                 <p style="font-size:13px; color:#666; margin:4px 0 8px 0;">Wir benötigen diese Daten, damit Ihre Versicherung die Rechnung prüfen und erstatten kann.</p>
-                                <div class="cnt"><input type="text" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" required /></div>
-                                <div class="cnt"><input type="text" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" required /></div>
-                                <div class="cnt"><input type="text" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" required /></div>
-                                <div class="cnt"><input type="text" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" required /></div>
-                                <div class="cnt"><input type="text" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" required /></div>
+                                <div class="cnt"><input type="text" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße *" required /></div>
+                                <div class="cnt"><input type="text" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer *" required /></div>
+                                <div class="cnt"><input type="text" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ *" required /></div>
+                                <div class="cnt"><input type="text" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt *" required /></div>
+                                <div class="cnt"><input type="text" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ) *" required /></div>
                             </div>
                         <?php } ?>
 
@@ -284,14 +284,14 @@ if ($client['one_time_booking']) {
                         </div>
                         <?php if (!empty($client['patient_billing_required'])) { ?>
                             <div id="billing-fields-paid" class="form-group text-left" style="margin-top:6px;">
-                                <label style="display:block; font-weight:600;">Ihre Daten</label>
+                                <label style="display:block; font-weight:600;">Ihre Daten <span style="color:#d00;">*</span></label>
                                 <p style="font-size:13px; color:#666; margin:4px 0 8px 0;">Wir benötigen diese Daten, damit Ihre Versicherung die Rechnung prüfen und erstatten kann.</p>
                                 <div class="form-row">
-                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" required /></div>
-                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" required /></div>
-                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" required /></div>
-                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" required /></div>
-                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" required /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße *" required /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer *" required /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ *" required /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt *" required /></div>
+                                    <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ) *" required /></div>
                                 </div>
                             </div>
                         <?php } ?>
@@ -544,6 +544,23 @@ if ($client['one_time_booking']) {
 
 	<script type="text/javascript">
 		window.translations = <?php echo json_encode($lang); ?>;
+	</script>
+
+	<script type="text/javascript">
+		// Deutsche Validierungsmeldungen für Pflichtfelder
+		document.addEventListener('DOMContentLoaded', function() {
+			var billingFields = document.querySelectorAll('#billing-fields input[required], #billing-fields-paid input[required]');
+			billingFields.forEach(function(field) {
+				field.addEventListener('invalid', function(e) {
+					e.preventDefault();
+					var fieldName = field.placeholder.replace(' *', '') || 'Dieses Feld';
+					field.setCustomValidity('Bitte füllen Sie das Feld "' + fieldName + '" aus.');
+				});
+				field.addEventListener('input', function(e) {
+					field.setCustomValidity('');
+				});
+			});
+		});
 	</script>
 
 	<script>
