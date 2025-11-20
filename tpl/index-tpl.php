@@ -547,7 +547,26 @@ if ($client['one_time_booking']) {
 	</script>
 
 	<script type="text/javascript">
-		// Deutsche Validierungsmeldungen für Pflichtfelder
+		// Deutsche Validierungsmeldungen für jQuery Validate
+		if (typeof jQuery !== 'undefined' && jQuery.validator) {
+			jQuery.extend(jQuery.validator.messages, {
+				required: "Dieses Feld ist ein Pflichtfeld.",
+				email: "Bitte geben Sie eine gültige E-Mail-Adresse an.",
+				url: "Bitte geben Sie eine gültige URL an.",
+				date: "Bitte geben Sie ein gültiges Datum an.",
+				number: "Bitte geben Sie eine gültige Zahl an.",
+				digits: "Bitte geben Sie nur Ziffern ein.",
+				equalTo: "Bitte geben Sie denselben Wert erneut ein.",
+				maxlength: jQuery.validator.format("Bitte geben Sie maximal {0} Zeichen ein."),
+				minlength: jQuery.validator.format("Bitte geben Sie mindestens {0} Zeichen ein."),
+				rangelength: jQuery.validator.format("Bitte geben Sie einen Wert zwischen {0} und {1} Zeichen ein."),
+				range: jQuery.validator.format("Bitte geben Sie einen Wert zwischen {0} und {1} ein."),
+				max: jQuery.validator.format("Bitte geben Sie einen Wert kleiner oder gleich {0} ein."),
+				min: jQuery.validator.format("Bitte geben Sie einen Wert größer oder gleich {0} ein.")
+			});
+		}
+		
+		// Deutsche Validierungsmeldungen für HTML5 Pflichtfelder
 		document.addEventListener('DOMContentLoaded', function() {
 			var billingFields = document.querySelectorAll('#billing-fields input[required], #billing-fields-paid input[required]');
 			billingFields.forEach(function(field) {
