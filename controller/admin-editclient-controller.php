@@ -521,6 +521,8 @@ function copyDate($id, $dates, $cid)
 	global $DB;
 	global $config;
 	
+	$copiedCount = 0;
+	
 	foreach($dates as $row) {
 		$date = getMySQLDate($row, $config["dateFormat"]);
 		$sql    = "INSERT INTO `dates` (`date`, `client_id`, `created_by`, `created_at`) VALUES (:date, :id, :user, NOW())";
@@ -532,41 +534,38 @@ function copyDate($id, $dates, $cid)
 
 		$add = $DB->PreparedStatement($sql, $params, false, false);
 		if ($add === false || is_null($add)) {
-			return false;
+			continue; // Weiter mit nächstem Datum statt abzubrechen
 		}
 
-	$dateID = $DB->lastInsertId();
+		$dateID = $DB->lastInsertId();
 
-	if($dateID) {
-		$sqlCopy    = "SELECT * FROM times where date_id = :id";
-		$params = array("id" => $id);
+		if($dateID) {
+			$sqlCopy    = "SELECT * FROM times where date_id = :id";
+			$params = array("id" => $id);
 
-		$data = $DB->PreparedSelect($sqlCopy, $params, false, false);
+			$data = $DB->PreparedSelect($sqlCopy, $params, false, false);
 
-		if($data) {
-			foreach($data as $timeRow){
-				$sql    = "INSERT INTO `times` (`date_id`, `time_start`, `time_end`, `created_by`, `created_at`) VALUES (:date, :time_start, :time_end, :user, NOW())";
-				$params = array(
-					"date" => $dateID,
-					"time_start" => $timeRow['time_start'],
-					"time_end" => $timeRow['time_end'],
-					"user" => $_SESSION["userid"]
-				);
+			if($data) {
+				foreach($data as $timeRow){
+					$sql    = "INSERT INTO `times` (`date_id`, `time_start`, `time_end`, `created_by`, `created_at`) VALUES (:date, :time_start, :time_end, :user, NOW())";
+					$params = array(
+						"date" => $dateID,
+						"time_start" => $timeRow['time_start'],
+						"time_end" => $timeRow['time_end'],
+						"user" => $_SESSION["userid"]
+					);
 
-				$add = $DB->PreparedStatement($sql, $params, false, false);
-				if ($add === false || is_null($add)) {
-					return false;
+					$add = $DB->PreparedStatement($sql, $params, false, false);
+					if ($add === false || is_null($add)) {
+						continue; // Weiter mit nächstem Time-Slot
+					}
 				}
+				$copiedCount++;
 			}
 		}
-		
-		echo json_encode(['status' => 1, 'message' => 'Done successfully']);
-		exit(); 
-		} else {
-			echo json_encode(['status' => 0, 'message' => 'Something went wrong']);
-			exit();
-		}
 	}
+	
+	return $copiedCount;
 }
 
 /**

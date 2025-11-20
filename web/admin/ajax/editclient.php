@@ -132,15 +132,24 @@ if (isset($_REQUEST["action"])) {
 // copy a date
 		case "copydate":
 			$id = (int) $_REQUEST["id"];
-			$dates = $_REQUEST['newDates'];
-			$cid = $_REQUEST['cid'];
+			$dates = isset($_REQUEST['newDates']) && is_array($_REQUEST['newDates']) ? $_REQUEST['newDates'] : array();
+			$cid = (int) $_REQUEST['cid'];
 		
-			$copied = false;
+			if (count($dates) === 0) {
+				$output["success"] = 0;
+				$output["error"] = "Keine Daten zum Kopieren ausgewählt";
+				break;
+			}
+			
 			$copied = copyDate($id, $dates, $cid);
-			if ($copied) {
+			if ($copied > 0) {
 				$output["success"] = 1;
 				$output["rows"]    = $copied;
 				$output["id"]      = $id;
+				$output["message"] = "Termine erfolgreich zu " . $copied . " Tag(en) kopiert";
+			} else {
+				$output["success"] = 0;
+				$output["error"] = "Fehler beim Kopieren der Termine";
 			}
 		break;
 
