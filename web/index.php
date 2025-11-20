@@ -76,7 +76,7 @@ else {
 				}
 
 				// Email missing
-				if (!isset($P["email"][1]) || $P["email"] == "E-Mail") {
+				if (empty($P["email"]) || trim($P["email"]) === "" || $P["email"] == "E-Mail") {
 					$messages[] = "Bitte geben Sie eine gültige E-Mail-Adresse an";
 					$error++;
 				}
