@@ -519,12 +519,18 @@ function setClientState($id, $state) {
 function copyDate($id, $dates, $cid)
 {
 	global $DB;
-	global $config;
 	
 	$copiedCount = 0;
 	
 	foreach($dates as $row) {
-		$date = getMySQLDate($row, $config["dateFormat"]);
+		// Das Frontend sendet bereits MySQL-Format (yy-mm-dd), keine Konvertierung nötig
+		// Validiere, dass das Datum das richtige Format hat (YYYY-MM-DD)
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $row)) {
+			continue; // Überspringe ungültige Datumsformate
+		}
+		
+		$date = $row; // Bereits im MySQL-Format
+		
 		$sql    = "INSERT INTO `dates` (`date`, `client_id`, `created_by`, `created_at`) VALUES (:date, :id, :user, NOW())";
 		$params = array(
 			"date" => $date,
@@ -545,7 +551,7 @@ function copyDate($id, $dates, $cid)
 
 			$data = $DB->PreparedSelect($sqlCopy, $params, false, false);
 
-			if($data) {
+			if($data && is_array($data)) {
 				foreach($data as $timeRow){
 					$sql    = "INSERT INTO `times` (`date_id`, `time_start`, `time_end`, `created_by`, `created_at`) VALUES (:date, :time_start, :time_end, :user, NOW())";
 					$params = array(
