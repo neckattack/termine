@@ -251,12 +251,16 @@ require ROOT."/tpl/header-tpl.php";
 						<a href="#" id="addDate">Hinzufügen</a>
 					</div>
 					<div id='copyDateBackdrop' style="display:none; position: fixed; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.2); z-index: 9998;"></div>
-					<div id='copyDate' style="display:none; position: fixed; top: 20%; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 0); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray; z-index: 9999;">
-						<span class='close-modal' style="text-align: right; height: 25px; width: 25px; color: red; margin-bottom: 50px; cursor: pointer; position: relative; top: -20px; right: -20px; font-weight: 600;">X</span>
-						<label>Select New Date</label> <br>
-						<input type="text" class="datePicker" name="newDate[]" value="<?=isset($day["date"]) ? $day["date"] : ""?>" />
-						<br><br>
-						<button><a style="line-height: 25px; text-decoration: none;" href="javascript:void(0)" class="copy-data">Copy</a></button>
+					<div id='copyDate' style="display:none; position: fixed; top: 10%; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 0); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray; z-index: 9999; max-width: 500px;">
+						<span class='close-modal' style="text-align: right; height: 25px; width: 25px; color: red; margin-bottom: 20px; cursor: pointer; position: absolute; top: 10px; right: 10px; font-weight: 600; font-size: 20px;">X</span>
+						<h3 style="margin-top: 0; margin-bottom: 15px;">Termine kopieren</h3>
+						<p style="font-size: 13px; color: #666; margin-bottom: 15px;">Wähle mehrere Tage aus, zu denen die Termine kopiert werden sollen:</p>
+						<div id="multiDatePicker" style="margin-bottom: 15px;"></div>
+						<div style="margin-bottom: 15px;">
+							<strong>Ausgewählte Tage (<span id="selectedCount">0</span>):</strong>
+							<div id="selectedDatesList" style="margin-top: 8px; padding: 10px; background: #f5f5f5; border-radius: 4px; min-height: 40px; max-height: 150px; overflow-y: auto;"></div>
+						</div>
+						<button style="padding: 8px 20px; background: #f4a900; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600;" class="copy-data">Termine kopieren</button>
 					</div>
 				</div>
             <div class="row">
@@ -462,65 +466,124 @@ require ROOT."/tpl/footer-tpl.php";
 ?>
 
 <script>
+	var selectedDates = [];
+
+	function formatDateForDisplay(dateStr) {
+		// Convert yyyy-mm-dd to dd.mm.yyyy for display
+		var parts = dateStr.split('-');
+		return parts[2] + '.' + parts[1] + '.' + parts[0];
+	}
+
+	function updateSelectedDatesList() {
+		var $list = $('#selectedDatesList');
+		var $count = $('#selectedCount');
+		
+		if (selectedDates.length === 0) {
+			$list.html('<span style="color: #999;">Noch keine Tage ausgewählt</span>');
+		} else {
+			var html = selectedDates.map(function(date) {
+				return '<span style="display: inline-block; background: white; padding: 4px 10px; margin: 2px; border-radius: 3px; font-size: 13px;">' +
+					formatDateForDisplay(date) +
+					' <a href="javascript:void(0)" data-date="' + date + '" class="remove-date" style="color: #d00; text-decoration: none; font-weight: bold; margin-left: 5px;">×</a>' +
+					'</span>';
+			}).join('');
+			$list.html(html);
+		}
+		$count.text(selectedDates.length);
+	}
+
+	$(document).on('click', '.remove-date', function() {
+		var dateToRemove = $(this).data('date');
+		selectedDates = selectedDates.filter(function(d) { return d !== dateToRemove; });
+		updateSelectedDatesList();
+		$('#multiDatePicker').datepicker('refresh');
+	});
+
 	$(document).on('click', '.copy-date', function() {
 		var id = $(this).data('id');
 		showModal(id);
-
 	})
 
 	$(document).on('click', '.copy-data', function() {
-		//ajax call with date id and new date
-		var newDates = $('[name="newDate[]"]').map(function() {
-            return $(this).val(); // Get the value of each input
-        }).get();
+		if (selectedDates.length === 0) {
+			alert('Bitte wähle mindestens einen Tag aus');
+			return;
+		}
+
 		var myDateId = $(this).attr('data-id');
-		
 		var url = '/admin/ajax/editclient.php?action=copydate';
 		var cid = 0;
-		// Get the current URL
 		var currentUrl = window.location.href;
-
-		// Regular expression to find 'cid' parameter
 		var regex = /[?&]cid=([^&]+)/;
-
-		// Match the 'cid' parameter in the URL
 		var match = currentUrl.match(regex);
 
 		if (match) {
-			cid = match[1]; // Extracted 'cid' value
+			cid = match[1];
 		} 
 
 		$.ajax({
 			url: url,
 			dataType: 'json',
 			type: 'post',
-			data: {newDates: newDates, id: myDateId, cid: cid},
+			data: {newDates: selectedDates, id: myDateId, cid: cid},
 			success: function(response){
-				if(response.status == 1) {
-					alert('Data added successfully');
+				if(response.success == 1) {
+					alert('Termine erfolgreich zu ' + selectedDates.length + ' Tag(en) kopiert!');
 					window.location.reload();
 				} else {
-					alert('Something went wrong, please try again');
+					alert('Fehler beim Kopieren. Bitte versuche es erneut.');
 				}
 			}
 		})
 	})
 
 	function showModal(id) {
-    // In den Body verschieben, damit kein übergeordneter Container die Anzeige blockiert
-    var $bd = $('#copyDateBackdrop');
-    var $md = $('#copyDate');
-    if ($bd.parent()[0] !== document.body) { $bd.appendTo('body'); }
-    if ($md.parent()[0] !== document.body) { $md.appendTo('body'); }
-    $bd.show();
-    $md.show();
-    $('.copy-data').attr('data-id', id);
-}
+		// Reset selected dates
+		selectedDates = [];
+		updateSelectedDatesList();
+
+		// Initialize datepicker
+		$('#multiDatePicker').datepicker('destroy');
+		$('#multiDatePicker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+			monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+			dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+			dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+			dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+			beforeShowDay: function(date) {
+				var dateStr = $.datepicker.formatDate('yy-mm-dd', date);
+				var isSelected = selectedDates.indexOf(dateStr) !== -1;
+				return [true, isSelected ? 'ui-state-highlight' : ''];
+			},
+			onSelect: function(dateText) {
+				var idx = selectedDates.indexOf(dateText);
+				if (idx === -1) {
+					selectedDates.push(dateText);
+					selectedDates.sort();
+				} else {
+					selectedDates.splice(idx, 1);
+				}
+				updateSelectedDatesList();
+				$(this).datepicker('refresh');
+			}
+		});
+
+		var $bd = $('#copyDateBackdrop');
+		var $md = $('#copyDate');
+		if ($bd.parent()[0] !== document.body) { $bd.appendTo('body'); }
+		if ($md.parent()[0] !== document.body) { $md.appendTo('body'); }
+		$bd.show();
+		$md.show();
+		$('.copy-data').attr('data-id', id);
+	}
 
 	$('.close-modal').click(function() {
 		$('#copyDate').hide();
 		$('#copyDateBackdrop').hide();
 		$('.copy-data').attr('data-id', null);
+		selectedDates = [];
 	})
 
 	$(document).on('keydown', function(e){
@@ -528,6 +591,7 @@ require ROOT."/tpl/footer-tpl.php";
 			$('#copyDate').hide();
 			$('#copyDateBackdrop').hide();
 			$('.copy-data').attr('data-id', null);
+			selectedDates = [];
 		}
 	});
 </script>
