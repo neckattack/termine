@@ -426,16 +426,27 @@ function sendConfirmationMail($email, $name, $times=array(), $contact=null, $mes
 	}
 
 	if ($html === true) {
-		/*
-		$message  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
-		$message .= "<html>\n<head>\n<title>Anmeldung</title>\n</head>\n<body>\n";
-		$message .= "<h1>Hallo ".$name."</h1>";
-		$message .= "<h2>Sie haben sich erfolgreich für folgende Termine angemeldet:</h2>\n";
-		$message .= "<pre>";
-		$message .= print_r($times, true);
-		$message .= "</pre>";
-		$message .= "<body>\n</html>";
-		*/
+		// HTML-Version mit formatierten ICS-Links
+		foreach ($timeFormat AS $date => $entries) {
+			$message_time .= "<strong>".$date."</strong><br>\n";
+			foreach ($entries AS $key => $entry) {
+				$icsUrl = ABSURL."web/ics.php?e=".md5($email)."&t=".$entry["id"];
+				$message_time .= $entry["start"]." - ".$entry["end"]." ";
+				$message_time .= '<a href="'.$icsUrl.'" style="display:inline-block;padding:4px 12px;background-color:#f4a900;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;margin-left:8px;">📅 In Kalender eintragen</a>';
+				$message_time .= "<br>\n";
+			}
+			$message_time .= "<br>\n";
+		}
+		
+		$terminate_link = ABSURL."web/bookings.php?e=".md5($email);
+		
+		$variables = array(
+			"Benutzername"    => $name,
+			"Termine"         => $message_time,
+			"Telefonnummer"   => $contact["phone"],
+			"Ansprechpartner" => $contact["string"],
+			"StornierenLink" => '<a href="'.$terminate_link.'">'.$terminate_link.'</a>',
+		);
 	}
 
 	// Plain text
@@ -484,7 +495,7 @@ function sendConfirmationMail($email, $name, $times=array(), $contact=null, $mes
 	$message = preg_replace("# {2}#", " ", $message);
 
 
-	$success = sendMail($email, $name, $from, $subject, $message, $contact["email"], false);
+	$success = sendMail($email, $name, $from, $subject, $message, $contact["email"], true);
 
 	return $success;
 }
