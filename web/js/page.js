@@ -280,10 +280,13 @@ jQuery(document).ready(function() {
 		
 		// Rules for validation
 		rules: {
-			"name"  : {
+			"first_name"  : {
 				required  : true,
-				minlength : 2,
-				not_regex : "^Name$"
+				minlength : 2
+			},
+			"last_name"  : {
+				required  : true,
+				minlength : 2
 			},
 			"email" : {
 				required : true,
@@ -296,9 +299,10 @@ jQuery(document).ready(function() {
 		
 		// Error messages
 		messages: {
-			"name"    : __t('check_name_message'),
-			"email"   : __t('check_email_message'),
-			"times[]" : __t('check_time_message')
+			"first_name"  : "Bitte geben Sie Ihren Vornamen an",
+			"last_name"   : "Bitte geben Sie Ihren Nachnamen an",
+			"email"       : __t('check_email_message'),
+			"times[]"     : __t('check_time_message')
 		},
 		
 		// Show Errors in box

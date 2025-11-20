@@ -167,7 +167,10 @@ $gText  = $client["greeting_text"];
 
 					                    if ($price ==0 || empty($price)) { ?>
                         <div class="cnt">
-                            <input type="text" id="name" name="name" value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" /><br />
+                            <input type="text" id="first_name" name="first_name" value="<?=(isset($P["first_name"])) ? htmlspecialchars($P["first_name"]) : ""?>" placeholder="Vorname" /><br />
+                        </div>
+                        <div class="cnt">
+                            <input type="text" id="last_name" name="last_name" value="<?=(isset($P["last_name"])) ? htmlspecialchars($P["last_name"]) : ""?>" placeholder="Nachname" /><br />
                         </div>
                         <div class="cnt">
                             <input type="text" id="email" name="email" value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" /><br />
@@ -196,11 +199,15 @@ $gText  = $client["greeting_text"];
 							<input class="btn btn-warning" style="float: right" type="submit" id="submit" name="submit" value="Anmelden"                    <?php } else { ?>
 
                         <div class="form-group">
-                            <input type="text" id="name" class="form-control"   value="<?=(isset($P["name"])) ? $P["name"] : "Name"?>" placeholder="Name" />
+                            <input type="text" id="first_name" name="first_name" class="form-control" value="<?=(isset($P["first_name"])) ? htmlspecialchars($P["first_name"]) : ""?>" placeholder="Vorname" />
                         </div>
 
                         <div class="form-group">
-                            <input type="text" id="email" class="form-control"  value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" />
+                            <input type="text" id="last_name" name="last_name" class="form-control" value="<?=(isset($P["last_name"])) ? htmlspecialchars($P["last_name"]) : ""?>" placeholder="Nachname" />
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="email" name="email" class="form-control" value="<?=(isset($P["email"])) ? $P["email"] : "E-Mail"?>" placeholder="E-Mail" />
                         </div>
                         <?php if (!empty($client['patient_billing_required'])) { ?>
                         <div class="form-group text-left" style="margin-top:6px;">

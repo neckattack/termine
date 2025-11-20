@@ -65,9 +65,13 @@ else {
 					$error++;
 				}
 
-				// Name missing
-				if (!isset($P["name"][1]) || $P["name"] == "Name") {
-					$messages[] = "Bitte geben Sie Ihren Namen an";
+				// Name missing (Vorname und Nachname)
+				if (empty($P["first_name"]) || trim($P["first_name"]) === "") {
+					$messages[] = "Bitte geben Sie Ihren Vornamen an";
+					$error++;
+				}
+				if (empty($P["last_name"]) || trim($P["last_name"]) === "") {
+					$messages[] = "Bitte geben Sie Ihren Nachnamen an";
 					$error++;
 				}
 
@@ -101,7 +105,9 @@ else {
 
 				// Insert the reservation
 				$times = $P["times"];
-				$name  = $P["name"];
+				$first_name = trim($P["first_name"]);
+				$last_name  = trim($P["last_name"]);
+				$name  = $first_name . ' ' . $last_name; // Für E-Mail-Versand
 				$email = $P["email"];
 				$street    = isset($P['street']) ? trim($P['street']) : '';
 				$house_no  = isset($P['house_no']) ? trim($P['house_no']) : '';
@@ -156,10 +162,9 @@ else {
                                 // Patient suchen
                                 $prow = $DB->PreparedSelect('SELECT * FROM patients WHERE LOWER(email) = :em', array('em'=>$eml), false, false);
                                 $pid = (is_array($prow) && isset($prow[0]['id'])) ? (int)$prow[0]['id'] : 0;
-                                // Name splitten
-                                $first = '';$last='';
-                                $parts = preg_split('/\s+/', trim($name));
-                                if (is_array($parts) && count($parts)>0) { $first = array_shift($parts); $last = implode(' ', $parts); }
+                                // Vor- und Nachname direkt verwenden
+                                $first = $first_name;
+                                $last = $last_name;
                                 // Geburtsdatum in Y-m-d transformieren, wenn gültig
                                 $bdSql = null; if (preg_match('#^(\d{2})\.(\d{2})\.(\d{4})$#', $birthdate, $m)) { $bdSql = $m[3].'-'.$m[2].'-'.$m[1]; }
 
