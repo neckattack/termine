@@ -32,10 +32,18 @@ switch ($R["action"]) {
 		$clientID = (int) $R["id"];
 		$client   = getClientInfos($clientID);
 		$times    = @$R["times"];
-		$name     = @$R["name"];
+		$first_name = isset($R["first_name"]) ? trim($R["first_name"]) : '';
+		$last_name  = isset($R["last_name"]) ? trim($R["last_name"]) : '';
+		$name     = $first_name . ' ' . $last_name;
 		$email    = @strtolower(trim($R["email"]));
 		$message  = $client["email_text"];
 		
+		// Validierung: Vorname und Nachname erforderlich
+		if (empty($first_name) || empty($last_name)) {
+			$output["success"] = 0;
+			$output["errors"] = "Bitte geben Sie Ihren Vor- und Nachnamen an";
+			break;
+		}
 		
 		// Register to times
 		$checkAvail = checkTimesAvailable($times);
