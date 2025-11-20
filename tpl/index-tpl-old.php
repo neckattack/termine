@@ -174,12 +174,13 @@ $gText  = $client["greeting_text"];
                         </div>
                         <?php if (!empty($client['patient_billing_required'])) { ?>
                         <div class="form-group text-left" style="margin-top:6px;">
-                            <label style="display:block; font-weight:600;">Rechnungsadresse</label>
-                            <div class="cnt"><input type="text" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" /></div>
-                            <div class="cnt"><input type="text" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" /></div>
-                            <div class="cnt"><input type="text" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" /></div>
-                            <div class="cnt"><input type="text" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" /></div>
-                            <div class="cnt"><input type="text" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" /></div>
+                            <label style="display:block; font-weight:600;">Ihre Daten</label>
+                            <p style="font-size:13px; color:#666; margin:4px 0 8px 0;">Wir benötigen diese Daten, damit Ihre Versicherung die Rechnung prüfen und erstatten kann.</p>
+                            <div class="cnt"><input type="text" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" required /></div>
+                            <div class="cnt"><input type="text" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" required /></div>
+                            <div class="cnt"><input type="text" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" required /></div>
+                            <div class="cnt"><input type="text" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" required /></div>
+                            <div class="cnt"><input type="text" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" required /></div>
                         </div>
                         <?php } ?>
 
@@ -203,13 +204,14 @@ $gText  = $client["greeting_text"];
                         </div>
                         <?php if (!empty($client['patient_billing_required'])) { ?>
                         <div class="form-group text-left" style="margin-top:6px;">
-                            <label style="display:block; font-weight:600;">Rechnungsadresse</label>
+                            <label style="display:block; font-weight:600;">Ihre Daten</label>
+                            <p style="font-size:13px; color:#666; margin:4px 0 8px 0;">Wir benötigen diese Daten, damit Ihre Versicherung die Rechnung prüfen und erstatten kann.</p>
                             <div class="form-row">
-                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" /></div>
-                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" /></div>
-                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" /></div>
-                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" /></div>
-                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="street" value="<?= isset($P['street'])?htmlspecialchars($P['street']):'' ?>" placeholder="Straße" required /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="house_no" value="<?= isset($P['house_no'])?htmlspecialchars($P['house_no']):'' ?>" placeholder="Hausnummer" required /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="zip" value="<?= isset($P['zip'])?htmlspecialchars($P['zip']):'' ?>" placeholder="PLZ" required /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="city" value="<?= isset($P['city'])?htmlspecialchars($P['city']):'' ?>" placeholder="Stadt" required /></div>
+                                <div class="col-12" style="margin-bottom:6px;"><input type="text" class="form-control" name="birthdate" value="<?= isset($P['birthdate'])?htmlspecialchars($P['birthdate']):'' ?>" placeholder="Geburtsdatum (TT.MM.JJJJ)" required /></div>
                             </div>
                         </div>
                         <?php } ?>
