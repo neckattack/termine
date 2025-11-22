@@ -227,11 +227,18 @@ require ROOT."/tpl/header-tpl.php";
 					</select>
 				</div>
 
+				<div class="row">
+					<label for="show_past_dates">Vergangene Termine anzeigen</label>
+					<input type="checkbox" id="show_past_dates" value="1" />
+					<span style="font-size: 12px; color: #666; margin-left: 10px;">(Standard: nur aktuelle und zukünftige Termine)</span>
+				</div>
+
 				<div class="row row-date-section" style="position: relative;">
 					<label>Tage</label>
 					<div class="dates">
+						<a href="#" id="addDate" style="display: inline-block; margin-bottom: 15px; font-weight: bold;">+ Hinzufügen</a>
 						<?php foreach ($cDays AS $day) {?>
-						<div id="date_<?=$day["id"]?>">
+						<div id="date_<?=$day["id"]?>" class="date-entry" data-date="<?=isset($day["date"]) ? $day["date"] : ""?>">
 							<input type="text" class="datePicker" name="cDays[]" value="<?=isset($day["date"]) ? $day["date"] : ""?>" />
 							<?php if (isset($day["id"]) && $day["id"] > 0) {?>
 							<a href="editslots.php?id=<?=$day["id"]?>">Termine</a>
@@ -248,7 +255,6 @@ require ROOT."/tpl/header-tpl.php";
 							<?php }?>
 						</div>
 						<?php }?>
-						<a href="#" id="addDate">Hinzufügen</a>
 					</div>
 					<div id='copyDateBackdrop' style="display:none; position: fixed; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.2); z-index: 9998;"></div>
 					<div id='copyDate' style="display:none; position: fixed; top: 10%; left: 50%; background-color: white; padding: 30px; transform: translate(-50%, 0); border: 2px solid gray; border-radius: 5px; box-shadow: 1px 2px 15px gray; z-index: 9999; max-width: 500px;">
@@ -593,5 +599,73 @@ require ROOT."/tpl/footer-tpl.php";
 			$('.copy-data').attr('data-id', null);
 			selectedDates = [];
 		}
+	});
+
+	// Termine Filter und Sortierung
+	$(document).ready(function() {
+		var $datesContainer = $('.dates');
+		var $dateEntries = $('.date-entry');
+		var $checkbox = $('#show_past_dates');
+		var today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		// Funktion zum Parsen des deutschen Datumsformats (dd.mm.yyyy)
+		function parseGermanDate(dateStr) {
+			if (!dateStr || dateStr.trim() === '') return null;
+			var parts = dateStr.trim().split('.');
+			if (parts.length !== 3) return null;
+			// dd.mm.yyyy -> yyyy-mm-dd
+			return new Date(parts[2], parts[1] - 1, parts[0]);
+		}
+
+		// Sortiere Termine: nächste zuerst (aufsteigend)
+		var sortedEntries = $dateEntries.toArray().sort(function(a, b) {
+			var dateA = parseGermanDate($(a).attr('data-date'));
+			var dateB = parseGermanDate($(b).attr('data-date'));
+			
+			if (!dateA && !dateB) return 0;
+			if (!dateA) return 1;
+			if (!dateB) return -1;
+			
+			return dateA - dateB; // Nächste zuerst (aufsteigend)
+		});
+
+		// Entferne alle date-entries und füge sie sortiert wieder ein
+		$dateEntries.detach();
+		var $addDateLink = $('#addDate');
+		$.each(sortedEntries, function(index, entry) {
+			$(entry).insertAfter($addDateLink);
+			$addDateLink = $(entry); // Update reference so next entry is inserted after this one
+		});
+
+		// Funktion zum Ein-/Ausblenden vergangener Termine
+		function togglePastDates() {
+			var showPast = $checkbox.is(':checked');
+			
+			$('.date-entry').each(function() {
+				var dateStr = $(this).attr('data-date');
+				var entryDate = parseGermanDate(dateStr);
+				
+				if (entryDate && entryDate < today) {
+					// Vergangener Termin
+					if (showPast) {
+						$(this).show();
+					} else {
+						$(this).hide();
+					}
+				} else {
+					// Aktueller oder zukünftiger Termin
+					$(this).show();
+				}
+			});
+		}
+
+		// Initial: vergangene Termine ausblenden
+		togglePastDates();
+
+		// Event Listener für Checkbox
+		$checkbox.on('change', function() {
+			togglePastDates();
+		});
 	});
 </script>
