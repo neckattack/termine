@@ -236,7 +236,7 @@ require ROOT."/tpl/header-tpl.php";
 				<div class="row row-date-section" style="position: relative;">
 					<label>Tage</label>
 					<div class="dates">
-						<a href="#" id="addDate" style="display: inline-block; margin-bottom: 15px; font-weight: bold;">+ Hinzufügen</a>
+						<a href="#" id="addDate" style="display: block; margin-bottom: 10px; font-weight: bold;">+ Hinzufügen</a>
 						<?php foreach ($cDays AS $day) {?>
 						<div id="date_<?=$day["id"]?>" class="date-entry" data-date="<?=isset($day["date"]) ? $day["date"] : ""?>">
 							<input type="text" class="datePicker" name="cDays[]" value="<?=isset($day["date"]) ? $day["date"] : ""?>" />
