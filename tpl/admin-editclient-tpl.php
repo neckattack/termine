@@ -634,10 +634,11 @@ require ROOT."/tpl/footer-tpl.php";
 
 		// Entferne alle date-entries und füge sie sortiert wieder ein
 		$dateEntries.detach();
-		var $addDateLink = $('#addDate');
+		var $addDateWrapper = $('#addDate').parent(); // Get the wrapper div, not the link
+		var $lastEntry = $addDateWrapper;
 		$.each(sortedEntries, function(index, entry) {
-			$(entry).insertAfter($addDateLink);
-			$addDateLink = $(entry); // Update reference so next entry is inserted after this one
+			$(entry).insertAfter($lastEntry);
+			$lastEntry = $(entry); // Update reference so next entry is inserted after this one
 		});
 
 		// Funktion zum Ein-/Ausblenden vergangener Termine
