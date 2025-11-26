@@ -47,7 +47,7 @@ require ROOT."/tpl/header-tpl.php";
             </div>
             <div class="slots">
             <div style="position:relative;">
-                <button type="button" id="btn-send-invoices" style="position:absolute; right:160px; top:-34px; background:#2b7; color:#fff; border:0; padding:6px 10px; border-radius:4px; cursor:pointer;">Rechnungen E‑Mailen</button>
+                <button type="button" id="btn-send-invoices" style="position:absolute; right:240px; top:-34px; background:#2b7; color:#fff; border:0; padding:6px 10px; border-radius:4px; cursor:pointer;">Rechnungen E‑Mailen</button>
                 
                 <!-- Neues E-Mail Dropdown -->
                 <div style="position:absolute; right:0; top:-34px; display:inline-block;">
@@ -501,6 +501,13 @@ require ROOT."/tpl/footer-tpl.php";
             }
             
             if (action === 'invoices'){
+                // Bestätigungs-Dialog
+                var confirmMsg = 'Sind Sie sicher, dass Sie an alle ' + ids.length + ' ausgewählten Patienten eine Rechnung schicken möchten?';
+                if (!confirm(confirmMsg)) {
+                    this.value = ''; // Reset dropdown
+                    return;
+                }
+                
                 // Rechnungen E-Mailen (bestehende Funktion)
                 if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Sende Rechnungen…', null); }
                 var params = new URLSearchParams();
