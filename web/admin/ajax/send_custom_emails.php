@@ -144,17 +144,11 @@ try {
             continue; 
         }
 
-        // Name aufsplitten für persönliche Anrede
-        $nameParts = preg_split('/\s+/', trim($pname));
-        $firstName = is_array($nameParts) && count($nameParts) > 0 ? $nameParts[0] : $pname;
-        
         // Body mit Zeilenumbrüchen in HTML umwandeln
         $bodyHtml = nl2br(htmlspecialchars($body));
         
-        // E-Mail Inhalt mit persönlicher Anrede
-        $coreHtml = '<p>Hallo '.htmlspecialchars($firstName).',</p>'
-                  . '<p>'.$bodyHtml.'</p>'
-                  . '<p>Vielen Dank und bis zum nächsten Mal,<br/>Ihr neckattack Team</p>';
+        // E-Mail Inhalt - nur der eingegebene Text, keine automatischen Zusätze
+        $coreHtml = $bodyHtml;
         
         $html = render_email_template($subject, $coreHtml);
 
