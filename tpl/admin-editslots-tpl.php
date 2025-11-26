@@ -47,7 +47,16 @@ require ROOT."/tpl/header-tpl.php";
             </div>
             <div class="slots">
             <div style="position:relative;">
-                <button type="button" id="btn-send-invoices" style="position:absolute; right:0; top:-34px; background:#2b7; color:#fff; border:0; padding:6px 10px; border-radius:4px; cursor:pointer;">Rechnungen E‑Mailen</button>
+                <button type="button" id="btn-send-invoices" style="position:absolute; right:160px; top:-34px; background:#2b7; color:#fff; border:0; padding:6px 10px; border-radius:4px; cursor:pointer;">Rechnungen E‑Mailen</button>
+                
+                <!-- Neues E-Mail Dropdown -->
+                <div style="position:absolute; right:0; top:-34px; display:inline-block;">
+                    <select id="email-action-dropdown" style="padding:6px 10px; background:#2b7; color:#fff; border:0; border-radius:4px; cursor:pointer; font-weight:600;">
+                        <option value="">E-Mail ▼</option>
+                        <option value="invoices">Rechnungen E-Mailen</option>
+                        <option value="custom">E-Mail individuell</option>
+                    </select>
+                </div>
             </div>
             <h3><?= isset($slots[0]["date"]) ? $slots[0]["date"] : "" ?></h3>
 			<ul id="slots">
@@ -187,6 +196,25 @@ require ROOT."/tpl/header-tpl.php";
 		<p id="error-invalid" class="error check-for-js">Bitte überprüfen Sie Ihre Eingabe.</p>
 		<p id="error-not-available" class="error check-for-js">Einige der Termine überschneiden sich. Bitte überprüfen Sie Ihre Eingabe.</p>
 		<p id="success">Der Kunde wurde erfolgreich eingetragen/geändert.</p>
+
+<!-- Modal für individuelle E-Mail -->
+<div id="custom-email-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:30px; border-radius:8px; max-width:600px; width:90%; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; margin-bottom:20px;">E-Mail individuell versenden</h3>
+        <div style="margin-bottom:15px;">
+            <label for="custom-email-subject" style="display:block; margin-bottom:5px; font-weight:600;">Betreff:</label>
+            <input type="text" id="custom-email-subject" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px;" placeholder="Betreff eingeben..." />
+        </div>
+        <div style="margin-bottom:20px;">
+            <label for="custom-email-body" style="display:block; margin-bottom:5px; font-weight:600;">Nachricht:</label>
+            <textarea id="custom-email-body" rows="10" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; resize:vertical;" placeholder="Nachricht eingeben..."></textarea>
+        </div>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button type="button" id="custom-email-cancel" style="padding:8px 20px; background:#ccc; color:#333; border:0; border-radius:4px; cursor:pointer; font-weight:600;">Abbrechen</button>
+            <button type="button" id="custom-email-send" style="padding:8px 20px; background:#2b7; color:#fff; border:0; border-radius:4px; cursor:pointer; font-weight:600;">Senden</button>
+        </div>
+    </div>
+</div>
 
 <?php
 // Footer
@@ -425,6 +453,135 @@ require ROOT."/tpl/footer-tpl.php";
                     if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner(msg, ok); }
                 })
                 .catch(function(e){ if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Fehler beim Senden: '+(e&&e.message?e.message:''), false); } });
+        });
+    })();
+
+    // Neues E-Mail Dropdown & Individuelles E-Mail Modal
+    (function(){
+        var dropdown = document.getElementById('email-action-dropdown');
+        var modal = document.getElementById('custom-email-modal');
+        var subjectInput = document.getElementById('custom-email-subject');
+        var bodyInput = document.getElementById('custom-email-body');
+        var cancelBtn = document.getElementById('custom-email-cancel');
+        var sendBtn = document.getElementById('custom-email-send');
+        
+        if (!dropdown || !modal) return;
+        
+        function getSelectedResIds(){
+            var ids=[]; 
+            document.querySelectorAll('.slot-select:checked').forEach(function(cb){ 
+                var id=cb.getAttribute('data-resid'); 
+                if(id) ids.push(id); 
+            });
+            return ids;
+        }
+        
+        function openModal(){
+            modal.style.display = 'flex';
+            subjectInput.value = '';
+            bodyInput.value = '';
+        }
+        
+        function closeModal(){
+            modal.style.display = 'none';
+        }
+        
+        // Dropdown Change Handler
+        dropdown.addEventListener('change', function(){
+            var action = this.value;
+            if (!action) return;
+            
+            var ids = getSelectedResIds();
+            if (ids.length === 0){
+                if (typeof window.__sbShowBanner==='function'){ 
+                    window.__sbShowBanner('Keine Slots ausgewählt', false); 
+                }
+                this.value = ''; // Reset dropdown
+                return;
+            }
+            
+            if (action === 'invoices'){
+                // Rechnungen E-Mailen (bestehende Funktion)
+                if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Sende Rechnungen…', null); }
+                var params = new URLSearchParams();
+                ids.forEach(function(id){ params.append('reservation_ids[]', id); });
+                fetch('<?= ABSURL ?>web/admin/ajax/send_invoices.php', { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, 
+                    credentials:'same-origin', 
+                    body: params.toString() 
+                })
+                .then(function(r){ if(!r.ok){ return r.text().then(function(t){ throw new Error('HTTP '+r.status+' '+(t||'')); }); } return r.json(); })
+                .then(function(j){
+                    var ok = j && j.ok===true;
+                    var details = '';
+                    if (j && j.results && j.results.length){
+                        var fails = j.results.filter(function(r){ return r && r.ok===false; });
+                        if (fails.length){ details = ' | 1. Fehler: '+(fails[0].reason||'unbekannt'); }
+                    }
+                    var msg = ok ? ('Rechnungen gesendet: '+(j.sent||0)+(j.failed&&j.failed.length?(', Fehler: '+j.failed.length):''))+details : 'Fehler beim Senden';
+                    if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner(msg, ok); }
+                })
+                .catch(function(e){ if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Fehler beim Senden: '+(e&&e.message?e.message:''), false); } });
+                
+            } else if (action === 'custom'){
+                // E-Mail individuell
+                openModal();
+            }
+            
+            this.value = ''; // Reset dropdown
+        });
+        
+        // Modal Cancel
+        cancelBtn.addEventListener('click', closeModal);
+        
+        // Modal Send
+        sendBtn.addEventListener('click', function(){
+            var subject = subjectInput.value.trim();
+            var body = bodyInput.value.trim();
+            
+            if (!subject || !body){
+                if (typeof window.__sbShowBanner==='function'){ 
+                    window.__sbShowBanner('Betreff und Nachricht müssen ausgefüllt sein', false); 
+                }
+                return;
+            }
+            
+            var ids = getSelectedResIds();
+            if (ids.length === 0){
+                if (typeof window.__sbShowBanner==='function'){ 
+                    window.__sbShowBanner('Keine Slots ausgewählt', false); 
+                }
+                closeModal();
+                return;
+            }
+            
+            closeModal();
+            if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Sende E-Mails…', null); }
+            
+            var params = new URLSearchParams();
+            ids.forEach(function(id){ params.append('reservation_ids[]', id); });
+            params.append('subject', subject);
+            params.append('body', body);
+            
+            fetch('<?= ABSURL ?>web/admin/ajax/send_custom_emails.php', { 
+                method:'POST', 
+                headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}, 
+                credentials:'same-origin', 
+                body: params.toString() 
+            })
+            .then(function(r){ if(!r.ok){ return r.text().then(function(t){ throw new Error('HTTP '+r.status+' '+(t||'')); }); } return r.json(); })
+            .then(function(j){
+                var ok = j && j.ok===true;
+                var msg = ok ? ('E-Mails versendet: '+(j.sent||0)+(j.failed?' | Fehler: '+j.failed:'')) : 'Fehler beim Senden';
+                if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner(msg, ok); }
+            })
+            .catch(function(e){ if (typeof window.__sbShowBanner==='function'){ window.__sbShowBanner('Fehler beim Senden: '+(e&&e.message?e.message:''), false); } });
+        });
+        
+        // Close modal on background click
+        modal.addEventListener('click', function(e){
+            if (e.target === modal) closeModal();
         });
     })();
     </script>
