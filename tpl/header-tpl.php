@@ -58,6 +58,90 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 		}
 	} catch(e){}
 })();
+
+// Globaler Error Handler für Debugging (besonders für Firefox-Probleme)
+(function(){
+	var errorCount = 0;
+	var maxErrors = 5;
+	
+	// Fehler-Banner erstellen
+	function showErrorBanner(msg, details) {
+		if (errorCount >= maxErrors) return;
+		errorCount++;
+		
+		var banner = document.createElement('div');
+		banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff4444;color:#fff;padding:12px 20px;z-index:99999;font-family:monospace;font-size:13px;line-height:1.4;box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+		banner.innerHTML = '<strong>⚠️ JavaScript-Fehler:</strong> ' + msg + (details ? '<br><small style="opacity:0.9;">' + details + '</small>' : '');
+		
+		// Schließen-Button
+		var closeBtn = document.createElement('button');
+		closeBtn.textContent = '✕';
+		closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:rgba(255,255,255,0.2);border:0;color:#fff;padding:4px 8px;cursor:pointer;border-radius:3px;';
+		closeBtn.onclick = function(){ banner.remove(); };
+		banner.appendChild(closeBtn);
+		
+		document.body.appendChild(banner);
+		
+		// Nach 10 Sekunden automatisch ausblenden
+		setTimeout(function(){ if(banner.parentNode) banner.remove(); }, 10000);
+	}
+	
+	// Browser-Info für Debugging
+	function getBrowserInfo() {
+		var ua = navigator.userAgent || '';
+		var isFirefox = ua.indexOf('Firefox') > -1;
+		var isChrome = ua.indexOf('Chrome') > -1;
+		var isSafari = ua.indexOf('Safari') > -1 && !isChrome;
+		var browser = isFirefox ? 'Firefox' : (isChrome ? 'Chrome' : (isSafari ? 'Safari' : 'Unbekannt'));
+		return browser + ' | ' + ua.substring(0, 80);
+	}
+	
+	// Globaler Error Handler
+	window.addEventListener('error', function(e){
+		var msg = e.message || 'Unbekannter Fehler';
+		var file = e.filename || '';
+		var line = e.lineno || '';
+		var col = e.colno || '';
+		var stack = (e.error && e.error.stack) ? e.error.stack : '';
+		
+		var details = 'Datei: ' + file + ' | Zeile: ' + line + ':' + col;
+		console.error('❌ JS-Fehler:', msg, details, '\nBrowser:', getBrowserInfo(), '\nStack:', stack);
+		
+		showErrorBanner(msg, details);
+		
+		// Fehler zur späteren Analyse in localStorage speichern
+		try {
+			if (window.localStorage) {
+				var errors = JSON.parse(localStorage.getItem('jsErrors') || '[]');
+				errors.push({
+					msg: msg,
+					file: file,
+					line: line,
+					col: col,
+					browser: getBrowserInfo(),
+					timestamp: new Date().toISOString(),
+					url: window.location.href
+				});
+				// Nur die letzten 20 Fehler behalten
+				if (errors.length > 20) errors = errors.slice(-20);
+				localStorage.setItem('jsErrors', JSON.stringify(errors));
+			}
+		} catch(storageError) {
+			console.warn('Konnte Fehler nicht speichern:', storageError);
+		}
+		
+		return false; // Fehler nicht weiter propagieren
+	});
+	
+	// Promise-Fehler abfangen (z.B. fetch-Fehler)
+	window.addEventListener('unhandledrejection', function(e){
+		var msg = (e.reason && e.reason.message) ? e.reason.message : String(e.reason);
+		console.error('❌ Unhandled Promise Rejection:', msg, '\nBrowser:', getBrowserInfo());
+		showErrorBanner('Promise-Fehler: ' + msg, 'Siehe Console für Details');
+	});
+	
+	console.log('✅ Error Handler aktiv | Browser:', getBrowserInfo());
+})();
 </script>
 <?php include_once __DIR__ . '/../inc/language-switcher.php'; ?>
 <?php if (isset($ADMIN) && $ADMIN === true) { ?>
