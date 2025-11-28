@@ -6,13 +6,15 @@
  */
 
 error_reporting(-1);
+ini_set('display_errors', 1);
 $PAGE = basename(__FILE__);
 require "_root_.php";
 require ROOT."/inc/_include.php";
 require ROOT."/inc/admincheck.php";
 
+$ADMIN = true;
 $title = "JavaScript-Fehler Debug";
-require ROOT."/tpl/_include.php";
+require ROOT."/tpl/header-tpl.php";
 ?>
 
 <div id="content">
