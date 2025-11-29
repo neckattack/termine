@@ -314,6 +314,8 @@ Ihr neckattack-Team</textarea>
         })();
         </script>
 
+		<!-- ALTES DESIGN AUSGEBLENDET (kann später gelöscht werden, wenn neues Design bestätigt ist) -->
+		<div style="display:none;">
 		<a href="editclient.php">Kunde Hinzufügen</a>
 
 		<ul id="clientlist" class="general-list">
@@ -352,6 +354,8 @@ Ihr neckattack-Team</textarea>
 			<li>Noch kein Kunde vorhanden.</li>
 			<?php }?>
 		</ul>
+		</div>
+		<!-- ENDE ALTES DESIGN -->
 		
 	</div>
 	
