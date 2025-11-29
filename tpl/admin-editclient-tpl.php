@@ -299,18 +299,24 @@ require ROOT."/tpl/header-tpl.php";
     <input type="number" min="1" step="1" id="booking_deadline_hours_custom" name="booking_deadline_hours_custom" style="display:none;width:80px;" placeholder="Stunden" value="<?=($__bdh!=0&&$__bdh!=12&&$__bdh!=24&&$__bdh!=48&&$__bdh!=168)?$__bdh:''?>" />
 </div>
 <script>
-$(function(){
-    $('#booking_deadline_hours').change(function(){
-        if($(this).val()==='custom') {
+(function waitForJQuery() {
+    if (typeof jQuery === 'undefined') {
+        setTimeout(waitForJQuery, 50);
+        return;
+    }
+    jQuery(function($){
+        $('#booking_deadline_hours').change(function(){
+            if($(this).val()==='custom') {
+                $('#booking_deadline_hours_custom').show();
+            } else {
+                $('#booking_deadline_hours_custom').hide();
+            }
+        });
+        if($('#booking_deadline_hours').val()==='custom') {
             $('#booking_deadline_hours_custom').show();
-        } else {
-            $('#booking_deadline_hours_custom').hide();
         }
     });
-    if($('#booking_deadline_hours').val()==='custom') {
-        $('#booking_deadline_hours_custom').show();
-    }
-});
+})();
 </script>
 				</div>
 
@@ -380,8 +386,13 @@ $(function(){
 					<input type="text" id="price" name="price" value="<?=$price?>" size="20" />&nbsp;EUR
 				</div>
 
-				<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 				<script type="text/javascript">
+				// Warte bis jQuery vom Footer geladen ist
+				(function waitForJQuery() {
+					if (typeof jQuery === 'undefined') {
+						setTimeout(waitForJQuery, 50);
+						return;
+					}
 				    jQuery(document).ready(function($) {
 
 						$(function() {
@@ -397,7 +408,8 @@ $(function(){
 							})
 						});
 				    });
-				</script>
+				})(); // Ende waitForJQuery
+			</script>
 
 				<?php /* // Disable
 				<label for="upload_image">Bild</label>
@@ -481,6 +493,16 @@ require ROOT."/tpl/footer-tpl.php";
 		var parts = dateStr.split('-');
 		return parts[2] + '.' + parts[1] + '.' + parts[0];
 	}
+
+	// Warte bis jQuery vom Footer geladen ist
+	(function waitForJQuery() {
+		if (typeof jQuery === 'undefined') {
+			setTimeout(waitForJQuery, 50);
+			return;
+		}
+		
+		// jQuery ist geladen, jetzt Code ausführen
+		jQuery(function($) {
 
 	function updateSelectedDatesList() {
 		var $list = $('#selectedDatesList');
@@ -671,4 +693,7 @@ require ROOT."/tpl/footer-tpl.php";
 			togglePastDates();
 		});
 	});
+
+		}); // Ende jQuery(function($)
+	})(); // Ende waitForJQuery
 </script>
