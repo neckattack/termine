@@ -95,6 +95,25 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 		var browser = isFirefox ? 'Firefox' : (isChrome ? 'Chrome' : (isSafari ? 'Safari' : 'Unbekannt'));
 		return browser + ' | ' + ua.substring(0, 80);
 	}
+
+	// Bestimmte, bekannte Extension-Fehler ignorieren (MetaMask, Browser-Plugins, etc.)
+	function isIgnoredError(msg, file) {
+		msg = msg || '';
+		file = file || '';
+		var lowerMsg = String(msg).toLowerCase();
+		var lowerFile = String(file).toLowerCase();
+
+		// MetaMask / Wallet-Erweiterungen
+		if (lowerMsg.indexOf('metamask') !== -1) return true;
+		if (lowerMsg.indexOf('failed to connect to metamask') !== -1) return true;
+
+		// Browser-Extensions (Chrome/Firefox)
+		if (lowerFile.indexOf('chrome-extension://') === 0) return true;
+		if (lowerFile.indexOf('moz-extension://') === 0) return true;
+
+		// Sonstige typische Extension-Fehler können hier ergänzt werden
+		return false;
+	}
 	
 	// Globaler Error Handler
 	window.addEventListener('error', function(e){
@@ -105,6 +124,13 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 		var stack = (e.error && e.error.stack) ? e.error.stack : '';
 		
 		var details = 'Datei: ' + file + ' | Zeile: ' + line + ':' + col;
+		
+		// Extension-Fehler ignorieren
+		if (isIgnoredError(msg, file)) {
+			console.debug('Ignoriere Extension-Fehler:', msg, details);
+			return false;
+		}
+		
 		console.error('❌ JS-Fehler:', msg, details, '\nBrowser:', getBrowserInfo(), '\nStack:', stack);
 		
 		showErrorBanner(msg, details);
@@ -136,6 +162,20 @@ error_reporting(E_ERROR & E_PARSE &E_WARNING);
 	// Promise-Fehler abfangen (z.B. fetch-Fehler)
 	window.addEventListener('unhandledrejection', function(e){
 		var msg = (e.reason && e.reason.message) ? e.reason.message : String(e.reason);
+		var file = '';
+		// Bei manchen Promise-Fehlern steckt die Info im Stack
+		if (e.reason && e.reason.stack) {
+			var stack = String(e.reason.stack);
+			if (stack.indexOf('chrome-extension://') !== -1) file = 'chrome-extension://';
+			if (stack.indexOf('moz-extension://') !== -1) file = 'moz-extension://';
+		}
+		
+		// Extension-Fehler ignorieren
+		if (isIgnoredError(msg, file)) {
+			console.debug('Ignoriere Extension-Promise-Fehler:', msg);
+			return;
+		}
+		
 		console.error('❌ Unhandled Promise Rejection:', msg, '\nBrowser:', getBrowserInfo());
 		showErrorBanner('Promise-Fehler: ' + msg, 'Siehe Console für Details');
 	});
