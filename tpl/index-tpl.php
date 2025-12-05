@@ -144,16 +144,21 @@ $gText  = $client["greeting_text"];
 						<h3><?php echo __t('date_text'); ?></h3>
 						<?php if ($result !== false) {
 							foreach ($result["dates"] as $key => $date) {
+								$masseurLabel = '';
+								if (!empty($client['patient_invoice_flag']) && !empty($date['masseur_first_name'])) {
+									$masseurLabel = ' – ' . htmlspecialchars($date['masseur_first_name']);
+								}
 						?>
 								<div class="form-check">
 									<label for="date_<?= $date["id"] ?>">
 										<input type="radio" id="date_<?= $date["id"] ?>" name="date" <?= ((int)$date["id"] === $date_id) ? 'checked="checked"' : "" ?> value="<?= $date["id"] ?>" />
-										<span><?= $date["date"] ?></span><sup class="datetimescount"></sup>
+										<span><?= $date["date"] ?><?= $masseurLabel ?></span><sup class="datetimescount"></sup>
 									</label>
 								</div>
 						<?php }
-						} ?>
-						<noscript>
+						}
+						?>
+<noscript>
 							<p><input type="submit" name="select_date" value="Anzeigen" /></p>
 						</noscript>
 					</div>

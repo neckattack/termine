@@ -17,7 +17,7 @@ function getClientInfos($id) {
 	$id = (int)$id;
 
 	    // Tag: stornovorlauf – booking_deadline_hours für Fristlogik ins Frontend laden
-    $sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, `c`.`contact_masseur_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours`, `c`.`avoid_double_bookings_mode`, `c`.`patient_billing_required` ";
+    $sql  = "SELECT `c`.`id`, `c`.`name`, `c`.`hashlink`, `c`.`greeting_text`, `c`.`email_text`, `c`.`contact_masseur_id`, `c`.`enabled`, `c`.`group_id`, `c`.`image`, `c`.`price`, `c`.`booking_deadline_hours`, `c`.`avoid_double_bookings_mode`, `c`.`patient_billing_required`, `c`.`patient_invoice_flag` ";
 	$sql .= "FROM `clients` AS `c` ";
 	$sql .= "LEFT JOIN `admin` AS `a` ON (`a`.`id` = `c`.`contact_masseur_id`) ";
 	$sql .= "WHERE `c`.`id` = :id ";
@@ -98,9 +98,10 @@ function getDates($id, $initial=false, $alltimes=false) {
 
 	// Get all dates for this client
 	$dateStr = getMySQLDateString($config["dateFormat"]);
-	$sql    = "SELECT `d`.`id`, DATE_FORMAT(`d`.`date`, '".$dateStr."') AS `date` ";
+	$sql    = "SELECT `d`.`id`, DATE_FORMAT(`d`.`date`, '".$dateStr."') AS `date`, `d`.`masseur_id`, `a`.`first_name` AS masseur_first_name ";
 	$sql   .= "FROM `dates` AS `d` ";
 	$sql   .= "RIGHT JOIN `times` AS `t` ON (`d`.`id` = `t`.`date_id`) ";		// Select only those with time values
+	$sql   .= "LEFT JOIN `admin` AS `a` ON (`a`.`id` = `d`.`masseur_id`) ";
 	$sql   .= "WHERE `d`.`client_id` = :id AND `d`.`date` >= DATE(NOW()) ";
 	$sql   .= "GROUP BY `d`.`id` ";
 	$sql   .= "ORDER BY `d`.`date` ASC ";
@@ -426,27 +427,16 @@ function sendConfirmationMail($email, $name, $times=array(), $contact=null, $mes
 	}
 
 	if ($html === true) {
-		// HTML-Version mit formatierten ICS-Links
-		foreach ($timeFormat AS $date => $entries) {
-			$message_time .= "<strong>".$date."</strong><br>\n";
-			foreach ($entries AS $key => $entry) {
-				$icsUrl = ABSURL."web/ics.php?e=".md5($email)."&t=".$entry["id"];
-				$message_time .= $entry["start"]." - ".$entry["end"]." ";
-				$message_time .= '<a href="'.$icsUrl.'" style="display:inline-block;padding:4px 12px;background-color:#f4a900;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;margin-left:8px;">📅 In Kalender eintragen</a>';
-				$message_time .= "<br>\n";
-			}
-			$message_time .= "<br>\n";
-		}
-		
-		$terminate_link = ABSURL."web/bookings.php?e=".md5($email);
-		
-		$variables = array(
-			"Benutzername"    => $name,
-			"Termine"         => $message_time,
-			"Telefonnummer"   => $contact["phone"],
-			"Ansprechpartner" => $contact["string"],
-			"StornierenLink" => '<a href="'.$terminate_link.'">'.$terminate_link.'</a>',
-		);
+		/*
+		$message  = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
+		$message .= "<html>\n<head>\n<title>Anmeldung</title>\n</head>\n<body>\n";
+		$message .= "<h1>Hallo ".$name."</h1>";
+		$message .= "<h2>Sie haben sich erfolgreich für folgende Termine angemeldet:</h2>\n";
+		$message .= "<pre>";
+		$message .= print_r($times, true);
+		$message .= "</pre>";
+		$message .= "<body>\n</html>";
+		*/
 	}
 
 	// Plain text
@@ -495,7 +485,7 @@ function sendConfirmationMail($email, $name, $times=array(), $contact=null, $mes
 	$message = preg_replace("# {2}#", " ", $message);
 
 
-	$success = sendMail($email, $name, $from, $subject, $message, $contact["email"], true);
+	$success = sendMail($email, $name, $from, $subject, $message, $contact["email"], false);
 
 	return $success;
 }

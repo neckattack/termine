@@ -267,6 +267,16 @@ function editClient($data) {
         }
     } catch (Exception $e) {}
 
+    // Masseurnamen anzeigen (patient_invoice_flag), optional nur falls Spalte existiert
+    $patient_invoice_flag = isset($data['patient_invoice_flag']) ? (int)!!$data['patient_invoice_flag'] : 0;
+    try {
+        $cols2 = $DB->PreparedSelect("SHOW COLUMNS FROM `clients` LIKE 'patient_invoice_flag'", array(), false, false);
+        if (is_array($cols2) && count($cols2) > 0) {
+            $sqlP2 = "UPDATE `clients` SET `patient_invoice_flag` = :v WHERE `id` = :id";
+            $DB->PreparedStatement($sqlP2, array('v' => $patient_invoice_flag, 'id' => (int)$id), false, false);
+        }
+    } catch (Exception $e) {}
+
     // Persist client-specific service prices (if provided)
     if (isset($data['service_prices']) && is_array($data['service_prices'])) {
         $prices = $data['service_prices'];

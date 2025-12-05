@@ -38,6 +38,11 @@ require ROOT."/tpl/header-tpl.php";
 				</div>
 
 				<div class="row">
+					<label for="patient_invoice_flag">Masseurnamen anzeigen</label>
+					<input type="checkbox" id="patient_invoice_flag" name="patient_invoice_flag" value="1" <?=(isset($patient_invoice_flag) && (int)$patient_invoice_flag===1)?'checked="checked"':''?> />
+				</div>
+
+				<div class="row">
 					<?php $disabled = ((int) $_SESSION["userid"] === $contact_client_id) ? 'disabled="disabled"' : ''; ?>
 					<label for="contact_masseur_id">Ansprechpartner (Masseur)</label>
 					<select id="contact_masseur_id" name="contact_masseur_id" <?=$disabled?>>

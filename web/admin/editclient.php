@@ -48,14 +48,20 @@ $services = getAllGebuehServices();
 
 // Client-spezifische Servicepreise laden (Anzeige, kein Speichern in diesem Schritt)
 $client_service_prices = array();
-// Flag: Patientenrechnung notwendig (default: 0)
+// Flags: Patientenrechnung notwendig & Masseurnamen anzeigen (defaults)
 $patient_billing_required = 0;
-// Prüfen, ob Spalte existiert
+$patient_invoice_flag    = 0;
+// Prüfen, ob Spalten existieren
 $__hasPatientBillingCol = false;
+$__hasPatientInvoiceCol = false;
 try {
-    $col = $DB->PreparedSelect("SHOW COLUMNS FROM `clients` LIKE 'patient_billing_required'", array(), false, false);
-    $__hasPatientBillingCol = (is_array($col) && count($col) > 0);
+	$col = $DB->PreparedSelect("SHOW COLUMNS FROM `clients` LIKE 'patient_billing_required'", array(), false, false);
+	$__hasPatientBillingCol = (is_array($col) && count($col) > 0);
 } catch (Exception $e) { $__hasPatientBillingCol = false; }
+try {
+	$col2 = $DB->PreparedSelect("SHOW COLUMNS FROM `clients` LIKE 'patient_invoice_flag'", array(), false, false);
+	$__hasPatientInvoiceCol = (is_array($col2) && count($col2) > 0);
+} catch (Exception $e) { $__hasPatientInvoiceCol = false; }
 if ($clientID > 0) {
     try {
         $sql = "SELECT service_id, price_amount FROM client_service_prices WHERE client_id = :cid";
@@ -69,15 +75,25 @@ if ($clientID > 0) {
     } catch (Exception $e) {
         $client_service_prices = array();
     }
-    // Patientenrechnung-Flag laden
-    if ($__hasPatientBillingCol) {
-        try {
-            $row = $DB->PreparedSelect("SELECT patient_billing_required FROM clients WHERE id = :cid", array('cid' => $clientID), false, false);
-            if (is_array($row) && isset($row[0]['patient_billing_required'])) {
-                $patient_billing_required = (int)$row[0]['patient_billing_required'];
-            }
-        } catch (Exception $e) {}
-    }
+    // Patientenrechnung-/Masseurnamen-Flags laden
+	if ($__hasPatientBillingCol || $__hasPatientInvoiceCol) {
+		try {
+			$row = $DB->PreparedSelect(
+				"SELECT patient_billing_required, patient_invoice_flag FROM clients WHERE id = :cid",
+				array('cid' => $clientID),
+				false,
+				false
+			);
+			if (is_array($row) && isset($row[0])) {
+				if (isset($row[0]['patient_billing_required'])) {
+					$patient_billing_required = (int)$row[0]['patient_billing_required'];
+				}
+				if (isset($row[0]['patient_invoice_flag'])) {
+					$patient_invoice_flag = (int)$row[0]['patient_invoice_flag'];
+				}
+			}
+		} catch (Exception $e) {}
+	}
 }
 
 
@@ -139,8 +155,9 @@ else {
 	// Defaults für neue Kunden
 	$avoid_double_bookings_mode = 'none';
     // Default-Felder initialisieren
-    $default_service_ids = $default_service_ids_req;
+    $default_service_ids      = $default_service_ids_req;
     $patient_billing_required = 0;
+    $patient_invoice_flag     = 0;
 }
 
 
